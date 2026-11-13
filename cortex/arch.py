@@ -21,6 +21,8 @@ class CortexConfig:
     n_slots: int = 48
     slot_merge_sim: float = 0.92
     n_write_per_chunk: int = 1
+    learned_alloc: bool = False
+    alloc_tau: float = 0.5
 
 
 def build_rope(seq_len: int, head_dim: int, base: float = 10000.0) -> torch.Tensor:
@@ -196,11 +198,17 @@ class HippocampalMemoryAttention(SurpriseDeltaMemoryAttention):
         self.n_slots = cfg.n_slots
         self.merge_sim = cfg.slot_merge_sim
         self.n_write_per_chunk = cfg.n_write_per_chunk
+        self.learned_alloc = cfg.learned_alloc
+        self.alloc_tau = cfg.alloc_tau
         H = cfg.n_head
         self.slot_gate = nn.Linear(cfg.d_model, H)
         self.slot_temp = nn.Parameter(torch.full((H,), 2.0))
         nn.init.zeros_(self.slot_gate.weight)
         nn.init.constant_(self.slot_gate.bias, -0.5)
+        if self.learned_alloc:
+            self.alloc_head = nn.Linear(cfg.d_model, H)
+            nn.init.zeros_(self.alloc_head.weight)
+            nn.init.zeros_(self.alloc_head.bias)
 
     def forward(
         self,
@@ -222,6 +230,7 @@ class HippocampalMemoryAttention(SurpriseDeltaMemoryAttention):
         qkv_m = self.qkv_mem(x)
         g = self.gates(x)
         sg_in = self.slot_gate(x)
+        alloc_all = self.alloc_head(x).float().transpose(1, 2) if self.learned_alloc else None
         with torch.autocast(x.device.type, enabled=False):
             qm, km, vm = qkv_m.float().view(B, T, 3, H, Dm).permute(2, 0, 3, 1, 4)
             qm, km = F.normalize(qm, dim=-1), F.normalize(km, dim=-1)
@@ -263,16 +272,33 @@ class HippocampalMemoryAttention(SurpriseDeltaMemoryAttention):
                 dead = ec.any(dim=1)[:, None, None, None].float()
                 sk, sv = sk * (1 - dead), sv * (1 - dead)
                 sw = sw * (1 - dead.squeeze(-1))
-                surp_m = surp.squeeze(-1).masked_fill(~active[:, None, :].expand(-1, H, -1), -1e9)
-                kw = min(self.n_write_per_chunk, qc.shape[2])
-                stars = surp_m.topk(kw, dim=2).indices  # [B,H,kw]
+                L = qc.shape[2]
+                kw = min(self.n_write_per_chunk, L)
                 act_exp = active[:, None, :].expand(-1, H, -1)
+                if self.learned_alloc:
+                    score_m = (surp.squeeze(-1) + alloc_all[:, :, s : s + MC]).masked_fill(~act_exp, -1e9)
+                    picked = torch.zeros(B, H, L, device=x.device, dtype=torch.bool)
+                    stars = None
+                else:
+                    surp_m = surp.squeeze(-1).masked_fill(~act_exp, -1e9)
+                    stars = surp_m.topk(kw, dim=2).indices  # [B,H,kw]
                 for j in range(kw):
-                    star = stars[:, :, j]
-                    ix = star[:, :, None, None].expand(-1, -1, 1, Dm)
-                    k_star, v_star = kc.gather(2, ix).squeeze(2), vc.gather(2, ix).squeeze(2)
-                    b_star = beta.squeeze(-1).gather(2, star.unsqueeze(-1)).squeeze(-1)
-                    write_ok = act_exp.gather(2, star.unsqueeze(-1)).squeeze(-1).float()  # no-op for padded picks
+                    if self.learned_alloc:
+                        s_m = score_m.masked_fill(picked, -1e9)
+                        soft = torch.softmax(s_m / self.alloc_tau, dim=-1)
+                        hard = F.one_hot(s_m.argmax(-1), L).float()
+                        p = hard + (soft - soft.detach())  # ST: hard pick fwd, soft grad back
+                        picked = picked | hard.bool()
+                        k_star = (p.unsqueeze(-1) * kc).sum(2)
+                        v_star = (p.unsqueeze(-1) * vc).sum(2)
+                        b_star = (p * beta.squeeze(-1)).sum(-1)
+                        write_ok = (p * act_exp.float()).sum(-1)
+                    else:
+                        star = stars[:, :, j]
+                        ix = star[:, :, None, None].expand(-1, -1, 1, Dm)
+                        k_star, v_star = kc.gather(2, ix).squeeze(2), vc.gather(2, ix).squeeze(2)
+                        b_star = beta.squeeze(-1).gather(2, star.unsqueeze(-1)).squeeze(-1)
+                        write_ok = act_exp.gather(2, star.unsqueeze(-1)).squeeze(-1).float()  # no-op for padded picks
                     sim = (k_star.unsqueeze(2) * sk).sum(-1).masked_fill(sw <= 1e-6, -1e9)
                     best_sim, best_ix = sim.max(dim=-1)
                     do_merge = (best_sim > self.merge_sim) & (sw.gather(-1, best_ix.unsqueeze(-1)).squeeze(-1) > 1e-6)
@@ -534,7 +560,7 @@ class BaseCognitiveModel(nn.Module):
 
     def _init_residual(self, scale_depth: int):
         for name, p in self.named_parameters():
-            if p.dim() >= 2 and not name.startswith(("perc.", "ttt_adapter.", "world_model.")):
+            if p.dim() >= 2 and not name.startswith(("perc.", "ttt_adapter.", "world_model.")) and not name.endswith("alloc_head.weight"):
                 res = name.endswith(("proj.weight", "mem_proj.weight", "down.weight", "cand_upd.weight"))
                 nn.init.normal_(p, std=0.02 / math.sqrt(2 * scale_depth) if res else 0.02)
         self.ttt_adapter.reset_adapter()

@@ -356,6 +356,8 @@ class HippocampusAttention(SynapseAttention):
     n_slots = 48
     merge_sim = 0.92
     n_write_per_chunk = 1  # Gen-2 lever: >1 writes the top-k surprising tokens per chunk
+    learned_alloc = False  # Gen-2 lever: learned write scorer on top of surprise (ST-estimator pick)
+    alloc_tau = 0.5
 
     def __init__(self, cfg):
         super().__init__(cfg)
@@ -364,6 +366,13 @@ class HippocampusAttention(SynapseAttention):
         self.slot_temp = nn.Parameter(torch.full((H,), 2.0))
         nn.init.zeros_(self.slot_gate.weight)
         nn.init.constant_(self.slot_gate.bias, -0.5)
+        if self.learned_alloc:
+            # zero-init -> score = surprise exactly at step 0; argmax pick is discrete so the
+            # head only trains through the straight-through softmax below (hard pick forward,
+            # soft gradient backward). Additive: learns to re-rank which token earns the slot.
+            self.alloc_head = nn.Linear(cfg.d_model, H)
+            nn.init.zeros_(self.alloc_head.weight)
+            nn.init.zeros_(self.alloc_head.bias)
 
     def forward(self, x, rope, local_mask, eot, state):
         B, T, C = x.shape
@@ -375,6 +384,7 @@ class HippocampusAttention(SynapseAttention):
         qkv_m = self.qkv_mem(x)
         gates = self.mem_gates(x)
         sgate = self.slot_gate(x)
+        alloc_all = self.alloc_head(x).float().transpose(1, 2) if self.learned_alloc else None
         with torch.autocast(x.device.type, enabled=False):
             qm, km, vm = qkv_m.float().view(B, T, 3, H, Dm).permute(2, 0, 3, 1, 4)
             qm, km = F.normalize(qm, dim=-1), F.normalize(km, dim=-1)
@@ -421,19 +431,35 @@ class HippocampusAttention(SynapseAttention):
                 dead = ec.any(dim=1)[:, None, None, None].float()  # [B,1,1,1], 0 keeps graph unbroken
                 sk, sv = sk * (1 - dead), sv * (1 - dead)
                 sw = sw * (1 - dead.squeeze(-1))
-                surp_m = surp.squeeze(-1).masked_fill(~active[:, None, :].expand(-1, H, -1), -1e9)
                 kw = min(self.n_write_per_chunk, L)
-                stars = surp_m.topk(kw, dim=2).indices  # [B,H,kw]
                 act_exp = active[:, None, :].expand(-1, H, -1)
+                if self.learned_alloc:
+                    score_m = (surp.squeeze(-1) + alloc_all[:, :, s:s + MC]).masked_fill(~act_exp, -1e9)
+                    picked = torch.zeros(B, H, L, device=x.device, dtype=torch.bool)
+                    stars = None
+                else:
+                    surp_m = surp.squeeze(-1).masked_fill(~act_exp, -1e9)
+                    stars = surp_m.topk(kw, dim=2).indices  # [B,H,kw]
                 for j in range(kw):
-                    star = stars[:, :, j]  # [B,H]
-                    ix = star[:, :, None, None].expand(-1, -1, 1, Dm)
-                    k_star = kc.gather(2, ix).squeeze(2)
-                    v_star = vc.gather(2, ix).squeeze(2)
-                    b_star = beta.squeeze(-1).gather(2, star.unsqueeze(-1)).squeeze(-1)
-                    # padded picks (inactive positions when fewer than kw actives) must be
-                    # full no-ops — otherwise they'd evict a real slot when the bank is full
-                    write_ok = act_exp.gather(2, star.unsqueeze(-1)).squeeze(-1).float()  # [B,H]
+                    if self.learned_alloc:
+                        s_m = score_m.masked_fill(picked, -1e9)
+                        soft = torch.softmax(s_m / self.alloc_tau, dim=-1)
+                        hard = F.one_hot(s_m.argmax(-1), L).float()
+                        p = hard + (soft - soft.detach())  # ST: hard pick fwd, soft grad back
+                        picked = picked | hard.bool()
+                        k_star = (p.unsqueeze(-1) * kc).sum(2)
+                        v_star = (p.unsqueeze(-1) * vc).sum(2)
+                        b_star = (p * beta.squeeze(-1)).sum(-1)
+                        write_ok = (p * act_exp.float()).sum(-1)  # = act at picked pos fwd
+                    else:
+                        star = stars[:, :, j]  # [B,H]
+                        ix = star[:, :, None, None].expand(-1, -1, 1, Dm)
+                        k_star = kc.gather(2, ix).squeeze(2)
+                        v_star = vc.gather(2, ix).squeeze(2)
+                        b_star = beta.squeeze(-1).gather(2, star.unsqueeze(-1)).squeeze(-1)
+                        # padded picks (inactive positions when fewer than kw actives) must be
+                        # full no-ops — otherwise they'd evict a real slot when the bank is full
+                        write_ok = act_exp.gather(2, star.unsqueeze(-1)).squeeze(-1).float()  # [B,H]
                     sim = (k_star.unsqueeze(2) * sk).sum(-1)
                     sim = sim.masked_fill(sw <= 1e-6, -1e9)
                     best_sim, best_ix = sim.max(dim=-1)
@@ -544,11 +570,45 @@ class HippocampusW3Transformer(SynapseTransformer):
         self._init_weights(cfg.n_layer)
 
 
+class HippocampusLAAttention(HippocampusAttention):
+    """Write-selection lever (post-Exp#022): same single write per chunk, but the
+    pick is score = surprise + alloc_head(x) with the head trained through a
+    straight-through estimator — learns WHICH surprising token deserves the slot."""
+    learned_alloc = True
+
+
+class HippocampusLABlock(SynapseBlock):
+    def __init__(self, cfg, mlp_hidden=768):
+        super().__init__(cfg, mlp_hidden)
+        self.attn = HippocampusLAAttention(cfg)
+
+
+class HippocampusLATransformer(SynapseTransformer):
+    def __init__(self, cfg):
+        super().__init__(cfg)
+        self.blocks = nn.ModuleList(
+            [SynapseBlock(cfg, mlp_hidden=768) for _ in range(cfg.n_layer - 1)]
+            + [HippocampusLABlock(cfg, mlp_hidden=768)]
+        )
+        self._init_weights(cfg.n_layer)
+
+    def _init_weights(self, depth_scale):
+        super()._init_weights(depth_scale)
+        # _init_weights re-randomizes every Linear — restore the alloc head to exact
+        # zero so LA is bit-identical to the w1 pick at step 0 (clean attribution).
+        # Guarded: the parent's __init__ calls this before the LA block exists.
+        ah = getattr(self.blocks[-1].attn, "alloc_head", None)
+        if ah is not None:
+            nn.init.zeros_(ah.weight)
+            nn.init.zeros_(ah.bias)
+
+
 MODELS = {
     "transformer": Transformer,
     "memory": MemoryTransformer,
     "synapse": SynapseTransformer,
     "hippocampus": HippocampusTransformer,
     "hippocampus_w3": HippocampusW3Transformer,
+    "hippocampus_la": HippocampusLATransformer,
     "cortex": CortexTransformer,
 }

@@ -220,7 +220,7 @@ def select_action_learned(wm: DiscreteBoardWM, obs_toks: list[int], horizon: int
             if term:
                 continue
             for a in range(4):
-                if mode == "raw" or mode == "staged":
+                if mode in ("raw", "staged", "agflag"):
                     sn, r, tr = wm.step(st, torch.tensor([a], device=device), hard=True)
                 elif mode == "surg":
                     sn, r, tr = surgical_step(wm, st, torch.tensor([a], device=device))
@@ -254,8 +254,10 @@ def select_action_learned(wm: DiscreteBoardWM, obs_toks: list[int], horizon: int
         seen, nodes = set(), []
         for score, sn, nsc, fa, term in cands:
             cells, flag = decode_state(sn)
-            ag = cells.index(2) if 2 in cells else -1
-            key = (ag, flag)
+            # symbolic-planner dedup used (ag, flag) — correct there because that IS the
+            # whole state, but two DISTINCT imagined boards sharing (ag,flag) are not
+            # equivalent; dedup on the full board keeps beam diversity (Exp #026).
+            key = (ag, flag) if mode == "agflag" else tuple(cells) + (flag,)
             if key in seen:
                 continue
             seen.add(key)
@@ -315,7 +317,7 @@ def onehot_from_parsed(cells: torch.Tensor, flags: torch.Tensor) -> torch.Tensor
     return torch.cat([ch, fh], dim=-1)
 
 
-def train(wm: DiscreteBoardWM, transitions: list[dict], steps: int, bs: int, device: str, seed: int = 42):
+def train(wm: DiscreteBoardWM, transitions: list[dict], steps: int, bs: int, device: str, seed: int = 42, aux_agent: bool = True, ss_depth: int = SS_DEPTH):
     opt = torch.optim.AdamW(wm.parameters(), lr=2e-3, weight_decay=1e-2)
     rng = random.Random(seed)
     wm.train()
@@ -345,7 +347,7 @@ def train(wm: DiscreteBoardWM, transitions: list[dict], steps: int, bs: int, dev
                 p = prev_of.get(i)
                 if p is None:
                     continue
-                depth = 1 + rng.randrange(SS_DEPTH)
+                depth = 1 + rng.randrange(ss_depth)
                 chain = [i]
                 while len(chain) <= depth and prev_of.get(chain[-1]) is not None:
                     chain.append(prev_of[chain[-1]])
@@ -379,7 +381,7 @@ def train(wm: DiscreteBoardWM, transitions: list[dict], steps: int, bs: int, dev
         # only ~1/36 for it). Penalize the SOFT agent count deviating from exactly 1 —
         # under scheduled sampling this teaches self-correction from degraded inputs.
         cnt = pred_cells.softmax(-1)[..., 2].sum(-1)
-        loss_cnt = F.mse_loss(cnt, torch.ones_like(cnt))
+        loss_cnt = F.mse_loss(cnt, torch.ones_like(cnt)) if aux_agent else torch.zeros((), device=device)
         loss_r = F.mse_loss(r_pred, rews)
         loss_t = F.binary_cross_entropy_with_logits(trap_logit, traps)
         loss = loss_enc + loss_tr + 3.0 * loss_r + 3.0 * loss_t + loss_cnt
@@ -458,6 +460,9 @@ def main():
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--load", default=None, help="checkpoint to load; skips training")
+    ap.add_argument("--ckpt-out", default="cortex_runs/discrete_wm.pt")
+    ap.add_argument("--aux-agent", type=int, default=1, help="agent-existence auxiliary loss")
+    ap.add_argument("--ss-depth", type=int, default=SS_DEPTH)
     ap.add_argument("--plan-modes", default=None, help="comma list: run eval_learned_planning per mode")
     ap.add_argument("--out", default="cortex_runs/discrete_wm_eval.json")
     args = ap.parse_args()
@@ -471,8 +476,9 @@ def main():
         print(f"[discrete_wm] collecting {args.n_envs} env trajectories...", flush=True)
         transitions = collect_world_model_dataset(n_envs=args.n_envs, seed_start=10000)
         print(f"[discrete_wm] {len(transitions)} transitions; training {args.steps} steps on {args.device}", flush=True)
-        train(wm, transitions, args.steps, args.bs, args.device, args.seed)
-        torch.save(wm.state_dict(), "cortex_runs/discrete_wm.pt")
+        train(wm, transitions, args.steps, args.bs, args.device, args.seed, aux_agent=bool(args.aux_agent), ss_depth=args.ss_depth)
+        torch.save(wm.state_dict(), args.ckpt_out)
+        print(f"[discrete_wm] saved {args.ckpt_out}", flush=True)
 
     print(f"[discrete_wm] rollout-fidelity eval: {args.eval_maps} held-out maps, depth {args.eval_depth}", flush=True)
     res = eval_rollout(wm, args.eval_maps, args.eval_depth, args.device)

@@ -577,8 +577,10 @@ def select_action_mpc(
 
 
 @torch.no_grad()
-def evaluate_planning(model, n_maps: int = 80, seed_start: int = 50000, device: str = "cuda") -> dict:
-    """Compare Myopic (H=1), Reactive Policy (H=0), and Latent World-Model MPC (H=6) on unseen maps."""
+def evaluate_planning(model, n_maps: int = 80, seed_start: int = 50000, device: str = "cuda", dwm=None) -> dict:
+    """Compare Myopic (H=1), Reactive Policy (H=0), and Latent World-Model MPC (H=6) on unseen maps.
+    `dwm`: optional DiscreteBoardWM checkpoint — adds the fully-learned discrete-WM planner
+    (Exp #023/#026: conv-equivariant transition, hard-argmax rollout, full-board dedup)."""
     results = {}
     modes = [("myopic_H1", 1, "flat"), ("reactive_policy_H0", 0, "flat"), ("world_model_mpc_H6", 6, "flat")]
     if hasattr(model.world_model, "milestone_head"):
@@ -586,6 +588,8 @@ def evaluate_planning(model, n_maps: int = 80, seed_start: int = 50000, device: 
         modes.append(("reground_symbolic_H12", 12, "reground"))
         modes.append(("symbolic_decoded_H16", 16, "symbolic"))
         modes.append(("symbolic_oracle_H16", 16, "oracle"))
+    if dwm is not None:
+        modes.append(("learned_dwm_H16", 16, "learned_dwm"))
     for mode_name, horizon, mode in modes:
         solved, trapped, returns = 0, 0, []
         for i in range(n_maps):
@@ -625,6 +629,9 @@ def evaluate_planning(model, n_maps: int = 80, seed_start: int = 50000, device: 
                         goal_pos=cells0.index(5) if 5 in cells0 else -1,
                         horizon=horizon,
                     )
+                elif mode == "learned_dwm":
+                    from cortex.discrete_wm import select_action_learned  # lazy: discrete_wm imports planning
+                    act = select_action_learned(dwm, obs[0], horizon=horizon, device=device)
                 else:
                     act = select_action_mpc(model, z0, horizon=horizon, recent_z=recent_z, mode=mode)
                 obs, rew, done, is_trap = env.step(act)

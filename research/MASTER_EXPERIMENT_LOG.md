@@ -181,3 +181,34 @@ Every experiment conducted in this laboratory—including negative results, bugs
   - **Architecture lesson (thinking outside the box):** don't make the learned latent transition more accurate at long horizons — *move the state* into a domain where correctness is verifiable. Decode/parse to a symbolic board, then run exact discrete search with milestone-consistent transition rules. This is the planning analog of the Wall-1 finding: discrete symbolic structure (slots there, symbolic states here) beats bounded continuous representations where precision matters.
 - **Remaining 10%:** maps unsolved under H=16 + beam 64 — likely layouts where the optimal path exceeds episode cap or the beam prunes the detour; not investigated further this round.
 - **Honest negatives preserved:** `symbolic_decoded` (learned perception) = 0% — decoder fidelity remains unsolved; `reground_symbolic` (decode→clean→re-encode) = 0% — off-manifold latents decode to unusable boards; latent `subgoal` mode still underperforms flat MPC.
+
+### Exp #019 — `H4_cortex_v2` Autonomous Evolution Cycle (all mutants rejected — baseline stands)
+- **Artifact:** `cortex_runs/evolution_archive_H4_cortex_v2.jsonl`, `evo_h4.out`
+- **Setup:** `autonomous_loop.py --arch H4_cortex_v2` — Gen-0 champion (val_ood 0.3261) + 4 falsifiable candidates at identical 3,600-step budget, safety-gated (`max_mem_norm`), auto-rollback on negative delta.
+- **Result:** **0/4 mutations promoted** — the Gen-2 baseline defended itself:
+  | gen | mutation | val_ood | Δ | verdict |
+  |---|---|---:|---:|---|
+  | 0 | `gen0_H4_cortex_v2_base` | 0.3261 | — | champion (held-out OOD 0.3050) |
+  | 1 | `ablation_no_surprise_gate` | 0.2989 | −0.027 | rejected (control — surprise gate still contributes, esp. mm_2hop 0.43→0.23) |
+  | 2 | `mut1_finer_microchunk_mem48` | 0.3208 | −0.005 | rejected (finer writes + rank-48 matrix ≈ neutral, small negative) |
+  | 3 | `mut2_deep_recursion_verifier` | 0.1813 | −0.145 | rejected (**ponder_steps=6 + micro_chunk=8 destroyed the causal grok**: causal_do 1.0→0.3 — over-deeper untrained depth + finer chunks broke the binding scaffold) |
+  | 4 | `mut3_denser_slots_mc8` | 0.2812 | −0.045 | rejected (**n_slots=96 + micro_chunk=8 hurt** — write-capacity is NOT the OOD bottleneck) |
+- **Interpretation:** two informative negatives. (a) `mut3` shows that scaling slot-bank capacity/granularity alone does NOT buy OOD — the ~4-pt write-selectivity residual is an LM-recall issue, not an OOD-reasoning issue, so `n_write_per_chunk` is tested in `lab/` (LM recall), not here. (b) `mut2` re-confirms that the causal grok is *fragile to the training curriculum*: deeper ponder + finer chunks in the same run killed the grok — the scaffold's benefit is path-dependent, not just architectural. Champion `gen0_H4_cortex_v2_base` stands with held-out OOD 0.3050.
+
+### Exp #020 — Closing the Perception Gap: Weighted-CE Decoder Fidelity Lifts `symbolic_decoded` 0%→62.5%
+- **Artifact:** `cortex_runs/H4_cortex_v2_decft{,W}.pt`, `cortex_runs/planning_gen2_decft_eval.json`
+- **Setup:** after Exp #018 named the "perception gap" (learned `obs_dec` 86.3% cell-acc → decoded-perception symbolic planning = 0%), test whether it is a training-budget artifact or a capacity ceiling — dedicated fine-tune of `obs_enc`+`obs_dec` on real obs only, cross-entropy weighted ~12× on rare landmark cells (key/door/goal/trap ≈1/36 cells each) + 3× on the agent.
+- **Result — budget artifact, not a wall:**
+  - In-sample decode: 13.5% (untrained-mix checkpoint) → **100%** cell-acc, 100% exactly-one-agent, ~600 steps. Rare cells are the weak link under plain CE: held-out per-type key 66% / door 69% / goal 64% / trap 78% vs common cells ~99% — class imbalance, exactly the cells that define subgoals.
+  - Weighted-CE held-out decode: **99.25% cell-acc**, landmark cells 93–96%, one-agent 96.8%.
+  - `symbolic_decoded` planning (40 held-out maps, suite-checkpoint encoder + fine-tune): **goal 62.5% (25/40), trap 2.5% (1/40), return +1.557** — vs 0% for the un-sharpened decoder and 90% for obs-parsed oracle.
+  - **Encoder quality matters as much as the decoder:** the same weighted-CE pass after a fresh 1,200-step JEPA `train_world_model` retrain gave only **5% (2/40)** in `evaluate_planning` — the suite's longer curriculum yields a better-structured `encode_obs` latent for decoding; decode fidelity cannot rescue a poorly-shaped encoder.
+- **Full Wall-2 planning table now:**
+  | perception / search | goal | trap |
+  |---|---:|---:|
+  | latent MPC any horizon (H6/H8/H12) | 0% | 10–38% |
+  | symbolic search on un-sharpened `obs_dec` | 0% | 50% |
+  | symbolic search on JEPA-retrained enc + weighted-CE decode | 5% | 10% |
+  | **symbolic search on suite-encoder + weighted-CE decode** | **62.5%** | **2.5%** |
+  | symbolic search on obs-parsed board | 90% | 0% |
+- **Interpretation:** the neural end-to-end pipeline `obs → encode_obs → obs_dec → symbolic board → exact beam search` now demonstrably works (62.5% > 0%), closing the perception gap from "impossible" to "partially closed" — remaining ~27-pt gap to oracle is residual landmark-cell errors + encoder-representation quality. The imagination gap (latent rollout fidelity) remains fully open.

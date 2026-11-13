@@ -1,0 +1,179 @@
+{
+  "champion_id": "gen0_H4_cortex_v2_base",
+  "champion_meta": {
+    "ponder_eval": 4,
+    "verifier_select": false
+  },
+  "champion_val": {
+    "per_axis": {
+      "ep_ood": 0.25,
+      "s5_ood": 0.2,
+      "math_ood": 0.0875,
+      "arc_ood": 0.0,
+      "causal_do": 0.9875,
+      "mm_2hop": 0.4313
+    },
+    "val_ood_mean": 0.3261,
+    "val_ece": 0.0672
+  },
+  "heldout_test_benchmarks": {
+    "episodic_id_gap64": {
+      "exact_acc": 0.3583,
+      "token_acc": 0.3583,
+      "ece": 0.1012,
+      "auroc": 0.5125
+    },
+    "episodic_ood_gap160": {
+      "exact_acc": 0.2625,
+      "token_acc": 0.2625,
+      "ece": 0.1006,
+      "auroc": 0.5523
+    },
+    "episodic_ood_gap320": {
+      "exact_acc": 0.2125,
+      "token_acc": 0.2125,
+      "ece": 0.1487,
+      "auroc": 0.4866
+    },
+    "s5_id_len6": {
+      "exact_acc": 0.1833,
+      "token_acc": 0.1833,
+      "ece": 0.0569,
+      "auroc": 0.4689
+    },
+    "s5_ood_len10": {
+      "exact_acc": 0.2625,
+      "token_acc": 0.2625,
+      "ece": 0.0453,
+      "auroc": 0.4939
+    },
+    "s5_ood_len13": {
+      "exact_acc": 0.2208,
+      "token_acc": 0.2208,
+      "ece": 0.0347,
+      "auroc": 0.5009
+    },
+    "math_id_depth2": {
+      "exact_acc": 0.1292,
+      "token_acc": 0.1292,
+      "ece": 0.0534,
+      "auroc": 0.6819
+    },
+    "math_ood_depth3": {
+      "exact_acc": 0.0958,
+      "token_acc": 0.0958,
+      "ece": 0.0212,
+      "auroc": 0.7594
+    },
+    "math_ood_depth4": {
+      "exact_acc": 0.0708,
+      "token_acc": 0.0708,
+      "ece": 0.0673,
+      "auroc": 0.7444
+    },
+    "arc_id_3demo": {
+      "exact_acc": 0.0625,
+      "token_acc": 0.6396,
+      "ece": 0.0057,
+      "auroc": 1.0
+    },
+    "arc_ood_compositional": {
+      "exact_acc": 0.0,
+      "token_acc": 0.5734,
+      "ece": 0.0065,
+      "auroc": 0.5
+    },
+    "causal_id_mixed": {
+      "exact_acc": 0.9917,
+      "token_acc": 0.9917,
+      "ece": 0.0234,
+      "auroc": 0.9874
+    },
+    "causal_ood_scm": {
+      "exact_acc": 0.55,
+      "token_acc": 0.55,
+      "ece": 0.4191,
+      "auroc": 0.763
+    },
+    "causal_ood_do_interventional": {
+      "exact_acc": 0.9833,
+      "token_acc": 0.9833,
+      "ece": 0.0456,
+      "auroc": 0.9057
+    },
+    "multimodal_id_1hop": {
+      "exact_acc": 0.5875,
+      "token_acc": 0.5875,
+      "ece": 0.0343,
+      "auroc": 0.8018
+    },
+    "multimodal_ood_2hop": {
+      "exact_acc": 0.3917,
+      "token_acc": 0.3917,
+      "ece": 0.1296,
+      "auroc": 0.5243
+    },
+    "metacognitive_global": {
+      "ece": 0.0524,
+      "error_detect_auroc": 0.8439
+    },
+    "test_time_compute_scaling": {
+      "K=1": {
+        "math_ood_d3": 0.0917,
+        "s5_ood_len10": 0.2167,
+        "multimodal_ood_2hop": 0.4,
+        "mean_reasoning_ood": 0.2361
+      },
+      "K=2": {
+        "math_ood_d3": 0.0917,
+        "s5_ood_len10": 0.225,
+        "multimodal_ood_2hop": 0.4083,
+        "mean_reasoning_ood": 0.2417
+      },
+      "K=4": {
+        "math_ood_d3": 0.0958,
+        "s5_ood_len10": 0.2625,
+        "multimodal_ood_2hop": 0.3917,
+        "mean_reasoning_ood": 0.25
+      },
+      "K=6": {
+        "math_ood_d3": 0.0958,
+        "s5_ood_len10": 0.2667,
+        "multimodal_ood_2hop": 0.3917,
+        "mean_reasoning_ood": 0.2514
+      },
+      "K=8": {
+        "math_ood_d3": 0.0958,
+        "s5_ood_len10": 0.2583,
+        "multimodal_ood_2hop": 0.3833,
+        "mean_reasoning_ood": 0.2458
+      },
+      "K=12": {
+        "math_ood_d3": 0.1,
+        "s5_ood_len10": 0.2333,
+        "multimodal_ood_2hop": 0.3958,
+        "mean_reasoning_ood": 0.243
+      },
+      "K=16": {
+        "math_ood_d3": 0.0958,
+        "s5_ood_len10": 0.2333,
+        "multimodal_ood_2hop": 0.3667,
+        "mean_reasoning_ood": 0.2319
+      },
+      "K=8_verifier_selected": {
+        "math_ood_d3": 0.0917,
+        "s5_ood_len10": 0.2583,
+        "multimodal_ood_2hop": 0.4,
+        "mean_reasoning_ood": 0.25
+      }
+    },
+    "composite_id_acc": 0.3854,
+    "composite_ood_acc": 0.305
+  },
+  "heldout_arc_ood_ttt": {
+    "zeroshot_grid_exact": 0.0,
+    "zeroshot_cell_acc": 0.5875,
+    "ttt_grid_exact": 0.0,
+    "ttt_cell_acc": 0.5961
+  }
+}

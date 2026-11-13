@@ -26,6 +26,7 @@ N_CELL = 8
 N_FLAG = 4
 N_ACT = 5
 STATE_DIM = GRID * N_CELL + N_FLAG
+SS_DEPTH = 4  # max scheduled-sampling chain length (model unrolls up to 4 steps back)
 
 
 def parse_state(obs_toks: list[int]) -> tuple[list[int], int]:
@@ -110,14 +111,107 @@ def decode_state(s: torch.Tensor) -> tuple[list[int], int]:
     return cells.argmax(-1)[0].tolist(), flags.argmax(-1).item()
 
 
+def extract_statics(cells: list[int]) -> dict:
+    """Immovable per-episode structure: walls + landmark positions. Landmarks never
+    move in this env — they are only consumed (flag flips) or overlaid by the agent."""
+    return {
+        "walls": [i for i, c in enumerate(cells) if c == 1],
+        "key": cells.index(3) if 3 in cells else -1,
+        "door": cells.index(4) if 4 in cells else -1,
+        "goal": cells.index(5) if 5 in cells else -1,
+        "trap": cells.index(6) if 6 in cells else -1,
+    }
+
+
+def render_factored(agent: int, flag: int, st: dict) -> list[int]:
+    """(agent_pos, flag, statics) -> board, same overlay order as KeyDoorTrapEnv.obs()."""
+    g = [0] * GRID
+    for w in st["walls"]:
+        g[w] = 1
+    if st["trap"] >= 0:
+        g[st["trap"]] = 6
+    if not (flag & 1) and st["key"] >= 0:
+        g[st["key"]] = 3
+    if not (flag & 2) and st["door"] >= 0:
+        g[st["door"]] = 4
+    if st["goal"] >= 0:
+        g[st["goal"]] = 5
+    if agent >= 0:
+        g[agent] = 2
+    return g
+
+
+def surgical_step(wm: DiscreteBoardWM, s: torch.Tensor, a: torch.Tensor):
+    """Minimal manifold projection: per-cell argmax for everything, then enforce the
+    one global constraint per-cell CE cannot express — exactly one agent. Absent ->
+    revive at argmax over cell-2 logits; multiple -> keep highest logit-2 cell, demote
+    others to their 2nd-best class. Statics/landmarks untouched (Exp-#025 showed the
+    residual failure is agent evaporation ~25% of steps, not landmark corruption)."""
+    logits, rew, tr = wm.step(s, a)
+    cl, fl = wm.split_state(logits)
+    cl0, fl0 = cl[0].clone(), fl[0]
+    cells = cl0.argmax(-1).tolist()
+    ag_pos = [i for i, c in enumerate(cells) if c == 2]
+    if len(ag_pos) == 0:
+        cells[int(cl0[:, 2].argmax().item())] = 2
+    elif len(ag_pos) > 1:
+        keep = max(ag_pos, key=lambda i: cl0[i, 2].item())
+        for i in ag_pos:
+            if i != keep:
+                cl0[i, 2] = -1e9
+                cells[i] = int(cl0[i].argmax().item())
+    flag = int(fl0.argmax().item())
+    s2 = onehot_from_parsed(
+        torch.tensor([cells], dtype=torch.long, device=s.device),
+        torch.tensor([flag], dtype=torch.long, device=s.device),
+    )
+    return s2, rew, tr
+
+
+def factored_step(wm: DiscreteBoardWM, s: torch.Tensor, a: torch.Tensor, st: dict, learn_flag: bool = True):
+    """Projected rollout step: the conv net predicts only what can CHANGE — the next
+    agent position (argmax over cell-2 logits, walls masked) and optionally the flag.
+    With learn_flag=False the flag is derived from the milestone rules (agent-on-key
+    -> has_key; agent-on-door with key -> door_open), reducing the learned output to
+    a single moving part. Locked-door entries revert to the previous agent position
+    (env: blocked move). The board is then re-rendered exactly — object permanence as
+    a hard constraint instead of re-predicting 36 independent cells every step."""
+    logits, rew, tr = wm.step(s, a)
+    cl, fl = wm.split_state(logits)
+    prev_cells, prev_flag = decode_state(s)
+    prev_agent = prev_cells.index(2) if 2 in prev_cells else -1
+    alog = cl[0, :, 2].clone()
+    alog[st["walls"]] = -1e9
+    agent = int(alog.argmax().item())
+    flag = int(fl[0].argmax().item()) if learn_flag else prev_flag
+    if agent == st["door"] and not (flag & 1):
+        agent = prev_agent  # env: locked door blocks the move
+    if not learn_flag:
+        if agent == st["key"] >= 0:
+            flag |= 1
+        elif agent == st["door"] >= 0 and (flag & 1):
+            flag |= 2
+    board = render_factored(agent, flag, st)
+    s2 = onehot_from_parsed(
+        torch.tensor([board], dtype=torch.long, device=s.device),
+        torch.tensor([flag], dtype=torch.long, device=s.device),
+    )
+    return s2, rew, tr, agent, flag
+
+
 @torch.no_grad()
-def select_action_learned(wm: DiscreteBoardWM, obs_toks: list[int], horizon: int = 16, beam_width: int = 64, gamma: float = 0.97, device: str = "cpu") -> int:
+def select_action_learned(wm: DiscreteBoardWM, obs_toks: list[int], horizon: int = 16, beam_width: int = 64, gamma: float = 0.97, device: str = "cpu", mode: str = "raw") -> int:
     """Fully-learned beam-search MPC: exact symbolic search structure (Exp #018)
     but the transition is the LEARNED conv dynamics T(s,a) — no hand-coded rules.
     Node = (hard_state, score, first_action, terminal). Terminal = trapped (the
-    '6' cell is gone — agent stands on it) or solved (flag bit1 && '5' gone)."""
+    '6' cell is gone — agent stands on it) or solved (flag bit1 && '5' gone).
+    mode 'raw': per-cell argmax rollout; 'surg': argmax + one-agent constraint only;
+    'pin': factored step, learned flag; 'fact': factored step, derived flag;
+    'staged': raw + popcount(flag) milestone-progress bonus (Exp-#025: failures are
+    stage-transition stalls — never reaching the flag flip, not mid-path drift)."""
     x = torch.tensor([obs_toks], dtype=torch.long, device=device)
     s0 = wm.encode(x, hard=True)
+    st0 = extract_statics(decode_state(s0)[0]) if mode in ("pin", "fact") else None
     nodes = [(s0, 0.0, -1, False)]
     best_first, best_score = 0, -1e9
     for h in range(horizon):
@@ -126,7 +220,12 @@ def select_action_learned(wm: DiscreteBoardWM, obs_toks: list[int], horizon: int
             if term:
                 continue
             for a in range(4):
-                sn, r, tr = wm.step(st, torch.tensor([a], device=device), hard=True)
+                if mode == "raw" or mode == "staged":
+                    sn, r, tr = wm.step(st, torch.tensor([a], device=device), hard=True)
+                elif mode == "surg":
+                    sn, r, tr = surgical_step(wm, st, torch.tensor([a], device=device))
+                else:
+                    sn, r, tr, _, _ = factored_step(wm, st, torch.tensor([a], device=device), st0, learn_flag=(mode == "pin"))
                 p_trap = torch.sigmoid(tr).item()
                 cells, flag = decode_state(sn)
                 hk, do = flag & 1, (flag >> 1) & 1
@@ -140,6 +239,8 @@ def select_action_learned(wm: DiscreteBoardWM, obs_toks: list[int], horizon: int
                 elif trapped:
                     score -= 5.0
                 else:
+                    if mode == "staged":
+                        score += 3.0 * bin(flag).count("1")
                     ag = cells.index(2) if 2 in cells else -1
                     key_pos = cells.index(3) if 3 in cells else -1
                     door_pos = cells.index(4) if 4 in cells else -1
@@ -169,7 +270,7 @@ def select_action_learned(wm: DiscreteBoardWM, obs_toks: list[int], horizon: int
 
 
 @torch.no_grad()
-def eval_learned_planning(wm: DiscreteBoardWM, n_maps: int, device: str, seed0: int = 50000, horizon: int = 16, max_steps: int = 18) -> dict:
+def eval_learned_planning(wm: DiscreteBoardWM, n_maps: int, device: str, seed0: int = 50000, horizon: int = 16, max_steps: int = 18, mode: str = "raw") -> dict:
     """Held-out planning with the FULLY-LEARNED pipeline: obs -> encode -> learned-T
     beam search -> env step. Same protocol as evaluate_planning's symbolic modes."""
     wm.eval()
@@ -180,7 +281,7 @@ def eval_learned_planning(wm: DiscreteBoardWM, n_maps: int, device: str, seed0: 
         obs = env.reset()
         ret, n_steps = 0.0, 0
         while not env.done and n_steps < max_steps:
-            a = select_action_learned(wm, obs[0], horizon=horizon, device=device)
+            a = select_action_learned(wm, obs[0], horizon=horizon, device=device, mode=mode)
             obs, r, done, trapped = env.step(a)
             ret += r
             n_steps += 1
@@ -233,11 +334,10 @@ def train(wm: DiscreteBoardWM, transitions: list[dict], steps: int, bs: int, dev
         flags_cur = torch.tensor([parse_state(b["obs"][0])[1] for b in batch], dtype=torch.long, device=device)
         cells_nxt, flags_nxt = batch_target(batch, device)
         s_true = onehot_from_parsed(cells_cur, flags_cur)
-        # Scheduled sampling: with ramping probability feed trans the model's OWN
-        # one-step prediction of s_t (from the same-episode predecessor step), so it
-        # trains on the imperfect-state distribution it faces at rollout (Exp-#021
-        # follow-up: discreteness alone didn't fix rollouts — trans trained only on
-        # perfect states diverged on its own errors).
+        # Scheduled sampling: with ramping probability feed trans its OWN n-step
+        # prediction of s_t (walk the same-episode predecessor chain up to SS_DEPTH
+        # steps back through the model itself), exposing it to the imperfect-state
+        # distribution it faces at rollout (Exp-#021/#023 lineage).
         ss = min(0.9, it / (0.5 * steps))
         if rng.random() < ss:
             s_in = s_true.clone()
@@ -245,15 +345,23 @@ def train(wm: DiscreteBoardWM, transitions: list[dict], steps: int, bs: int, dev
                 p = prev_of.get(i)
                 if p is None:
                     continue
-                tp = transitions[p]
-                c_p, f_p = parse_state(tp["obs"][0])
+                depth = 1 + rng.randrange(SS_DEPTH)
+                chain = [i]
+                while len(chain) <= depth and prev_of.get(chain[-1]) is not None:
+                    chain.append(prev_of[chain[-1]])
+                if len(chain) <= 1:
+                    continue
+                start = transitions[chain[-1]]
+                c_p, f_p = parse_state(start["obs"][0])
                 s_p = onehot_from_parsed(
                     torch.tensor([c_p], dtype=torch.long, device=device),
                     torch.tensor([f_p], dtype=torch.long, device=device),
                 )
-                a_p = torch.tensor([tp["act"]], dtype=torch.long, device=device)
                 with torch.no_grad():
-                    s_in[j : j + 1], _, _ = wm.step(s_p, a_p, hard=True)
+                    for ci in reversed(chain[1:]):
+                        a_p = torch.tensor([transitions[ci]["act"]], dtype=torch.long, device=device)
+                        s_p, _, _ = wm.step(s_p, a_p, hard=True)
+                s_in[j : j + 1] = s_p
         else:
             s_in = s_true
 
@@ -266,9 +374,15 @@ def train(wm: DiscreteBoardWM, transitions: list[dict], steps: int, bs: int, dev
         pred_cells, pred_flags = wm.split_state(logits_nxt)
         loss_tr = F.cross_entropy(pred_cells.reshape(-1, N_CELL), cells_nxt.clamp(0, N_CELL - 1).reshape(-1))
         loss_tr = loss_tr + F.cross_entropy(pred_flags, flags_nxt.clamp(0, N_FLAG - 1))
+        # Agent-existence auxiliary: the dominant v6 residual was the agent
+        # evaporating from imagined boards (~25% of rollout steps; per-cell CE pays
+        # only ~1/36 for it). Penalize the SOFT agent count deviating from exactly 1 —
+        # under scheduled sampling this teaches self-correction from degraded inputs.
+        cnt = pred_cells.softmax(-1)[..., 2].sum(-1)
+        loss_cnt = F.mse_loss(cnt, torch.ones_like(cnt))
         loss_r = F.mse_loss(r_pred, rews)
         loss_t = F.binary_cross_entropy_with_logits(trap_logit, traps)
-        loss = loss_enc + loss_tr + 3.0 * loss_r + 3.0 * loss_t
+        loss = loss_enc + loss_tr + 3.0 * loss_r + 3.0 * loss_t + loss_cnt
 
         opt.zero_grad()
         loss.backward()
@@ -289,19 +403,23 @@ def eval_rollout(wm: DiscreteBoardWM, n_maps: int, depth: int, device: str, seed
     """Imagine from the ENCODED initial obs (full neural pipeline) for `depth` steps;
     score per-step fidelity against ground-truth parsed states."""
     wm.eval()
-    stats = {k: [[] for _ in range(depth)] for k in ["exact", "agent", "landmark", "exact_oracle"]}
+    tracks = ["exact", "agent", "landmark", "exact_oracle", "exact_fact", "agent_fact", "landmark_fact"]
+    stats = {k: [[] for _ in range(depth)] for k in tracks}
     for m in range(n_maps):
         env = KeyDoorTrapEnv(seed0 + m)
         obs = env.reset()
         plan = list(env.optimal_actions)
         x = torch.tensor([obs[0]], dtype=torch.long, device=device)
         s = wm.encode(x, hard=True)  # discrete encoded state
+        s_fact = s.clone()
+        st0 = extract_statics(decode_state(s)[0])
         s_or = None  # oracle-discrete track: parsed true state -> trans (encoder-free)
         for t in range(depth):
             if env.done or t >= len(plan):
                 break
             a = torch.tensor([plan[t]], dtype=torch.long, device=device)
             s, _, _ = wm.step(s, a, hard=True)
+            s_fact, _, _, _, _ = factored_step(wm, s_fact, a, st0, learn_flag=False)
             if t == 0:
                 c0, f0 = parse_state(obs[0])
                 s_or = onehot_from_parsed(
@@ -311,15 +429,14 @@ def eval_rollout(wm: DiscreteBoardWM, n_maps: int, depth: int, device: str, seed
             s_or, _, _ = wm.step(s_or, a, hard=True)
             obs, rew, done, trapped = env.step(int(plan[t]))
             tc, tf = parse_state(obs[0])
-            pc, pf = wm.split_state(s)
-            pred_cells = pc.argmax(-1)[0].tolist()
-            pred_flag = pf.argmax(-1).item()
             true_cells = [min(max(int(c), 0), N_CELL - 1) for c in tc]
-            stats["exact"][t].append(float(pred_cells == true_cells and pred_flag == tf))
-            stats["agent"][t].append(float(2 in pred_cells and true_cells.index(2) == pred_cells.index(2)))
             lm_true = {true_cells.index(v) for v in (3, 4, 5, 6) if v in true_cells}
-            lm_pred = {pred_cells.index(v) for v in (3, 4, 5, 6) if v in pred_cells}
-            stats["landmark"][t].append(float(lm_true == lm_pred))
+            for tag, s_pred in (("", s), ("_fact", s_fact)):
+                p_cells, p_flag = decode_state(s_pred)
+                stats[f"exact{tag}"][t].append(float(p_cells == true_cells and p_flag == tf))
+                stats[f"agent{tag}"][t].append(float(2 in p_cells and true_cells.index(2) == p_cells.index(2)))
+                lm_pred = {p_cells.index(v) for v in (3, 4, 5, 6) if v in p_cells}
+                stats[f"landmark{tag}"][t].append(float(lm_true == lm_pred))
             oc, of = wm.split_state(s_or)
             oc_list = oc.argmax(-1)[0].tolist()
             stats["exact_oracle"][t].append(float(oc_list == true_cells and of.argmax(-1).item() == tf))
@@ -340,21 +457,33 @@ def main():
     ap.add_argument("--eval-maps", type=int, default=40)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--load", default=None, help="checkpoint to load; skips training")
+    ap.add_argument("--plan-modes", default=None, help="comma list: run eval_learned_planning per mode")
     ap.add_argument("--out", default="cortex_runs/discrete_wm_eval.json")
     args = ap.parse_args()
 
     torch.manual_seed(args.seed)
-    print(f"[discrete_wm] collecting {args.n_envs} env trajectories...", flush=True)
-    transitions = collect_world_model_dataset(n_envs=args.n_envs, seed_start=10000)
-    print(f"[discrete_wm] {len(transitions)} transitions; training {args.steps} steps on {args.device}", flush=True)
     wm = DiscreteBoardWM().to(args.device)
-    train(wm, transitions, args.steps, args.bs, args.device, args.seed)
-    torch.save(wm.state_dict(), "cortex_runs/discrete_wm.pt")
+    if args.load:
+        wm.load_state_dict(torch.load(args.load, map_location=args.device))
+        print(f"[discrete_wm] loaded {args.load}", flush=True)
+    else:
+        print(f"[discrete_wm] collecting {args.n_envs} env trajectories...", flush=True)
+        transitions = collect_world_model_dataset(n_envs=args.n_envs, seed_start=10000)
+        print(f"[discrete_wm] {len(transitions)} transitions; training {args.steps} steps on {args.device}", flush=True)
+        train(wm, transitions, args.steps, args.bs, args.device, args.seed)
+        torch.save(wm.state_dict(), "cortex_runs/discrete_wm.pt")
 
     print(f"[discrete_wm] rollout-fidelity eval: {args.eval_maps} held-out maps, depth {args.eval_depth}", flush=True)
     res = eval_rollout(wm, args.eval_maps, args.eval_depth, args.device)
     res["steps"] = args.steps
-    res["n_transitions"] = len(transitions)
+    if not args.load:
+        res["n_transitions"] = len(transitions)
+    if args.plan_modes:
+        for mode in args.plan_modes.split(","):
+            pres = eval_learned_planning(wm, args.eval_maps, args.device, mode=mode)
+            res[f"plan_{mode}"] = pres
+            print(f"[discrete_wm] plan {mode}: {pres}", flush=True)
     print(json.dumps(res, indent=1), flush=True)
     with open(args.out, "w") as f:
         json.dump(res, f, indent=1)

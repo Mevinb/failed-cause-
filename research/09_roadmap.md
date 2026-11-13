@@ -14,7 +14,7 @@
 ## Stage 1 — Multi-Timescale Episodic & Semantic Consolidation *(Active / Short-Term)*
 - [x] Resolve micro-chunk decay scaling ($\alpha_{\text{chunk}} = \alpha_{\text{win}}^{1/8}$) and surprise-modulated sparse writes to prevent filler overwrite at 400–800+ token horizons.
 - [x] **Hippocampal Sparse Landmark Slot Bank (Gen-2, WALL 1 BREACHED):** 48-slot/head content-addressable landmark memory alongside the delta matrix — `hippocampus_24k` `val_loss 1.5142 < baseline 1.5888`, gap-406 recall **60.4%**, gap-807 **42.5%** (vs 25% chance). *Remaining:* gap≤103 residual cost vs full-context baseline.
-  - [ ] Per-head **top-k writes** (currently top-1/16-token chunk misses multi-fact episodes) — `n_write_per_chunk` config flag
+  - [x] Per-head **top-k writes** — `n_write_per_chunk` implemented, **FALSIFIED at 4k gate** (Exp #022): w3 ≤ w1 at every gap; write-rate isn't the bottleneck → next lever is *learned write allocation* (which tokens), not more writes
   - [ ] **Learned write allocation** (replace argmax-surprise with a learned scorer) + mid-depth second slot bank
   - [ ] Multi-fact saturation & interference diagnostic (how many concurrent bindings before eviction errors dominate)
 - [ ] **Offline Sleep-Phase Consolidation:** Distill high-surprise episodic buffer trajectories into slow structural weights during periodic offline consolidation cycles while resetting fast episodic matrices.
@@ -27,7 +27,7 @@
 
 ## Stage 2 — Deep Recursive Program Synthesis & Grounded World Simulation *(Medium-Term)*
 - [ ] **Discrete-Continuous Hybrid Workspace:** Augment `IterativeLatentReasoner` with differentiablediscrete slot attention and soft execution traces so induced rules on 2D grids (ARC-AGI-2) can compose arbitrary $k$-step programs with test-time verification search over `ttt_adapter` hypotheses. *(Gen-2 evidence: gradient-refined FiLM programs insufficient — add a library-of-primitives enumeration layer guided by the reasoner prior.)*
-- [ ] **Hierarchical Multi-Step JEPA World Models:** Extend `LatentWorldModel` from single-step transitions $\hat{z}_{t+1} = f(z_t, a_t)$ to temporal-abstraction options / subgoal predictors $\hat{z}_{t+\Delta} = F(z_t, g)$, enabling planning over $10^2$–$10^3$ action steps without exponential beam growth.
+- [ ] **Latent-dynamics distillation (imagination-gap attack, Exp #020 follow-up):** distill the exact symbolic transition `_symbolic_step` into `step_latent` by supervised pairs `(z_t, a) → encode(symbolic_step(decode(z_t), a))` — no env rollouts needed. Measure faithful rollout depth (decoded boards stay valid N steps vs ~2 now). If `step_latent` can internalize the symbolic dynamics, latent MPC on decoded trajectories becomes possible in domains where rules aren't extractable. Longer-term alternative: options/subgoal predictors $\hat{z}_{t+\Delta} = F(z_t, g)$ skipping over steps entirely.
 - [ ] **Interventional Causal Discovery Agent:** Move from passive observational/interventional episodes to *active* experimental design—selecting interventions $do(X_i = v)$ that maximize expected information gain (epistemic reduction in structural graph entropy). *Leverage:* the now-verified fast causal grok makes this the most promising frontier — an agent that already does do-calculus can be asked to *choose* interventions.
 
 ## Stage 3 — Open-Ended Curriculum & Verified Self-Improvement *(Long-Term)*

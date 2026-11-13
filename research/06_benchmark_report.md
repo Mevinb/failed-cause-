@@ -181,6 +181,8 @@ H3 and H4 share identical `LatentWorldModel` weights (constructed before arch bl
 
 **Decomposition (Exp #018):** the search was never the wall — exact deduplicated beam search over symbolic states (`agent_pos × milestone_flags`, terminal traps, door-enterable-once-`has_key`, BFS-to-subgoal shaping) solves 90% of held-out maps with near-optimal 7–14-step paths and zero traps. The wall was **state-abstraction fidelity**, now split into two named sub-walls: **perception gap** (learned `obs_dec` 86.3% cell-acc corrupts critical cells → decoded-perception planning = 0%) and **imagination gap** (`step_latent` rollouts leave the encoder manifold within ~2 steps — only ~23% of decoded boards contain exactly one agent — so latent MPC is capped regardless of horizon). Milestone heads were *not* the problem (92.75% all-3-exact). Interim negative results preserved: partially-trained milestone heads mislabel stage → staged latent search underperforms flat MPC (0.375 vs 0.275 trap); re-grounding cannot rescue off-manifold decodes.
 
+**Perception gap largely closed (Exp #020):** dedicated weighted-CE fidelity training of `obs_enc`+`obs_dec` (~12× weight on rare landmark cells, which decode worst — key 66%/door 69%/goal 64%/trap 78% under plain CE) lifts held-out decode to 99.25% cell-acc / landmark 93–96%, and `symbolic_decoded` planning **0% → 62.5%** solve (25/40, trap 2.5%). Encoder quality matters as much as the decoder — a fresh 1,200-step JEPA retrain + same decode pass gives only 5%. **Imagination gap is representational, not a budget issue (Exp #021):** distilling the exact symbolic transition into `step_latent` (frozen sharpened enc/dec) converges in MSE yet yields only 72.6% agent-position fidelity at *one* step and 0% faithful 12-step trajectories — a continuous `z + trans(z,a)` update cannot hold a discrete state manifold. Discrete dynamics want discrete states → future direction is a slot/VQ-latent world model.
+
 ### 4.5 Flagship Language + Long-Range Recall — `hippocampus_24k` (Wall 1 BREACHED)
 
 | Model | Params | Steps | val_loss | val_loss_nomem | gap-0 | gap-103 | gap-198 | gap-406 | gap-807 |
@@ -189,9 +191,12 @@ H3 and H4 share identical `LatentWorldModel` weights (constructed before arch bl
 | `transformer_4k` | 17.31M | 4k | 1.9029 | — | 90.4% | 68.3% | 30.4% | 25.0% | 25.0% |
 | `synapse_v2_4k` | 17.35M | 4k | 1.8434 | 1.9184 | 71.7% | 47.9% | 42.9% | 37.5% | 32.9% |
 | `hippocampus_4k` | 17.35M | 4k | 1.8452 | 1.9208 | 57.9% | 51.7% | 52.1% | 43.8% | 36.7% |
+| `hippocampus_w3_4k` (n_write=3) | 17.35M | 4k | 1.8452 | 1.9207 | 60.4% | 51.2% | 49.2% | 39.2% | 36.2% |
 | **`hippocampus_24k`** | **17.35M** | **24k** | **1.5142** | **1.6158** | 91.2% | 69.6% | 71.2% | **60.4%** | **42.5%** |
 
 Gap-406 recall **2.4× chance**, gap-807 **1.7× chance**; `val_loss` beats the 24k baseline by −0.075 nats while memory contribution *grew* with training (−0.1016 nats). The 4k gap-0 regression healed (57.9%→91.2%): the slot gate learned when to stay shut. Discrete landmark slots + bounded delta matrix is the first lab memory architecture that scales recall to 800+ tokens *and* improves the LM.
+
+**`hippocampus_w3` (top-3 writes/chunk) — FALSIFIED at the 4k gate** (Exp #022): identical val_loss (1.8452) but ≤ w1 recall at every gap (all-metric gap-406: 33.5% vs 36.7%; pet above). Write-*rate* is not the gap≤103 bottleneck — 3× slot churn adds evictions/merge noise. Residual is a write-*selection* problem → learned write allocation is the next lever, not more writes.
 
 ### 4.6 Gen-2 Continual 5-Phase (seed-0 suite, H3)
 

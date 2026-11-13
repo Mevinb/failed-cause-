@@ -165,8 +165,11 @@ For each head $h$ with decoupled, RoPE-free normalized query/key $q_t, k_t \in \
 **`H4_cortex_v2` benchmark:** ID 0.3854 / OOD 0.3050 vs H3 0.2146/0.1671 (+83% rel.). The headline is a **verified, replicated causal-reasoning breakthrough** — `do()` interventional inference grokked to ~1.0 within 3,600 steps on *two independent seeds* (0.98 / 1.00), vs H3 needing ~540k episodes (~150× more data). Full mechanism attribution (Exp #015b/c/d): FiLM inert at eval; lottery ruled out; eval-time slot-kill costs only ~4 pts BUT **`H3+sinusoidal` (no slots ever) fails to grok at 0.20–0.25 on two seeds** → **the hippocampal slot bank is the enabler, acting as a *training-time developmental scaffold*** — it teaches the binding operator, which the delta matrix then partially subserves (a computational analog of hippocampal→neocortical systems consolidation). Sinusoidal depth encoding's verified role is K-extrapolation stability, not causal reasoning — the interim attribution was tested and corrected.
 
 ### 4.3 Running / Next
-- `H4` 5-phase continual standalone eval → `cortex/run_h4_continual.py` (running)
-- Next memory levers: per-head write-top-k, learned write allocation, second slot bank at mid-depth (gap≤103 residual cost), multi-fact saturation study.
-- Next reasoner lever: `H3+sinusoidal` (no slots) ablation to isolate depth-sharing as the causal-grok driver; adaptive halting on the `dz` signal (ponder curve saturates at K=6 — spend compute only where it helps).
+- `H4` 5-phase continual standalone eval — **done**: FAA 0.175 / BWT −0.081 / dormant 0.0% (`cortex_runs/continual_H4_gen2.json`).
+- `hippocampus_w3_4k` (`n_write_per_chunk=3`) gate run — tests whether top-k slot writes close the gap≤103 residual vs `hippocampus_4k` (n_write=1). Run uncompiled (kw>1's unrolled write loop bloats the compile graph).
+- Next memory levers: learned write allocation, second slot bank at mid-depth, multi-fact saturation study.
+- Next reasoner lever: adaptive halting on the `dz` signal (ponder curve saturates at K=6 — spend compute only where it helps).
+- Next planning lever: **slot/VQ-latent world model** — Exp #021 proved continuous `z + trans(z,a)` cannot hold discrete dynamics (72.6% agent fidelity at 1 step after exact distillation); a discrete state representation is required for faithful learned imagination.
+- `H4_cortex_v2` autonomous evolution archive — done: all 4 mutants rejected, gen0 champion stands (`cortex_runs/evolution_summary_H4_cortex_v2.json`).
 
 *(See `research/MASTER_EXPERIMENT_LOG.md` Exp #013–#016 for the chronological record.)*

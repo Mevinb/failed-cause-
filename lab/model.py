@@ -358,6 +358,7 @@ class HippocampusAttention(SynapseAttention):
     n_write_per_chunk = 1  # Gen-2 lever: >1 writes the top-k surprising tokens per chunk
     learned_alloc = False  # Gen-2 lever: learned write scorer on top of surprise (ST-estimator pick)
     alloc_tau = 0.5
+    novelty_gate = False  # Gen-2 lever: score = surprise + ||v - bank_read(k)|| (retrieval-aligned)
 
     def __init__(self, cfg):
         super().__init__(cfg)
@@ -438,7 +439,18 @@ class HippocampusAttention(SynapseAttention):
                     picked = torch.zeros(B, H, L, device=x.device, dtype=torch.bool)
                     stars = None
                 else:
-                    surp_m = surp.squeeze(-1).masked_fill(~act_exp, -1e9)
+                    score = surp.squeeze(-1)
+                    if self.novelty_gate:
+                        # Retrieval-aligned selection: a candidate whose (k,v) the bank
+                        # can already reconstruct adds nothing — score by surprise +
+                        # novelty ||v - read(k)|| instead of surprise alone. Detached:
+                        # this is a scoring function, not a trained objective (Exp #024
+                        # showed LM-gradient selection optimizes the wrong thing anyway).
+                        w_sim = temp * (kc @ sk.transpose(-1, -2))              # [B,H,L,S]
+                        w_sim = w_sim.masked_fill((sw <= 1e-6)[:, :, None, :], -1e4)
+                        recon = torch.softmax(w_sim, dim=-1) @ sv               # [B,H,L,Dm]
+                        score = score + (vc - recon).norm(dim=-1).detach() / math.sqrt(Dm)
+                    surp_m = score.masked_fill(~act_exp, -1e9)
                     stars = surp_m.topk(kw, dim=2).indices  # [B,H,kw]
                 for j in range(kw):
                     if self.learned_alloc:
@@ -603,6 +615,29 @@ class HippocampusLATransformer(SynapseTransformer):
             nn.init.zeros_(ah.bias)
 
 
+class HippocampusNovAttention(HippocampusAttention):
+    """Retrieval-aligned selection (post-Exp#024): score = surprise + ||v - bank_read(k)||
+    — a candidate whose fact the bank can already reconstruct earns no slot. No learned
+    parameters; the criterion is retrieval-aligned by construction, not by LM gradient."""
+    novelty_gate = True
+
+
+class HippocampusNovBlock(SynapseBlock):
+    def __init__(self, cfg, mlp_hidden=768):
+        super().__init__(cfg, mlp_hidden)
+        self.attn = HippocampusNovAttention(cfg)
+
+
+class HippocampusNovTransformer(SynapseTransformer):
+    def __init__(self, cfg):
+        super().__init__(cfg)
+        self.blocks = nn.ModuleList(
+            [SynapseBlock(cfg, mlp_hidden=768) for _ in range(cfg.n_layer - 1)]
+            + [HippocampusNovBlock(cfg, mlp_hidden=768)]
+        )
+        self._init_weights(cfg.n_layer)
+
+
 MODELS = {
     "transformer": Transformer,
     "memory": MemoryTransformer,
@@ -610,5 +645,6 @@ MODELS = {
     "hippocampus": HippocampusTransformer,
     "hippocampus_w3": HippocampusW3Transformer,
     "hippocampus_la": HippocampusLATransformer,
+    "hippocampus_nov": HippocampusNovTransformer,
     "cortex": CortexTransformer,
 }

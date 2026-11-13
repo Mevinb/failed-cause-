@@ -20,6 +20,7 @@ class CortexConfig:
     grid_max: int = 8
     n_slots: int = 48
     slot_merge_sim: float = 0.92
+    n_write_per_chunk: int = 1
 
 
 def build_rope(seq_len: int, head_dim: int, base: float = 10000.0) -> torch.Tensor:
@@ -194,6 +195,7 @@ class HippocampalMemoryAttention(SurpriseDeltaMemoryAttention):
         super().__init__(cfg)
         self.n_slots = cfg.n_slots
         self.merge_sim = cfg.slot_merge_sim
+        self.n_write_per_chunk = cfg.n_write_per_chunk
         H = cfg.n_head
         self.slot_gate = nn.Linear(cfg.d_model, H)
         self.slot_temp = nn.Parameter(torch.full((H,), 2.0))
@@ -262,23 +264,28 @@ class HippocampalMemoryAttention(SurpriseDeltaMemoryAttention):
                 sk, sv = sk * (1 - dead), sv * (1 - dead)
                 sw = sw * (1 - dead.squeeze(-1))
                 surp_m = surp.squeeze(-1).masked_fill(~active[:, None, :].expand(-1, H, -1), -1e9)
-                star = surp_m.argmax(dim=2)
-                ix = star[:, :, None, None].expand(-1, -1, 1, Dm)
-                k_star, v_star = kc.gather(2, ix).squeeze(2), vc.gather(2, ix).squeeze(2)
-                b_star = beta.squeeze(-1).gather(2, star.unsqueeze(-1)).squeeze(-1)
-                sim = (k_star.unsqueeze(2) * sk).sum(-1).masked_fill(sw <= 1e-6, -1e9)
-                best_sim, best_ix = sim.max(dim=-1)
-                do_merge = (best_sim > self.merge_sim) & (sw.gather(-1, best_ix.unsqueeze(-1)).squeeze(-1) > 1e-6)
-                has_empty = sw <= 1e-6
-                target = torch.where(do_merge, best_ix, torch.where(has_empty.any(dim=-1), has_empty.float().argmax(dim=-1), sw.argmin(dim=-1)))
-                t_one = F.one_hot(target, S).float().unsqueeze(-1)
-                mrg = do_merge[:, :, None, None]
-                new_k = torch.where(mrg, F.normalize(0.7 * sk + 0.3 * k_star.unsqueeze(2), dim=-1), k_star.unsqueeze(2).expand(-1, -1, S, -1))
-                new_v = torch.where(mrg, 0.7 * sv + 0.3 * v_star.unsqueeze(2), v_star.unsqueeze(2).expand(-1, -1, S, -1))
-                sk = sk * (1 - t_one) + new_k * t_one
-                sv = sv * (1 - t_one) + new_v * t_one
-                new_w = torch.where(do_merge.unsqueeze(-1), torch.maximum(sw, b_star.unsqueeze(-1)), b_star.unsqueeze(-1).expand(-1, -1, S))
-                sw = sw * (1 - t_one.squeeze(-1)) + new_w * t_one.squeeze(-1)
+                kw = min(self.n_write_per_chunk, qc.shape[2])
+                stars = surp_m.topk(kw, dim=2).indices  # [B,H,kw]
+                act_exp = active[:, None, :].expand(-1, H, -1)
+                for j in range(kw):
+                    star = stars[:, :, j]
+                    ix = star[:, :, None, None].expand(-1, -1, 1, Dm)
+                    k_star, v_star = kc.gather(2, ix).squeeze(2), vc.gather(2, ix).squeeze(2)
+                    b_star = beta.squeeze(-1).gather(2, star.unsqueeze(-1)).squeeze(-1)
+                    write_ok = act_exp.gather(2, star.unsqueeze(-1)).squeeze(-1).float()  # no-op for padded picks
+                    sim = (k_star.unsqueeze(2) * sk).sum(-1).masked_fill(sw <= 1e-6, -1e9)
+                    best_sim, best_ix = sim.max(dim=-1)
+                    do_merge = (best_sim > self.merge_sim) & (sw.gather(-1, best_ix.unsqueeze(-1)).squeeze(-1) > 1e-6)
+                    has_empty = sw <= 1e-6
+                    target = torch.where(do_merge, best_ix, torch.where(has_empty.any(dim=-1), has_empty.float().argmax(dim=-1), sw.argmin(dim=-1)))
+                    t_one = F.one_hot(target, S).float().unsqueeze(-1) * write_ok[:, :, None, None]
+                    mrg = do_merge[:, :, None, None]
+                    new_k = torch.where(mrg, F.normalize(0.7 * sk + 0.3 * k_star.unsqueeze(2), dim=-1), k_star.unsqueeze(2).expand(-1, -1, S, -1))
+                    new_v = torch.where(mrg, 0.7 * sv + 0.3 * v_star.unsqueeze(2), v_star.unsqueeze(2).expand(-1, -1, S, -1))
+                    sk = sk * (1 - t_one) + new_k * t_one
+                    sv = sv * (1 - t_one) + new_v * t_one
+                    new_w = torch.where(do_merge.unsqueeze(-1), torch.maximum(sw, b_star.unsqueeze(-1)), b_star.unsqueeze(-1).expand(-1, -1, S))
+                    sw = sw * (1 - t_one.squeeze(-1)) + new_w * t_one.squeeze(-1)
             read = torch.sigmoid(self.read_logit).view(1, H, 1, 1) * torch.cat(reads, dim=2)
             mean_surp = torch.cat(surprises, dim=1).squeeze(-1)
             state = {"M": mem, "K": sk, "V": sv, "w": sw}

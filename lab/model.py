@@ -355,6 +355,7 @@ class HippocampusAttention(SynapseAttention):
 
     n_slots = 48
     merge_sim = 0.92
+    n_write_per_chunk = 1  # Gen-2 lever: >1 writes the top-k surprising tokens per chunk
 
     def __init__(self, cfg):
         super().__init__(cfg)
@@ -421,27 +422,34 @@ class HippocampusAttention(SynapseAttention):
                 sk, sv = sk * (1 - dead), sv * (1 - dead)
                 sw = sw * (1 - dead.squeeze(-1))
                 surp_m = surp.squeeze(-1).masked_fill(~active[:, None, :].expand(-1, H, -1), -1e9)
-                star = surp_m.argmax(dim=2)  # [B,H]
-                ix = star[:, :, None, None].expand(-1, -1, 1, Dm)
-                k_star = kc.gather(2, ix).squeeze(2)
-                v_star = vc.gather(2, ix).squeeze(2)
-                b_star = beta.squeeze(-1).gather(2, star.unsqueeze(-1)).squeeze(-1)
-                sim = (k_star.unsqueeze(2) * sk).sum(-1)
-                sim = sim.masked_fill(sw <= 1e-6, -1e9)
-                best_sim, best_ix = sim.max(dim=-1)
-                do_merge = (best_sim > self.merge_sim) & (sw.gather(-1, best_ix.unsqueeze(-1)).squeeze(-1) > 1e-6)
-                has_empty = sw <= 1e-6
-                first_empty = has_empty.float().argmax(dim=-1)
-                victim = sw.argmin(dim=-1)
-                target = torch.where(do_merge, best_ix, torch.where(has_empty.any(dim=-1), first_empty, victim))
-                t_one = F.one_hot(target, S).float().unsqueeze(-1)  # [B,H,S,1]
-                mrg = do_merge[:, :, None, None].float()
-                new_k = torch.where(mrg.bool(), F.normalize(0.7 * sk + 0.3 * k_star.unsqueeze(2), dim=-1), k_star.unsqueeze(2).expand(-1, -1, S, -1))
-                new_v = torch.where(mrg.bool(), 0.7 * sv + 0.3 * v_star.unsqueeze(2), v_star.unsqueeze(2).expand(-1, -1, S, -1))
-                sk = sk * (1 - t_one) + new_k * t_one
-                sv = sv * (1 - t_one) + new_v * t_one
-                new_w = torch.where(do_merge.unsqueeze(-1), torch.maximum(sw, b_star.unsqueeze(-1)), b_star.unsqueeze(-1).expand(-1, -1, S))
-                sw = sw * (1 - t_one.squeeze(-1)) + new_w * t_one.squeeze(-1)
+                kw = min(self.n_write_per_chunk, L)
+                stars = surp_m.topk(kw, dim=2).indices  # [B,H,kw]
+                act_exp = active[:, None, :].expand(-1, H, -1)
+                for j in range(kw):
+                    star = stars[:, :, j]  # [B,H]
+                    ix = star[:, :, None, None].expand(-1, -1, 1, Dm)
+                    k_star = kc.gather(2, ix).squeeze(2)
+                    v_star = vc.gather(2, ix).squeeze(2)
+                    b_star = beta.squeeze(-1).gather(2, star.unsqueeze(-1)).squeeze(-1)
+                    # padded picks (inactive positions when fewer than kw actives) must be
+                    # full no-ops — otherwise they'd evict a real slot when the bank is full
+                    write_ok = act_exp.gather(2, star.unsqueeze(-1)).squeeze(-1).float()  # [B,H]
+                    sim = (k_star.unsqueeze(2) * sk).sum(-1)
+                    sim = sim.masked_fill(sw <= 1e-6, -1e9)
+                    best_sim, best_ix = sim.max(dim=-1)
+                    do_merge = (best_sim > self.merge_sim) & (sw.gather(-1, best_ix.unsqueeze(-1)).squeeze(-1) > 1e-6)
+                    has_empty = sw <= 1e-6
+                    first_empty = has_empty.float().argmax(dim=-1)
+                    victim = sw.argmin(dim=-1)
+                    target = torch.where(do_merge, best_ix, torch.where(has_empty.any(dim=-1), first_empty, victim))
+                    t_one = F.one_hot(target, S).float().unsqueeze(-1) * write_ok[:, :, None, None]  # [B,H,S,1]
+                    mrg = do_merge[:, :, None, None].float()
+                    new_k = torch.where(mrg.bool(), F.normalize(0.7 * sk + 0.3 * k_star.unsqueeze(2), dim=-1), k_star.unsqueeze(2).expand(-1, -1, S, -1))
+                    new_v = torch.where(mrg.bool(), 0.7 * sv + 0.3 * v_star.unsqueeze(2), v_star.unsqueeze(2).expand(-1, -1, S, -1))
+                    sk = sk * (1 - t_one) + new_k * t_one
+                    sv = sv * (1 - t_one) + new_v * t_one
+                    new_w = torch.where(do_merge.unsqueeze(-1), torch.maximum(sw, b_star.unsqueeze(-1)), b_star.unsqueeze(-1).expand(-1, -1, S))
+                    sw = sw * (1 - t_one.squeeze(-1)) + new_w * t_one.squeeze(-1)
             read = torch.sigmoid(self.read_logit).view(1, H, 1, 1) * torch.cat(reads, dim=2)
             state = {"M": mem, "K": sk, "V": sv, "w": sw}
         read_out = self.mem_proj(read.to(x.dtype).transpose(1, 2).reshape(B, T, H * Dm))
@@ -514,10 +522,33 @@ class CortexTransformer(SynapseTransformer):
 # every architecture takes a Config and returns (logits, loss) from forward(idx, targets).
 # optional: max_context (None = unbounded), segments (consecutive windows per training sequence),
 # forward_stream(idx, targets, mems) -> (logits, loss, mems) for evaluation with memory carried across windows
+class HippocampusW3Attention(HippocampusAttention):
+    """Write-selectivity lever: write the top-3 surprising tokens per micro-chunk
+    instead of top-1, so multi-fact chunks stop losing facts (gap<=103 residual)."""
+    n_write_per_chunk = 3
+
+
+class HippocampusW3Block(SynapseBlock):
+    def __init__(self, cfg, mlp_hidden=768):
+        super().__init__(cfg, mlp_hidden)
+        self.attn = HippocampusW3Attention(cfg)
+
+
+class HippocampusW3Transformer(SynapseTransformer):
+    def __init__(self, cfg):
+        super().__init__(cfg)
+        self.blocks = nn.ModuleList(
+            [SynapseBlock(cfg, mlp_hidden=768) for _ in range(cfg.n_layer - 1)]
+            + [HippocampusW3Block(cfg, mlp_hidden=768)]
+        )
+        self._init_weights(cfg.n_layer)
+
+
 MODELS = {
     "transformer": Transformer,
     "memory": MemoryTransformer,
     "synapse": SynapseTransformer,
     "hippocampus": HippocampusTransformer,
+    "hippocampus_w3": HippocampusW3Transformer,
     "cortex": CortexTransformer,
 }

@@ -1,0 +1,6 @@
+{
+ "goal_rate": 0.35,
+ "trap_rate": 0.0,
+ "mean_return": 1.006,
+ "mean_steps": 15.47
+}

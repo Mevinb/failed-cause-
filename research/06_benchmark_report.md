@@ -183,6 +183,8 @@ H3 and H4 share identical `LatentWorldModel` weights (constructed before arch bl
 
 **Perception gap largely closed (Exp #020):** dedicated weighted-CE fidelity training of `obs_enc`+`obs_dec` (~12× weight on rare landmark cells, which decode worst — key 66%/door 69%/goal 64%/trap 78% under plain CE) lifts held-out decode to 99.25% cell-acc / landmark 93–96%, and `symbolic_decoded` planning **0% → 62.5%** solve (25/40, trap 2.5%). Encoder quality matters as much as the decoder — a fresh 1,200-step JEPA retrain + same decode pass gives only 5%. **Imagination gap is representational, not a budget issue (Exp #021):** distilling the exact symbolic transition into `step_latent` (frozen sharpened enc/dec) converges in MSE yet yields only 72.6% agent-position fidelity at *one* step and 0% faithful 12-step trajectories — a continuous `z + trans(z,a)` update cannot hold a discrete state manifold. Discrete dynamics want discrete states → future direction is a slot/VQ-latent world model.
 
+**Imagination gap BREACHED (Exp #023, `cortex/discrete_wm.py`):** a *discrete* state (the parsed board itself — 36 cells × 8 types + milestone flag) with a **conv-equivariant learned transition** + shared-head encoder + scheduled sampling holds faithful imagined rollouts: `exact_d1=1.00, d3=0.90, d6=0.62, d12=0.53` on held-out maps (vs 0% everywhere for continuous `z`, and 0% for a flat-MLP discrete model which memorized positional layout statistics instead of the local dynamics rule — encoder/trans architecture, not discreteness alone, is the crux). **First fully-learned planner:** obs → encode → conv-`T` beam search (same dedup/shaping/dedup structure as `symbolic_oracle`) solves **35%** of held-out maps with 0% traps (+1.01 return) — vs oracle-symbolic 90%, decoded-symbolic 62.5%, all latent-MPC 0%. The remaining gap is residual `trans` error at milestone transitions and depth >8.
+
 ### 4.5 Flagship Language + Long-Range Recall — `hippocampus_24k` (Wall 1 BREACHED)
 
 | Model | Params | Steps | val_loss | val_loss_nomem | gap-0 | gap-103 | gap-198 | gap-406 | gap-807 |
@@ -192,11 +194,14 @@ H3 and H4 share identical `LatentWorldModel` weights (constructed before arch bl
 | `synapse_v2_4k` | 17.35M | 4k | 1.8434 | 1.9184 | 71.7% | 47.9% | 42.9% | 37.5% | 32.9% |
 | `hippocampus_4k` | 17.35M | 4k | 1.8452 | 1.9208 | 57.9% | 51.7% | 52.1% | 43.8% | 36.7% |
 | `hippocampus_w3_4k` (n_write=3) | 17.35M | 4k | 1.8452 | 1.9207 | 60.4% | 51.2% | 49.2% | 39.2% | 36.2% |
+| `hippocampus_la_4k` (learned alloc) | 17.37M | 4k | **1.8398** | 1.9170 | 60.4% | 40.8% | 37.9% | 34.6% | 30.0% |
 | **`hippocampus_24k`** | **17.35M** | **24k** | **1.5142** | **1.6158** | 91.2% | 69.6% | 71.2% | **60.4%** | **42.5%** |
 
 Gap-406 recall **2.4× chance**, gap-807 **1.7× chance**; `val_loss` beats the 24k baseline by −0.075 nats while memory contribution *grew* with training (−0.1016 nats). The 4k gap-0 regression healed (57.9%→91.2%): the slot gate learned when to stay shut. Discrete landmark slots + bounded delta matrix is the first lab memory architecture that scales recall to 800+ tokens *and* improves the LM.
 
 **`hippocampus_w3` (top-3 writes/chunk) — FALSIFIED at the 4k gate** (Exp #022): identical val_loss (1.8452) but ≤ w1 recall at every gap (all-metric gap-406: 33.5% vs 36.7%; pet above). Write-*rate* is not the gap≤103 bottleneck — 3× slot churn adds evictions/merge noise. Residual is a write-*selection* problem → learned write allocation is the next lever, not more writes.
+
+**`hippocampus_la` (learned write allocation, ST estimator) — FALSIFIED for recall** (Exp #024): best 4k val_loss (1.8398) but ≤ w1 recall at every gap — the end-to-end objective teaches *LM-relevant* selection, not rare-fact retention ("will this be queried in 400 tokens" is not inferable at write time). Remaining levers: retrieval-aligned auxiliary write objectives, mid-depth second bank, better merge/eviction policy.
 
 ### 4.6 Gen-2 Continual 5-Phase (seed-0 suite, H3)
 

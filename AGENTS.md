@@ -157,6 +157,13 @@ Modular 11-subsystem cognitive architecture (`SYNAPSE-1` / `H3_cortex_agi`) comp
 
 - Invariant tests (<5 s, CPU or GPU): `CUDA_VISIBLE_DEVICES="" .venv/bin/python cortex/test_invariants.py`
   (checks causality, multi-layer episode boundary isolation, fast-weight Frobenius norm bounds, TTT slow-weight reversibility, and `lab/` streaming equivalence).
+- Discrete-state world model (Exp #023 — imagination gap breached): `cortex/discrete_wm.py` —
+  state = parsed board (36 cells × 8 types + 4-val flag), shared-head obs encoder (exact OOD copy),
+  conv-equivariant transition trunk, scheduled sampling chains ≤3. Train+eval:
+  `.venv/bin/python -m cortex.discrete_wm --steps 8000 --bs 256 --n-envs 6000 --eval-maps 40 --device cuda`.
+  Held-out rollouts faithful `exact_d1=1.00/d3=0.90/d6=0.62`; `eval_learned_planning(wm, ...)` runs
+  fully-learned beam-MPC (35% solve / 0% traps vs symbolic_oracle 90%). Flat-MLP encoder/trans
+  memorizes layout stats (0% OOD) — conv equivariance is the key prior.
 - Full 8-domain benchmark suite (ID + OOD across Episodic Recall, $S_5$ State Tracking, Compositional Math, 2D ARC Grid Rule Induction + Test-Time Plasticity, Confounded Causal `do`-Calculus, Multimodal 2D Grounding, Key-Door-BaitTrap-Goal World-Model Beam MPC, and 5-Phase Continual Learning with dormant-neuron tracking):
   `.venv/bin/python cortex/run_suite.py --steps 3600 --batch 36 --seed 0`
 - Post-grokking algebraic/causal stress test & $K=1..8$ compute scaling:

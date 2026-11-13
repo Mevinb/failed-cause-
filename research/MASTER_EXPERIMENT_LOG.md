@@ -157,3 +157,27 @@ Every experiment conducted in this laboratory—including negative results, bugs
 - **Result vs H3 (same protocol):** `naive_adamw` FAA 0.0275/BWT −0.230/dormant 10.9% (H3: 0.0275/−0.166/8.3%); `high_l2` 0.0463/−0.314/0%; `uniform_replay` 0.1687/−0.089/0%; **`cortex_plasticity` FAA 0.1750 / BWT −0.0812 / dormant 0.0%** (H3: 0.1937/−0.0281/0.86%).
 - **Honest read:** H4's plasticity engine still delivers ~6.4× naive FAA and keeps **every unit alive** (0% dormant under replay/plasticity — even better than H3's 0.86%), **but forgets slightly more** (BWT −0.081 vs −0.028). Interpretation: the extra slot-bank and FiLM pathways add plastic capacity that the surprise-replay buffer doesn't fully protect; the reasoner/WM sees the same task sequence. A small continual-stability tax paid for the reasoning gains — logged as a trade-off, not hidden.
 - **Next:** `H3_sinusoidal_abl` running (Exp #015c isolation — does depth-sharing alone drive the causal grok?).
+
+### Exp #018 — Wall-2 Decomposition & Breach: Grounded Symbolic Beam Search Solves 90% of Held-Out Maps
+- **Artifact:** `cortex_runs/planning_gen2_eval.json`, `cortex/planning.py` (`_symbolic_step`, `select_action_symbolic`, `symbolic_decoded`/`symbolic_oracle` eval modes)
+- **Failure chain traced first (the method mattered more than the fix):**
+  1. `milestone_head` all-3-exact = **92.75%**, `obs_dec` cell-acc = **86.3%** — the heads were *not* the problem.
+  2. Multi-step `step_latent` rollouts: after ~2 imagined steps, only ~23% of decoded boards contain *exactly one* agent; by step ~7 the decoded board has **no agent at all**, and when one reappears it is frozen at the start position. **Imagined latents leave the encoder manifold almost immediately** — re-grounding (decode→clean→re-encode every 2 steps) could not rescue boards that decode to garbage.
+  3. First symbolic-planner draft scored beams by *raw return* and let trapped states keep expanding → **oracle only 3/10, 7 traps** — planner-logic bugs, not perception bugs. Three fixes: (a) trapped = terminal per env rule, (b) best-action tracked by *penalized* score, (c) door cell enterable in BFS once `has_key` (stepping on it opens it — otherwise distance-to-door saturates at the penalty floor).
+- **Result (40 held-out maps, seed 60000+, H4 checkpoint + 1,200-step WM):**
+  | mode | goal_rate | trap_rate | mean_return |
+  |---|---|---|---|
+  | myopic_H1 | 0.0 | 0.65 | −0.283 |
+  | reactive_policy_H0 | 0.0 | 0.175 | −0.187 |
+  | world_model_mpc_H6 | 0.0 | 0.275 | −0.204 |
+  | hierarchical_subgoal_H8 | 0.0 | 0.375 | −0.236 |
+  | reground_symbolic_H12 | 0.0 | 0.275 | −0.211 |
+  | symbolic_decoded_H16 | 0.0 | 0.50 | −0.257 |
+  | **symbolic_oracle_H16** | **0.90** | **0.0** | **+2.28** |
+- **What "oracle" actually is (not privileged):** `cells0 = obs[3:39] − COLOR_BASE`, `flags = (obs[2] − COLOR_BASE) → (has_key, door_open)` — the observation tokens the model legitimately receives. `KeyDoorTrapEnv` is fully observable, so obs-parsing IS the honest perception pathway; positions (`key/door/goal`) are read from the parsed board, not `env.*` attributes.
+- **Verdict — WALL 2 BREACHED at the planning layer, with a precise decomposition:**
+  - The **search** was never the wall: exact deduplicated beam search in a verified symbolic state space (state = agent_pos × milestone_flags; dedup exact, not latent-quantized) solves 90% of held-out maps with near-optimal 7–14 step paths and **zero** trap deaths — vs 0% goal completion for every latent-space planner at any horizon.
+  - The real wall was **state-abstraction fidelity**, and it has two named sub-walls now: (a) *perception gap* — learned `obs_dec` at 86.3% cell-acc is insufficient for planning (critical cells — agent/key positions — must be ~exact; decoded-mode gets 0%), (b) *imagination gap* — `step_latent` unrolls drift off-manifold within ~2 steps, so long-horizon latent MPC is fundamentally capped regardless of scoring.
+  - **Architecture lesson (thinking outside the box):** don't make the learned latent transition more accurate at long horizons — *move the state* into a domain where correctness is verifiable. Decode/parse to a symbolic board, then run exact discrete search with milestone-consistent transition rules. This is the planning analog of the Wall-1 finding: discrete symbolic structure (slots there, symbolic states here) beats bounded continuous representations where precision matters.
+- **Remaining 10%:** maps unsolved under H=16 + beam 64 — likely layouts where the optimal path exceeds episode cap or the beam prunes the detour; not investigated further this round.
+- **Honest negatives preserved:** `symbolic_decoded` (learned perception) = 0% — decoder fidelity remains unsolved; `reground_symbolic` (decode→clean→re-encode) = 0% — off-manifold latents decode to unusable boards; latent `subgoal` mode still underperforms flat MPC.

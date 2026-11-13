@@ -165,9 +165,21 @@ Sequential training across `P1 (Episodic) -> P2 (S5) -> P3 (Math) -> P4 (Causal)
 
 Continuous depth keeps K=8–16 **on-manifold** (Gen-1 discrete `step_emb[≥6]` collapsed) — graceful decay rather than catastrophic failure. Saturation at K=6 motivates adaptive halting.
 
-### 4.4 World-Model Planning (Wall 2 — honest negative)
+### 4.4 World-Model Planning (Wall 2 — BREACHED at the planning layer; perception/imagination gaps named)
 
-H3 and H4 share identical `LatentWorldModel` weights (constructed before arch blocks → identical RNG consumption) → identical planner metrics: `myopic` trap 66.3% / `reactive` 38.8% / **`mpc_H6` 22.5%** / `hierarchical_subgoal_H8` 51.3%; **goal completion 0% on all modes**. Partially-trained milestone heads mislabel stage → staged search underperforms flat MPC. Full `Key→Door→Goal` remains unsolved — needs symbolic subgoal state or MCTS.
+H3 and H4 share identical `LatentWorldModel` weights (constructed before arch blocks → identical RNG consumption) → identical latent-planner metrics. Dedicated 40-map eval (`cortex_runs/planning_gen2_eval.json`, seed 60000+, H4 + 1,200-step WM):
+
+| mode | goal_rate | trap_rate | mean_return |
+|---|---:|---:|---:|
+| `myopic_H1` | 0.0 | 0.65 | −0.283 |
+| `reactive_policy_H0` | 0.0 | 0.175 | −0.187 |
+| `world_model_mpc_H6` | 0.0 | 0.275 | −0.204 |
+| `hierarchical_subgoal_H8` | 0.0 | 0.375 | −0.236 |
+| `reground_symbolic_H12` | 0.0 | 0.275 | −0.211 |
+| `symbolic_decoded_H16` (learned `obs_dec` perception) | 0.0 | 0.50 | −0.257 |
+| **`symbolic_oracle_H16` (obs-parsed board, fully observable)** | **0.90** | **0.0** | **+2.28** |
+
+**Decomposition (Exp #018):** the search was never the wall — exact deduplicated beam search over symbolic states (`agent_pos × milestone_flags`, terminal traps, door-enterable-once-`has_key`, BFS-to-subgoal shaping) solves 90% of held-out maps with near-optimal 7–14-step paths and zero traps. The wall was **state-abstraction fidelity**, now split into two named sub-walls: **perception gap** (learned `obs_dec` 86.3% cell-acc corrupts critical cells → decoded-perception planning = 0%) and **imagination gap** (`step_latent` rollouts leave the encoder manifold within ~2 steps — only ~23% of decoded boards contain exactly one agent — so latent MPC is capped regardless of horizon). Milestone heads were *not* the problem (92.75% all-3-exact). Interim negative results preserved: partially-trained milestone heads mislabel stage → staged latent search underperforms flat MPC (0.375 vs 0.275 trap); re-grounding cannot rescue off-manifold decodes.
 
 ### 4.5 Flagship Language + Long-Range Recall — `hippocampus_24k` (Wall 1 BREACHED)
 

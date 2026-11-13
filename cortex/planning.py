@@ -254,6 +254,246 @@ def train_world_model(model, transitions: list[dict], steps: int = 900, batch_si
     wm.eval()
 
 
+def _decode_board(wm, z: torch.Tensor):
+    """Decode imagined latent z -> 6x6 cell types + milestone flags.
+    Returns (cells [B,36] int, flags [B,2] int {has_key, door_open})."""
+    dec = wm.obs_dec(z).view(-1, wm.obs_len, wm.n_cell_types)
+    cells = dec[:, 3:39].argmax(-1)
+    flags = dec[:, 2].argmax(-1).clamp(0, 3)
+    return cells, torch.stack([flags & 1, (flags >> 1) & 1], dim=-1)
+
+
+def _bfs(cells_row: list[int], src: int, blocked: set) -> list[float]:
+    dist = [-1.0] * 36
+    if src < 0:
+        return dist
+    q = deque([src]); dist[src] = 0.0
+    while q:
+        u = q.popleft()
+        r, c = divmod(u, 6)
+        for dr, dc in [(-1, 0), (1, 0), (0, 1), (0, -1)]:
+            nr, nc = r + dr, c + dc
+            v = nr * 6 + nc
+            if 0 <= nr < 6 and 0 <= nc < 6 and dist[v] < 0 and cells_row[v] not in blocked:
+                dist[v] = dist[u] + 1.0
+                q.append(v)
+    return dist
+
+
+@torch.no_grad()
+def _reground_z(wm, z: torch.Tensor, flags: torch.Tensor) -> torch.Tensor:
+    """Pull an off-manifold imagined latent back onto the encoder manifold:
+    decode -> enforce board consistency (exactly one agent, milestone-consistent
+    key/door cells) -> rebuild obs tokens -> re-encode."""
+    cells, dflags = _decode_board(wm, z)
+    B = z.shape[0]
+    toks = torch.zeros(B, wm.obs_len, dtype=torch.long, device=z.device)
+    toks[:, 0] = TOK_RESET
+    toks[:, 1] = TOK_IN_GRID
+    for b in range(B):
+        row = cells[b].tolist()
+        # keep exactly one agent: the argmax-2 cell; extra agents -> empty
+        agent_cells = [i for i, t in enumerate(row) if t == 2]
+        if len(agent_cells) != 1:
+            logp = wm.obs_dec(z[b : b + 1]).view(-1, wm.obs_len, wm.n_cell_types)[0, 3:39, 2]
+            keep = int(logp.argmax().item())
+            row = [0 if t == 2 and i != keep else t for i, t in enumerate(row)]
+        # milestone-consistent cells: if flags say has_key, key cell must be gone
+        hk, do = int(flags[b, 0]), int(flags[b, 1])
+        if hk:
+            row = [0 if t == 3 else t for t in row]
+        if do:
+            row = [0 if t == 4 else t for t in row]
+        new_flags = hk + 2 * do
+        toks[b, 2] = COLOR_BASE + new_flags
+        for i, t in enumerate(row):
+            toks[b, 3 + i] = COLOR_BASE + min(max(int(t), 0), wm.n_cell_types - 1)
+    return wm.encode_obs(toks)
+
+
+def _subgoal_target(flags_row: list[int], key_pos: int, door_pos: int, goal_pos: int) -> int:
+    """Next unachieved milestone's cell: key -> door -> goal."""
+    if not flags_row[0]:
+        return key_pos
+    if not flags_row[1]:
+        return door_pos
+    return goal_pos
+
+
+@torch.no_grad()
+def select_action_mpc_reground(
+    model,
+    z0: torch.Tensor,
+    init_flags: tuple[int, int],
+    horizon: int = 12,
+    beam_width: int = 24,
+    gamma: float = 0.95,
+    recent_z: list[torch.Tensor] | None = None,
+    reground_every: int = 2,
+    dist_w: float = 0.55,
+    key_pos: int = -1,
+    door_pos: int = -1,
+    goal_pos: int = -1,
+) -> int:
+    """Re-Grounded Symbolic MPC (Wall-2 fix attempt): latent beam search that (a) re-anchors
+    imagined z onto the encoder manifold every `reground_every` steps via decode->clean->re-encode,
+    (b) tracks milestone flags symbolically on decoded boards, and (c) shapes beams by BFS
+    distance to the current subgoal instead of learned progress logits."""
+    wm = model.world_model
+    fl = torch.tensor([list(init_flags)], dtype=torch.long, device=z0.device)  # [1,2]
+    beams_z, beams_fl = z0, fl
+    beams_ret = torch.zeros(1, device=z0.device)
+    beams_disc = torch.ones(1, device=z0.device)
+    beams_first_a = torch.zeros(1, dtype=torch.long, device=z0.device)
+    beams_dist = torch.zeros(1, device=z0.device)
+    hist_stack = torch.cat(recent_z[-6:], dim=0) if recent_z else None
+    cell_pos = {"key": key_pos, "door": door_pos, "goal": goal_pos}
+
+    for h in range(horizon):
+        B = beams_z.shape[0]
+        z_rep = beams_z.repeat_interleave(4, dim=0)
+        fl_rep = beams_fl.repeat_interleave(4, dim=0)
+        acts = torch.arange(4, device=z0.device).repeat(B)
+        z_nxt, r_pred, trap_logit = wm.step_latent(z_rep, acts)
+        p_trap = torch.sigmoid(trap_logit)
+        loop_pen = torch.zeros_like(r_pred)
+        if hist_stack is not None and h < 2:
+            sim = F.cosine_similarity(z_nxt.unsqueeze(1), hist_stack.unsqueeze(0), dim=-1).max(dim=1).values
+            loop_pen = 0.35 * F.relu(sim - 0.92)
+        prior_bonus = 0.08 * F.log_softmax(wm.policy_head(z_rep), dim=-1).gather(1, acts.unsqueeze(1)).squeeze(1)
+
+        # symbolic milestone update + BFS distance shaping on the DECODED board
+        cells_n, _ = _decode_board(wm, z_nxt)
+        cells_l = cells_n.cpu().tolist()
+        fl_l = fl_rep.cpu().tolist()
+        dist_new = torch.zeros(z_nxt.shape[0], device=z0.device)
+        new_fl = fl_rep.clone()
+        for i in range(z_nxt.shape[0]):
+            row = cells_l[i]
+            agent = row.index(2) if 2 in row else -1
+            hk, do = fl_l[i]
+            if agent >= 0:
+                if not hk and cell_pos["key"] >= 0 and agent == cell_pos["key"]:
+                    new_fl[i, 0] = 1
+                elif hk and not do and cell_pos["door"] >= 0 and agent == cell_pos["door"]:
+                    new_fl[i, 1] = 1
+            blocked = {4} if not new_fl[i, 1] else set()
+            d = _bfs(row, agent, blocked)
+            tgt = _subgoal_target(new_fl[i].tolist(), cell_pos["key"], cell_pos["door"], cell_pos["goal"])
+            dist_new[i] = d[tgt] if 0 <= tgt < 36 and d[tgt] >= 0 else 12.0
+
+        dist_gain = beams_dist.repeat_interleave(4) - dist_new
+        step_val = r_pred - 4.0 * p_trap - loop_pen + prior_bonus + dist_w * dist_gain.tanh()
+        ret_nxt = beams_ret.repeat_interleave(4) + beams_disc.repeat_interleave(4) * step_val
+        first_a = acts if h == 0 else beams_first_a.repeat_interleave(4)
+        term = (gamma ** (h + 1)) * wm.value_head(z_nxt).squeeze(-1) * (1.0 - p_trap)
+        score = ret_nxt + term
+        keep_ix = _dedup_beams(z_nxt, score) if z_nxt.shape[0] > beam_width else score.argsort(descending=True).tolist()
+        sel = torch.tensor(keep_ix[:beam_width], device=z0.device)
+        beams_z = z_nxt[sel]
+        beams_fl = new_fl[sel]
+        beams_ret = ret_nxt[sel]
+        beams_disc = beams_disc.repeat_interleave(4)[sel] * gamma * (1.0 - p_trap[sel])
+        beams_first_a = first_a[sel]
+        beams_dist = dist_new[sel]
+        if (h + 1) % reground_every == 0 and h + 1 < horizon:
+            beams_z = _reground_z(wm, beams_z, beams_fl)
+
+    return int(beams_first_a[0].item())
+
+
+def _symbolic_step(cells: list[int], flags: list[int], action: int, key_pos: int, door_pos: int, goal_pos: int):
+    """Exact gridworld dynamics on a decoded board. Mirrors KeyDoorTrapEnv.step:
+    returns (new_cells, new_flags, reward, done, trapped, moved)."""
+    row = list(cells)
+    fl = list(flags)
+    agent = row.index(2) if 2 in row else -1
+    if agent < 0:
+        return row, fl, -0.01, False, False, False
+    dr, dc = [(-1, 0), (1, 0), (0, 1), (0, -1)][action]
+    r, c = divmod(agent, 6)
+    nr, nc = r + dr, c + dc
+    rew = -0.01
+    if 0 <= nr < 6 and 0 <= nc < 6:
+        v = nr * 6 + nc
+        dest = row[v]
+        if dest == 1:
+            return row, fl, rew, False, False, False          # wall: no move
+        if v == door_pos and not fl[0]:
+            return row, fl, rew, False, False, False          # locked door: no move
+        row[agent], row[v] = 0, 2
+        if dest == 6:
+            return row, fl, 0.50, False, True, True           # trap: permanent
+        if v == key_pos and not fl[0]:
+            fl[0] = 1; rew = 0.30
+            row = [0 if t == 3 else t for t in row]
+        elif v == door_pos and fl[0] and not fl[1]:
+            fl[1] = 1; rew = 0.30
+            row = [0 if t == 4 else t for t in row]
+        elif v == goal_pos and fl[1]:
+            return row, fl, 2.00, True, False, True
+        return row, fl, rew, False, False, True
+    return row, fl, rew, False, False, False
+
+
+def select_action_symbolic(
+    cells0: list[int],
+    flags0: tuple[int, int],
+    key_pos: int,
+    door_pos: int,
+    goal_pos: int,
+    horizon: int = 16,
+    beam_width: int = 64,
+    gamma: float = 0.97,
+) -> int:
+    """Grounded Symbolic MPC: exact deduplicated beam search in the decoded board space.
+    State = (agent_pos, has_key, door_open) — dedup is EXACT, not latent-quantized.
+    Trapped states are terminal (env rule), best action tracked by penalized score,
+    and the door cell is enterable once has_key (that's how it opens)."""
+    # node: (cells, flags, score_so_far, first_action, trapped)
+    nodes = [(list(cells0), list(flags0), 0.0, -1, False)]
+    best_first, best_score = 0, -1e9
+    for h in range(horizon):
+        cands = []
+        for cells, fl, sc, first_a, trapped in nodes:
+            if trapped:
+                continue                                  # terminal: permanently stuck
+            for a in range(4):
+                nc, nf, r, done, ntrap, _ = _symbolic_step(cells, fl, a, key_pos, door_pos, goal_pos)
+                nsc = sc + (gamma ** h) * r
+                fa = a if h == 0 else first_a
+                score = nsc
+                if done and r >= 2.0:
+                    score += 10.0                         # solved the whole task
+                elif ntrap:
+                    score -= 5.0                          # irreversible trap
+                else:
+                    # BFS distance to current subgoal as potential shaping.
+                    # has_key => door cell enterable (stepping on it opens it).
+                    tgt = key_pos if not nf[0] else (door_pos if not nf[1] else goal_pos)
+                    ag = nc.index(2) if 2 in nc else -1
+                    blocked = set() if nf[0] else {4}
+                    d = _bfs(nc, ag, blocked)
+                    score -= 0.06 * (d[tgt] if 0 <= tgt < len(d) and d[tgt] >= 0 else 12)
+                cands.append((score, nc, nf, nsc, fa, ntrap or done))
+        cands.sort(key=lambda t: -t[0])
+        seen, nodes = set(), []
+        for score, nc, nf, nsc, fa, ntrap in cands:
+            ag = nc.index(2) if 2 in nc else -1
+            key = (ag, nf[0], nf[1])
+            if key in seen:
+                continue
+            seen.add(key)
+            nodes.append((nc, nf, nsc, fa, ntrap))
+            if score > best_score and fa >= 0:
+                best_score, best_first = score, fa
+            if len(nodes) >= beam_width:
+                break
+        if not nodes:
+            break
+    return best_first
+
+
 def _dedup_beams(z: torch.Tensor, score: torch.Tensor) -> list[int]:
     """Keep the best-scoring candidate per quantized latent bucket (state deduplication)."""
     keys = (z * 4).round().to(torch.int16).cpu().numpy().tobytes()
@@ -343,6 +583,9 @@ def evaluate_planning(model, n_maps: int = 80, seed_start: int = 50000, device: 
     modes = [("myopic_H1", 1, "flat"), ("reactive_policy_H0", 0, "flat"), ("world_model_mpc_H6", 6, "flat")]
     if hasattr(model.world_model, "milestone_head"):
         modes.append(("hierarchical_subgoal_H8", 8, "subgoal"))
+        modes.append(("reground_symbolic_H12", 12, "reground"))
+        modes.append(("symbolic_decoded_H16", 16, "symbolic"))
+        modes.append(("symbolic_oracle_H16", 16, "oracle"))
     for mode_name, horizon, mode in modes:
         solved, trapped, returns = 0, 0, []
         for i in range(n_maps):
@@ -354,7 +597,36 @@ def evaluate_planning(model, n_maps: int = 80, seed_start: int = 50000, device: 
                 x_cur = torch.tensor([obs[0]], dtype=torch.long, device=device)
                 z0 = model.world_model.encode_obs(x_cur)
                 recent_z.append(z0)
-                act = select_action_mpc(model, z0, horizon=horizon, recent_z=recent_z, mode=mode)
+                if mode == "reground":
+                    act = select_action_mpc_reground(
+                        model, z0, init_flags=(int(env.has_key), int(env.door_open)),
+                        horizon=horizon, recent_z=recent_z,
+                        key_pos=env.key[0] * 6 + env.key[1],
+                        door_pos=env.door[0] * 6 + env.door[1],
+                        goal_pos=env.goal[0] * 6 + env.goal[1],
+                    )
+                elif mode in ("symbolic", "oracle"):
+                    if mode == "oracle":
+                        # perception = obs tokens (exact parse of what the model sees)
+                        cells0 = [int(t) - COLOR_BASE for t in obs[0][3:39]]
+                        flag_tok = int(obs[0][2]) - COLOR_BASE
+                        flags0 = (flag_tok % 2, flag_tok // 2)
+                    else:
+                        # perception = learned WM decoder output on encoded obs
+                        cells0, df0 = _decode_board(model.world_model, z0)
+                        cells0 = cells0[0].tolist()
+                        flags0 = tuple(int(v) for v in df0[0].tolist())
+                    # Positions and milestone flags read from the parsed board / flag token —
+                    # fully observable, no privileged env attributes.
+                    act = select_action_symbolic(
+                        cells0, flags0,
+                        key_pos=cells0.index(3) if 3 in cells0 else -1,
+                        door_pos=cells0.index(4) if 4 in cells0 else -1,
+                        goal_pos=cells0.index(5) if 5 in cells0 else -1,
+                        horizon=horizon,
+                    )
+                else:
+                    act = select_action_mpc(model, z0, horizon=horizon, recent_z=recent_z, mode=mode)
                 obs, rew, done, is_trap = env.step(act)
                 ep_ret += rew
             solved += int(env.agent == env.goal and env.door_open)

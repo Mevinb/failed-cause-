@@ -1,0 +1,37 @@
+{
+ "myopic_H1": {
+  "goal_rate": 0.0,
+  "trap_rate": 0.65,
+  "mean_return": -0.2827
+ },
+ "reactive_policy_H0": {
+  "goal_rate": 0.0,
+  "trap_rate": 0.175,
+  "mean_return": -0.1865
+ },
+ "world_model_mpc_H6": {
+  "goal_rate": 0.0,
+  "trap_rate": 0.275,
+  "mean_return": -0.2035
+ },
+ "hierarchical_subgoal_H8": {
+  "goal_rate": 0.0,
+  "trap_rate": 0.375,
+  "mean_return": -0.236
+ },
+ "reground_symbolic_H12": {
+  "goal_rate": 0.0,
+  "trap_rate": 0.275,
+  "mean_return": -0.2112
+ },
+ "symbolic_decoded_H16": {
+  "goal_rate": 0.0,
+  "trap_rate": 0.5,
+  "mean_return": -0.2572
+ },
+ "symbolic_oracle_H16": {
+  "goal_rate": 0.9,
+  "trap_rate": 0.0,
+  "mean_return": 2.2805
+ }
+}

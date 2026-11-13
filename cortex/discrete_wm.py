@@ -317,7 +317,7 @@ def onehot_from_parsed(cells: torch.Tensor, flags: torch.Tensor) -> torch.Tensor
     return torch.cat([ch, fh], dim=-1)
 
 
-def train(wm: DiscreteBoardWM, transitions: list[dict], steps: int, bs: int, device: str, seed: int = 42, aux_agent: bool = True, ss_depth: int = SS_DEPTH):
+def train(wm: DiscreteBoardWM, transitions: list[dict], steps: int, bs: int, device: str, seed: int = 42, aux_agent: bool = True, ss_depth: int = SS_DEPTH, ckpt_every: int = 0, ckpt_prefix: str | None = None):
     opt = torch.optim.AdamW(wm.parameters(), lr=2e-3, weight_decay=1e-2)
     rng = random.Random(seed)
     wm.train()
@@ -398,6 +398,11 @@ def train(wm: DiscreteBoardWM, transitions: list[dict], steps: int, bs: int, dev
                 f"step {it+1}/{steps} loss {loss.item():.3f} | enc_cell {acc_cell:.4f} trans_cell {acc_tr:.4f} trans_flag {acc_fl:.4f}",
                 flush=True,
             )
+        # Periodic checkpointing: Exp #026 showed teacher-forced metrics are blind to
+        # rollout robustness — same recipe can land in a brittle basin (v8) or a
+        # robust one (v6). Cheap insurance against late-training instability.
+        if ckpt_every and ckpt_prefix and (it + 1) % ckpt_every == 0:
+            torch.save(wm.state_dict(), f"{ckpt_prefix}_step{it+1}.pt")
 
 
 @torch.no_grad()
@@ -450,6 +455,29 @@ def eval_rollout(wm: DiscreteBoardWM, n_maps: int, depth: int, device: str, seed
     return out
 
 
+@torch.no_grad()
+def select_checkpoint(wm: DiscreteBoardWM, paths: list[str], device: str, n_maps: int = 16, depth: int = 8, metric: str = "fidelity", sel_seed0: int = 70000) -> str:
+    """Model selection on the claimed metric. Exp #026 showed fidelity-selection
+    ANTI-selects for planning (mid-training peak vs monotone planning growth) —
+    'plan' scores each ckpt by goal rate on a disjoint seed range."""
+    best_path, best_score = paths[-1], -1.0
+    for p in paths:
+        wm.load_state_dict(torch.load(p, map_location=device))
+        if metric == "plan":
+            r = eval_learned_planning(wm, n_maps, device, seed0=sel_seed0)
+            sc = r["goal_rate"]
+        else:
+            r = eval_rollout(wm, n_maps, depth, device)
+            tail = [v for k, v in r.items() if k.startswith(("exact_d", "agent_d"))]
+            sc = sum(tail) / len(tail)
+        print(f"[select:{metric}] {p}: score {sc:.3f}", flush=True)
+        if sc > best_score:
+            best_score, best_path = sc, p
+    print(f"[select:{metric}] chose {best_path}", flush=True)
+    wm.load_state_dict(torch.load(best_path, map_location=device))
+    return best_path
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--steps", type=int, default=3000)
@@ -463,6 +491,8 @@ def main():
     ap.add_argument("--ckpt-out", default="cortex_runs/discrete_wm.pt")
     ap.add_argument("--aux-agent", type=int, default=1, help="agent-existence auxiliary loss")
     ap.add_argument("--ss-depth", type=int, default=SS_DEPTH)
+    ap.add_argument("--ckpt-every", type=int, default=0, help="save ckpt every N steps for fidelity selection")
+    ap.add_argument("--select-metric", default="fidelity", choices=["fidelity", "plan"])
     ap.add_argument("--plan-modes", default=None, help="comma list: run eval_learned_planning per mode")
     ap.add_argument("--out", default="cortex_runs/discrete_wm_eval.json")
     args = ap.parse_args()
@@ -476,9 +506,17 @@ def main():
         print(f"[discrete_wm] collecting {args.n_envs} env trajectories...", flush=True)
         transitions = collect_world_model_dataset(n_envs=args.n_envs, seed_start=10000)
         print(f"[discrete_wm] {len(transitions)} transitions; training {args.steps} steps on {args.device}", flush=True)
-        train(wm, transitions, args.steps, args.bs, args.device, args.seed, aux_agent=bool(args.aux_agent), ss_depth=args.ss_depth)
+        train(wm, transitions, args.steps, args.bs, args.device, args.seed, aux_agent=bool(args.aux_agent), ss_depth=args.ss_depth,
+              ckpt_every=args.ckpt_every, ckpt_prefix=args.ckpt_out.replace(".pt", ""))
         torch.save(wm.state_dict(), args.ckpt_out)
         print(f"[discrete_wm] saved {args.ckpt_out}", flush=True)
+        if args.ckpt_every:
+            import glob as _g
+            paths = sorted(_g.glob(args.ckpt_out.replace(".pt", "_step*.pt")), key=lambda p: int(p.split("_step")[-1][:-3]))
+            paths.append(args.ckpt_out)
+            best = select_checkpoint(wm, paths, args.device, metric=args.select_metric)
+            wm.load_state_dict(torch.load(best, map_location=args.device))
+            torch.save(wm.state_dict(), args.ckpt_out)  # selected -> canonical ckpt
 
     print(f"[discrete_wm] rollout-fidelity eval: {args.eval_maps} held-out maps, depth {args.eval_depth}", flush=True)
     res = eval_rollout(wm, args.eval_maps, args.eval_depth, args.device)

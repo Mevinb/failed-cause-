@@ -1,0 +1,35 @@
+[exp] EXP_FEEDBACK=4:27:0.3:norm
+0.00.484.584 W common_fit_params: failed to fit params to free device memory: n_gpu_layers already set by user to 30, abort
+0.01.886.765 I cmn          init: llama threadpool init, n_threads = 4
+0.02.011.813 I 
+0.02.011.873 I system_info: n_threads = 4 (n_threads_batch = 4) / 16 | CUDA : ARCHS = 890 | USE_GRAPHS = 1 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | 
+0.02.011.875 I perplexity: tokenizing the input ..
+0.02.398.738 I perplexity: tokenization took 386.855 ms
+0.02.399.040 I perplexity: calculating perplexity over 2 chunks, n_ctx=512, batch_size=512, n_seq=1
+0.28.775.945 I perplexity: 26.38 seconds per pass - ETA 0.87 minutes
+[1]5.8159,[2]8.2350,
+0.55.176.707 I Final estimate: PPL = 8.2350 +/- 1.04208
+
+	Command being timed: "llama.cpp-exp/build/bin/llama-perplexity -m models/Qwen3.5-9B-Q4_K_M.gguf -c 512 -b 512 -ub 1 --chunks 2 -ngl 30 -f data/wikitext-2-raw/wiki.test.raw -s 1"
+	User time (seconds): 120.12
+	System time (seconds): 1.16
+	Percent of CPU this job got: 219%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:55.34
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 5855872
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 168647
+	Voluntary context switches: 415002
+	Involuntary context switches: 1601
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 16
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

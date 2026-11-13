@@ -1,0 +1,15 @@
+# Large artifacts — keep code, docs, small JSONs; not checkpoints/binaries/models
+*.pt
+*.bin
+*.gguf
+models/
+data/tinystories/*.bin
+data/tinystories/tokenizer.json
+.venv/
+__pycache__/
+*.pyc
+llama.cpp-exp/build/
+runs/*/log.jsonl
+nohup.out
+*.out
+llama.cpp-exp/

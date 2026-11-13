@@ -1,0 +1,26 @@
+0.18 minutes
+[1]5.7091,[2]8.0619,[3]7.9060,[4]7.5823,[5]7.5024,[6]7.8221,[7]8.1214,[8]8.7108,[9]9.1538,[10]9.5125,[11]9.3689,[12]9.4057,[13]9.8569,[14]9.3662,[15]9.2140,[16]9.2540,[17]8.6933,[18]8.7013,[19]8.6324,[20]8.5881,
+
+[exp] EXP_LAYER_MAP=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31
+0.00.475.187 W common_fit_params: failed to fit params to free device memory: n_gpu_layers already set by user to 30, abort
+0.00.791.007 W model has unused tensor blk.16.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.791.012 W model has unused tensor blk.16.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.791.014 W model has unused tensor blk.16.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.791.015 W model has unused tensor blk.16.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.791.017 W model has unused tensor blk.16.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.791.018 W model has unused tensor blk.16.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.791.020 W model has unused tensor blk.16.ssm_a (size = 128 bytes) -- ignoring
+0.00.791.022 W model has unused tensor blk.16.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.791.023 W model has unused tensor blk.16.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.791.025 W model has unused tensor blk.16.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.791.026 W model has unused tensor blk.16.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.791.029 W model has unused tensor blk.16.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.791.031 W model has unused tensor blk.16.ffn_down.weight (size = 28311552 bytes) -- ignoring
+0.00.791.053 W model has unused tensor blk.16.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.01.848.219 I cmn          init: llama threadpool init, n_threads = 4
+0.01.915.889 I 
+0.01.915.965 I system_info: n_threads = 4 (n_threads_batch = 4) / 16 | CUDA : ARCHS = 890 | USE_GRAPHS = 1 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | 
+0.01.915.967 I perplexity: tokenizing the input ..
+0.02.331.496 I perplexity: tokenization took 415.522 ms
+0.02.331.686 I perplexity: calculating perplexity over 20 chunks, n_ctx=512, batch_size=512, n_seq=1
+0.02.930.030 I perplexity: 0.60 seconds per pass - ETA 0.13.524.932 I Final estimate: PPL = 8.5881 +/- 0.30807

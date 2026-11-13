@@ -1,0 +1,8 @@
+{
+  "causal_id_mixed": 1.0,
+  "causal_ood_do": 1.0,
+  "causal_ood_scm": 0.5125,
+  "episodic_ood_gap160": 0.2875,
+  "mm_ood_2hop": 0.1917,
+  "s5_ood_len10": 0.25
+}

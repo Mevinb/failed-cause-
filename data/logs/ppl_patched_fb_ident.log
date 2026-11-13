@@ -1,0 +1,35 @@
+[exp] EXP_FEEDBACK=31:0:0
+0.00.511.717 W common_fit_params: failed to fit params to free device memory: n_gpu_layers already set by user to 30, abort
+0.01.945.399 I cmn          init: llama threadpool init, n_threads = 4
+0.02.021.150 I 
+0.02.021.221 I system_info: n_threads = 4 (n_threads_batch = 4) / 16 | CUDA : ARCHS = 890 | USE_GRAPHS = 1 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | 
+0.02.021.222 I perplexity: tokenizing the input ..
+0.02.411.883 I perplexity: tokenization took 390.655 ms
+0.02.412.135 I perplexity: calculating perplexity over 20 chunks, n_ctx=512, batch_size=2048, n_seq=4
+0.05.022.170 I perplexity: 2.61 seconds per pass - ETA 0.22 minutes
+[1]5.5339,[2]7.7299,[3]7.7286,[4]7.4484,[5]7.3639,[6]7.6599,[7]7.9743,[8]8.5085,[9]8.9125,[10]9.2351,[11]9.0564,[12]9.0779,[13]9.5240,[14]9.0469,[15]8.9504,[16]9.0203,[17]8.4568,[18]8.4681,[19]8.4141,[20]8.3730,
+0.15.689.908 I Final estimate: PPL = 8.3730 +/- 0.30466
+
+	Command being timed: "env EXP_FEEDBACK=31:0:0 /home/mevlec/Data/exp/agi-exi/llama.cpp-exp/build/bin/llama-perplexity -m /home/mevlec/Data/exp/agi-exi/models/Qwen3.5-9B-Q4_K_M.gguf -c 512 --chunks 20 -ngl 30 -f /home/mevlec/Data/exp/agi-exi/data/wikitext-2-raw/wiki.test.raw -s 1"
+	User time (seconds): 22.35
+	System time (seconds): 0.83
+	Percent of CPU this job got: 145%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:15.93
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 5856008
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 387432
+	Voluntary context switches: 3939
+	Involuntary context switches: 1422
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 8
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

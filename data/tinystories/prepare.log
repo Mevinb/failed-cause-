@@ -1,0 +1,3 @@
+tokenizer: vocab=8192 (21s)
+val: 21990 stories, 4610237 tokens (22s)
+train: 2119489 stories, 458315113 tokens (155s)

@@ -1,0 +1,82 @@
+{
+  "naive_adamw": {
+    "final_avg_acc": 0.0275,
+    "backward_transfer": -0.2296,
+    "phase5_forward_acc": 0.1375,
+    "dormant_unit_frac": 0.1089,
+    "final_per_phase": {
+      "P1_episodic": 0.0,
+      "P2_s5_state": 0.0,
+      "P3_comp_math": 0.0,
+      "P4_causal_do": 0.0,
+      "P5_multimodal": 0.1375
+    },
+    "diagonal_peak": [
+      0.2437,
+      0.1625,
+      0.1187,
+      0.3937,
+      0.1375
+    ]
+  },
+  "high_l2_rigid": {
+    "final_avg_acc": 0.0463,
+    "backward_transfer": -0.3141,
+    "phase5_forward_acc": 0.1375,
+    "dormant_unit_frac": 0.0,
+    "final_per_phase": {
+      "P1_episodic": 0.0125,
+      "P2_s5_state": 0.0187,
+      "P3_comp_math": 0.0063,
+      "P4_causal_do": 0.0563,
+      "P5_multimodal": 0.1375
+    },
+    "diagonal_peak": [
+      0.2875,
+      0.1688,
+      0.0938,
+      0.8,
+      0.1375
+    ]
+  },
+  "uniform_replay": {
+    "final_avg_acc": 0.1687,
+    "backward_transfer": -0.089,
+    "phase5_forward_acc": 0.2,
+    "dormant_unit_frac": 0.0,
+    "final_per_phase": {
+      "P1_episodic": 0.1187,
+      "P2_s5_state": 0.1375,
+      "P3_comp_math": 0.0563,
+      "P4_causal_do": 0.3312,
+      "P5_multimodal": 0.2
+    },
+    "diagonal_peak": [
+      0.2562,
+      0.15,
+      0.1187,
+      0.475,
+      0.2
+    ]
+  },
+  "cortex_plasticity": {
+    "final_avg_acc": 0.175,
+    "backward_transfer": -0.0812,
+    "phase5_forward_acc": 0.2,
+    "dormant_unit_frac": 0.0,
+    "final_per_phase": {
+      "P1_episodic": 0.1625,
+      "P2_s5_state": 0.15,
+      "P3_comp_math": 0.0563,
+      "P4_causal_do": 0.3063,
+      "P5_multimodal": 0.2
+    },
+    "diagonal_peak": [
+      0.2625,
+      0.15,
+      0.1187,
+      0.4688,
+      0.2
+    ]
+  }
+}

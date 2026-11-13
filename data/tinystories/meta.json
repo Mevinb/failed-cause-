@@ -1,0 +1,12 @@
+{
+ "vocab_size": 8192,
+ "eot": 0,
+ "val": {
+  "tokens": 4610237,
+  "stories": 21990
+ },
+ "train": {
+  "tokens": 458315113,
+  "stories": 2119489
+ }
+}

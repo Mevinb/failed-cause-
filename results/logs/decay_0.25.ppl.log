@@ -1,0 +1,12 @@
+0.22 minutes
+[1]5.9910,[2]8.4532,[3]8.4108,[4]7.9914,[5]7.8354,[6]8.1101,[7]8.4809,[8]9.0865,[9]9.4437,[10]9.8048,[11]9.6353,[12]9.6651,[13]10.1256,[14]9.5800,[15]9.4495,[16]9.4857,[17]8.8951,[18]8.8972,[19]8.8526,[20]8.8013,
+
+[exp] EXP_SSM_DECAY=0.25
+0.00.528.672 W common_fit_params: failed to fit params to free device memory: n_gpu_layers already set by user to 30, abort
+0.02.062.625 I cmn          init: llama threadpool init, n_threads = 4
+0.02.140.433 I 
+0.02.140.510 I system_info: n_threads = 4 (n_threads_batch = 4) / 16 | CUDA : ARCHS = 890 | USE_GRAPHS = 1 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | 
+0.02.140.512 I perplexity: tokenizing the input ..
+0.02.562.353 I perplexity: tokenization took 421.835 ms
+0.02.562.569 I perplexity: calculating perplexity over 20 chunks, n_ctx=512, batch_size=512, n_seq=1
+0.03.243.272 I perplexity: 0.68 seconds per pass - ETA 0.15.072.733 I Final estimate: PPL = 8.8013 +/- 0.31966

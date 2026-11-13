@@ -1,0 +1,872 @@
+{
+  "config": {
+    "vocab_size": 256,
+    "max_seq_len": 512,
+    "d_model": 256,
+    "n_head": 4,
+    "local_window": 48,
+    "micro_chunk": 16,
+    "mem_dim": 32,
+    "ponder_steps": 4,
+    "max_ponder": 12,
+    "grid_max": 8
+  },
+  "steps": 3600,
+  "seed": 0,
+  "architectures": {
+    "H0_transformer": {
+      "params": 5944840,
+      "train_history": [
+        {
+          "step": 400,
+          "task_loss": 1.8708,
+          "ver_loss": 0.0,
+          "elapsed_s": 10.5
+        },
+        {
+          "step": 800,
+          "task_loss": 1.8529,
+          "ver_loss": 0.0,
+          "elapsed_s": 20.2
+        },
+        {
+          "step": 1200,
+          "task_loss": 1.8881,
+          "ver_loss": 0.0,
+          "elapsed_s": 30.0
+        },
+        {
+          "step": 1600,
+          "task_loss": 1.8209,
+          "ver_loss": 0.0,
+          "elapsed_s": 39.8
+        },
+        {
+          "step": 2000,
+          "task_loss": 1.8535,
+          "ver_loss": 0.0,
+          "elapsed_s": 49.6
+        },
+        {
+          "step": 2400,
+          "task_loss": 1.8046,
+          "ver_loss": 0.0,
+          "elapsed_s": 59.3
+        },
+        {
+          "step": 2800,
+          "task_loss": 1.8207,
+          "ver_loss": 0.0,
+          "elapsed_s": 69.2
+        },
+        {
+          "step": 3200,
+          "task_loss": 1.8295,
+          "ver_loss": 0.0,
+          "elapsed_s": 78.9
+        },
+        {
+          "step": 3600,
+          "task_loss": 1.7742,
+          "ver_loss": 0.0,
+          "elapsed_s": 88.8
+        }
+      ],
+      "benchmarks": {
+        "episodic_id_gap64": {
+          "exact_acc": 0.225,
+          "token_acc": 0.225,
+          "ece": 0.041,
+          "auroc": 0.6788
+        },
+        "episodic_ood_gap160": {
+          "exact_acc": 0.0708,
+          "token_acc": 0.0708,
+          "ece": 0.0412,
+          "auroc": 0.5431
+        },
+        "episodic_ood_gap320": {
+          "exact_acc": 0.0375,
+          "token_acc": 0.0375,
+          "ece": 0.0738,
+          "auroc": 0.5863
+        },
+        "s5_id_len6": {
+          "exact_acc": 0.0,
+          "token_acc": 0.4183,
+          "ece": 0.0102,
+          "auroc": 0.5
+        },
+        "s5_ood_len10": {
+          "exact_acc": 0.0,
+          "token_acc": 0.42,
+          "ece": 0.0191,
+          "auroc": 0.5
+        },
+        "s5_ood_len13": {
+          "exact_acc": 0.0,
+          "token_acc": 0.3967,
+          "ece": 0.0196,
+          "auroc": 0.5
+        },
+        "math_id_depth2": {
+          "exact_acc": 0.1208,
+          "token_acc": 0.1208,
+          "ece": 0.0169,
+          "auroc": 0.6187
+        },
+        "math_ood_depth3": {
+          "exact_acc": 0.1083,
+          "token_acc": 0.1083,
+          "ece": 0.0269,
+          "auroc": 0.5868
+        },
+        "math_ood_depth4": {
+          "exact_acc": 0.075,
+          "token_acc": 0.075,
+          "ece": 0.0691,
+          "auroc": 0.6176
+        },
+        "arc_id_3demo": {
+          "exact_acc": 0.0,
+          "token_acc": 0.5844,
+          "ece": 0.0016,
+          "auroc": 0.5
+        },
+        "arc_ood_compositional": {
+          "exact_acc": 0.0,
+          "token_acc": 0.5948,
+          "ece": 0.002,
+          "auroc": 0.5
+        },
+        "causal_id_mixed": {
+          "exact_acc": 0.25,
+          "token_acc": 0.25,
+          "ece": 0.0203,
+          "auroc": 0.4936
+        },
+        "causal_ood_scm": {
+          "exact_acc": 0.25,
+          "token_acc": 0.25,
+          "ece": 0.0206,
+          "auroc": 0.5219
+        },
+        "causal_ood_do_interventional": {
+          "exact_acc": 0.2833,
+          "token_acc": 0.2833,
+          "ece": 0.0114,
+          "auroc": 0.5403
+        },
+        "multimodal_id_1hop": {
+          "exact_acc": 0.1708,
+          "token_acc": 0.1708,
+          "ece": 0.0188,
+          "auroc": 0.4944
+        },
+        "multimodal_ood_2hop": {
+          "exact_acc": 0.125,
+          "token_acc": 0.125,
+          "ece": 0.0645,
+          "auroc": 0.5083
+        },
+        "metacognitive_global": {
+          "ece": 0.0216,
+          "error_detect_auroc": 0.7898
+        },
+        "composite_id_acc": 0.1278,
+        "composite_ood_acc": 0.095
+      },
+      "arc_ood_ttt": {
+        "zeroshot_grid_exact": 0.0,
+        "zeroshot_cell_acc": 0.6008,
+        "ttt_grid_exact": 0.0,
+        "ttt_cell_acc": 0.6016
+      },
+      "planning": null
+    },
+    "H1_synapse_mem": {
+      "params": 6006400,
+      "train_history": [
+        {
+          "step": 400,
+          "task_loss": 1.8598,
+          "ver_loss": 0.0,
+          "elapsed_s": 24.9
+        },
+        {
+          "step": 800,
+          "task_loss": 1.7824,
+          "ver_loss": 0.0,
+          "elapsed_s": 49.9
+        },
+        {
+          "step": 1200,
+          "task_loss": 1.8225,
+          "ver_loss": 0.0,
+          "elapsed_s": 75.3
+        },
+        {
+          "step": 1600,
+          "task_loss": 1.8099,
+          "ver_loss": 0.0,
+          "elapsed_s": 100.7
+        },
+        {
+          "step": 2000,
+          "task_loss": 1.6848,
+          "ver_loss": 0.0,
+          "elapsed_s": 126.4
+        },
+        {
+          "step": 2400,
+          "task_loss": 1.6328,
+          "ver_loss": 0.0,
+          "elapsed_s": 152.1
+        },
+        {
+          "step": 2800,
+          "task_loss": 1.6461,
+          "ver_loss": 0.0,
+          "elapsed_s": 177.6
+        },
+        {
+          "step": 3200,
+          "task_loss": 1.6844,
+          "ver_loss": 0.0,
+          "elapsed_s": 203.0
+        },
+        {
+          "step": 3600,
+          "task_loss": 1.5926,
+          "ver_loss": 0.0,
+          "elapsed_s": 228.4
+        }
+      ],
+      "benchmarks": {
+        "episodic_id_gap64": {
+          "exact_acc": 0.2875,
+          "token_acc": 0.2875,
+          "ece": 0.0699,
+          "auroc": 0.5706
+        },
+        "episodic_ood_gap160": {
+          "exact_acc": 0.2167,
+          "token_acc": 0.2167,
+          "ece": 0.0664,
+          "auroc": 0.5698
+        },
+        "episodic_ood_gap320": {
+          "exact_acc": 0.15,
+          "token_acc": 0.15,
+          "ece": 0.1095,
+          "auroc": 0.6875
+        },
+        "s5_id_len6": {
+          "exact_acc": 0.0042,
+          "token_acc": 0.44,
+          "ece": 0.0107,
+          "auroc": 1.0
+        },
+        "s5_ood_len10": {
+          "exact_acc": 0.0208,
+          "token_acc": 0.4825,
+          "ece": 0.0043,
+          "auroc": 0.617
+        },
+        "s5_ood_len13": {
+          "exact_acc": 0.0083,
+          "token_acc": 0.4642,
+          "ece": 0.01,
+          "auroc": 0.4076
+        },
+        "math_id_depth2": {
+          "exact_acc": 0.1125,
+          "token_acc": 0.1125,
+          "ece": 0.0404,
+          "auroc": 0.7491
+        },
+        "math_ood_depth3": {
+          "exact_acc": 0.1,
+          "token_acc": 0.1,
+          "ece": 0.0371,
+          "auroc": 0.6152
+        },
+        "math_ood_depth4": {
+          "exact_acc": 0.0875,
+          "token_acc": 0.0875,
+          "ece": 0.0508,
+          "auroc": 0.6297
+        },
+        "arc_id_3demo": {
+          "exact_acc": 0.0625,
+          "token_acc": 0.6138,
+          "ece": 0.005,
+          "auroc": 1.0
+        },
+        "arc_ood_compositional": {
+          "exact_acc": 0.0,
+          "token_acc": 0.5945,
+          "ece": 0.0017,
+          "auroc": 0.5
+        },
+        "causal_id_mixed": {
+          "exact_acc": 0.2708,
+          "token_acc": 0.2708,
+          "ece": 0.0247,
+          "auroc": 0.5207
+        },
+        "causal_ood_scm": {
+          "exact_acc": 0.2958,
+          "token_acc": 0.2958,
+          "ece": 0.0399,
+          "auroc": 0.4685
+        },
+        "causal_ood_do_interventional": {
+          "exact_acc": 0.3125,
+          "token_acc": 0.3125,
+          "ece": 0.0391,
+          "auroc": 0.4836
+        },
+        "multimodal_id_1hop": {
+          "exact_acc": 0.2083,
+          "token_acc": 0.2083,
+          "ece": 0.0284,
+          "auroc": 0.6007
+        },
+        "multimodal_ood_2hop": {
+          "exact_acc": 0.2458,
+          "token_acc": 0.2458,
+          "ece": 0.0224,
+          "auroc": 0.5677
+        },
+        "metacognitive_global": {
+          "ece": 0.0181,
+          "error_detect_auroc": 0.7707
+        },
+        "composite_id_acc": 0.1576,
+        "composite_ood_acc": 0.1437
+      },
+      "arc_ood_ttt": {
+        "zeroshot_grid_exact": 0.0,
+        "zeroshot_cell_acc": 0.5992,
+        "ttt_grid_exact": 0.0,
+        "ttt_cell_acc": 0.6
+      },
+      "planning": null
+    },
+    "H2_latent_ponder": {
+      "params": 5693845,
+      "train_history": [
+        {
+          "step": 400,
+          "task_loss": 1.8529,
+          "ver_loss": 0.6718,
+          "elapsed_s": 23.8
+        },
+        {
+          "step": 800,
+          "task_loss": 1.8356,
+          "ver_loss": 0.6727,
+          "elapsed_s": 46.9
+        },
+        {
+          "step": 1200,
+          "task_loss": 1.8563,
+          "ver_loss": 0.6478,
+          "elapsed_s": 69.8
+        },
+        {
+          "step": 1600,
+          "task_loss": 1.8364,
+          "ver_loss": 0.5403,
+          "elapsed_s": 93.3
+        },
+        {
+          "step": 2000,
+          "task_loss": 1.7541,
+          "ver_loss": 0.5757,
+          "elapsed_s": 116.9
+        },
+        {
+          "step": 2400,
+          "task_loss": 1.7888,
+          "ver_loss": 0.5677,
+          "elapsed_s": 140.4
+        },
+        {
+          "step": 2800,
+          "task_loss": 1.77,
+          "ver_loss": 0.5961,
+          "elapsed_s": 163.9
+        },
+        {
+          "step": 3200,
+          "task_loss": 1.7756,
+          "ver_loss": 0.5657,
+          "elapsed_s": 187.0
+        },
+        {
+          "step": 3600,
+          "task_loss": 1.7773,
+          "ver_loss": 0.5929,
+          "elapsed_s": 209.9
+        }
+      ],
+      "benchmarks": {
+        "episodic_id_gap64": {
+          "exact_acc": 0.2333,
+          "token_acc": 0.2333,
+          "ece": 0.0302,
+          "auroc": 0.6342
+        },
+        "episodic_ood_gap160": {
+          "exact_acc": 0.0708,
+          "token_acc": 0.0708,
+          "ece": 0.0867,
+          "auroc": 0.5716
+        },
+        "episodic_ood_gap320": {
+          "exact_acc": 0.0375,
+          "token_acc": 0.0375,
+          "ece": 0.0671,
+          "auroc": 0.5257
+        },
+        "s5_id_len6": {
+          "exact_acc": 0.0083,
+          "token_acc": 0.4608,
+          "ece": 0.0009,
+          "auroc": 0.6849
+        },
+        "s5_ood_len10": {
+          "exact_acc": 0.0083,
+          "token_acc": 0.4333,
+          "ece": 0.0028,
+          "auroc": 0.7311
+        },
+        "s5_ood_len13": {
+          "exact_acc": 0.0083,
+          "token_acc": 0.4483,
+          "ece": 0.0034,
+          "auroc": 0.7143
+        },
+        "math_id_depth2": {
+          "exact_acc": 0.125,
+          "token_acc": 0.125,
+          "ece": 0.0703,
+          "auroc": 0.6167
+        },
+        "math_ood_depth3": {
+          "exact_acc": 0.0917,
+          "token_acc": 0.0917,
+          "ece": 0.1474,
+          "auroc": 0.666
+        },
+        "math_ood_depth4": {
+          "exact_acc": 0.0417,
+          "token_acc": 0.0417,
+          "ece": 0.2867,
+          "auroc": 0.5796
+        },
+        "arc_id_3demo": {
+          "exact_acc": 0.0,
+          "token_acc": 0.5789,
+          "ece": 0.0001,
+          "auroc": 0.5
+        },
+        "arc_ood_compositional": {
+          "exact_acc": 0.0,
+          "token_acc": 0.5922,
+          "ece": 0.0001,
+          "auroc": 0.5
+        },
+        "causal_id_mixed": {
+          "exact_acc": 0.2542,
+          "token_acc": 0.2542,
+          "ece": 0.0303,
+          "auroc": 0.4895
+        },
+        "causal_ood_scm": {
+          "exact_acc": 0.2708,
+          "token_acc": 0.2708,
+          "ece": 0.0471,
+          "auroc": 0.4907
+        },
+        "causal_ood_do_interventional": {
+          "exact_acc": 0.2875,
+          "token_acc": 0.2875,
+          "ece": 0.0635,
+          "auroc": 0.4461
+        },
+        "multimodal_id_1hop": {
+          "exact_acc": 0.1042,
+          "token_acc": 0.1042,
+          "ece": 0.036,
+          "auroc": 0.4311
+        },
+        "multimodal_ood_2hop": {
+          "exact_acc": 0.1625,
+          "token_acc": 0.1625,
+          "ece": 0.0134,
+          "auroc": 0.526
+        },
+        "metacognitive_global": {
+          "ece": 0.0307,
+          "error_detect_auroc": 0.7342
+        },
+        "test_time_compute_scaling": {
+          "K=1": {
+            "math_ood_d3": 0.0917,
+            "s5_ood_len10": 0.0125,
+            "multimodal_ood_2hop": 0.1292,
+            "mean_reasoning_ood": 0.0778
+          },
+          "K=2": {
+            "math_ood_d3": 0.0875,
+            "s5_ood_len10": 0.0083,
+            "multimodal_ood_2hop": 0.1125,
+            "mean_reasoning_ood": 0.0694
+          },
+          "K=4": {
+            "math_ood_d3": 0.0917,
+            "s5_ood_len10": 0.0083,
+            "multimodal_ood_2hop": 0.1625,
+            "mean_reasoning_ood": 0.0875
+          },
+          "K=6": {
+            "math_ood_d3": 0.0917,
+            "s5_ood_len10": 0.0125,
+            "multimodal_ood_2hop": 0.1833,
+            "mean_reasoning_ood": 0.0958
+          },
+          "K=8": {
+            "math_ood_d3": 0.0917,
+            "s5_ood_len10": 0.0042,
+            "multimodal_ood_2hop": 0.1833,
+            "mean_reasoning_ood": 0.0931
+          },
+          "K=8_verifier_selected": {
+            "math_ood_d3": 0.0833,
+            "s5_ood_len10": 0.0125,
+            "multimodal_ood_2hop": 0.1292,
+            "mean_reasoning_ood": 0.075
+          }
+        },
+        "composite_id_acc": 0.1208,
+        "composite_ood_acc": 0.0979
+      },
+      "arc_ood_ttt": {
+        "zeroshot_grid_exact": 0.0,
+        "zeroshot_cell_acc": 0.5914,
+        "ttt_grid_exact": 0.0,
+        "ttt_cell_acc": 0.5875
+      },
+      "planning": null
+    },
+    "H3_cortex_agi": {
+      "params": 5736913,
+      "train_history": [
+        {
+          "step": 400,
+          "task_loss": 1.9134,
+          "ver_loss": 0.5921,
+          "elapsed_s": 30.6
+        },
+        {
+          "step": 800,
+          "task_loss": 1.8848,
+          "ver_loss": 0.6166,
+          "elapsed_s": 60.4
+        },
+        {
+          "step": 1200,
+          "task_loss": 1.8933,
+          "ver_loss": 0.5936,
+          "elapsed_s": 89.8
+        },
+        {
+          "step": 1600,
+          "task_loss": 1.9142,
+          "ver_loss": 0.5705,
+          "elapsed_s": 120.1
+        },
+        {
+          "step": 2000,
+          "task_loss": 1.8337,
+          "ver_loss": 0.5372,
+          "elapsed_s": 150.5
+        },
+        {
+          "step": 2400,
+          "task_loss": 1.8736,
+          "ver_loss": 0.5823,
+          "elapsed_s": 180.7
+        },
+        {
+          "step": 2800,
+          "task_loss": 1.8404,
+          "ver_loss": 0.4865,
+          "elapsed_s": 210.9
+        },
+        {
+          "step": 3200,
+          "task_loss": 1.8736,
+          "ver_loss": 0.5032,
+          "elapsed_s": 240.7
+        },
+        {
+          "step": 3600,
+          "task_loss": 1.834,
+          "ver_loss": 0.5777,
+          "elapsed_s": 270.1
+        }
+      ],
+      "benchmarks": {
+        "episodic_id_gap64": {
+          "exact_acc": 0.1875,
+          "token_acc": 0.1875,
+          "ece": 0.0588,
+          "auroc": 0.7434
+        },
+        "episodic_ood_gap160": {
+          "exact_acc": 0.1292,
+          "token_acc": 0.1292,
+          "ece": 0.0156,
+          "auroc": 0.6709
+        },
+        "episodic_ood_gap320": {
+          "exact_acc": 0.1083,
+          "token_acc": 0.1083,
+          "ece": 0.0501,
+          "auroc": 0.5539
+        },
+        "s5_id_len6": {
+          "exact_acc": 0.0,
+          "token_acc": 0.3133,
+          "ece": 0.0018,
+          "auroc": 0.5
+        },
+        "s5_ood_len10": {
+          "exact_acc": 0.0,
+          "token_acc": 0.29,
+          "ece": 0.004,
+          "auroc": 0.5
+        },
+        "s5_ood_len13": {
+          "exact_acc": 0.0,
+          "token_acc": 0.2967,
+          "ece": 0.0048,
+          "auroc": 0.5
+        },
+        "math_id_depth2": {
+          "exact_acc": 0.1208,
+          "token_acc": 0.1208,
+          "ece": 0.0387,
+          "auroc": 0.4736
+        },
+        "math_ood_depth3": {
+          "exact_acc": 0.1125,
+          "token_acc": 0.1125,
+          "ece": 0.057,
+          "auroc": 0.6658
+        },
+        "math_ood_depth4": {
+          "exact_acc": 0.075,
+          "token_acc": 0.075,
+          "ece": 0.1277,
+          "auroc": 0.4982
+        },
+        "arc_id_3demo": {
+          "exact_acc": 0.0,
+          "token_acc": 0.5818,
+          "ece": 0.0009,
+          "auroc": 0.5
+        },
+        "arc_ood_compositional": {
+          "exact_acc": 0.0,
+          "token_acc": 0.5872,
+          "ece": 0.0014,
+          "auroc": 0.5
+        },
+        "causal_id_mixed": {
+          "exact_acc": 0.2542,
+          "token_acc": 0.2542,
+          "ece": 0.032,
+          "auroc": 0.4753
+        },
+        "causal_ood_scm": {
+          "exact_acc": 0.2708,
+          "token_acc": 0.2708,
+          "ece": 0.0487,
+          "auroc": 0.4623
+        },
+        "causal_ood_do_interventional": {
+          "exact_acc": 0.2875,
+          "token_acc": 0.2875,
+          "ece": 0.0647,
+          "auroc": 0.5918
+        },
+        "multimodal_id_1hop": {
+          "exact_acc": 0.1708,
+          "token_acc": 0.1708,
+          "ece": 0.027,
+          "auroc": 0.408
+        },
+        "multimodal_ood_2hop": {
+          "exact_acc": 0.125,
+          "token_acc": 0.125,
+          "ece": 0.012,
+          "auroc": 0.5214
+        },
+        "metacognitive_global": {
+          "ece": 0.0106,
+          "error_detect_auroc": 0.756
+        },
+        "test_time_compute_scaling": {
+          "K=1": {
+            "math_ood_d3": 0.1125,
+            "s5_ood_len10": 0.0,
+            "multimodal_ood_2hop": 0.125,
+            "mean_reasoning_ood": 0.0792
+          },
+          "K=2": {
+            "math_ood_d3": 0.1125,
+            "s5_ood_len10": 0.0,
+            "multimodal_ood_2hop": 0.125,
+            "mean_reasoning_ood": 0.0792
+          },
+          "K=4": {
+            "math_ood_d3": 0.1125,
+            "s5_ood_len10": 0.0,
+            "multimodal_ood_2hop": 0.125,
+            "mean_reasoning_ood": 0.0792
+          },
+          "K=6": {
+            "math_ood_d3": 0.1125,
+            "s5_ood_len10": 0.0,
+            "multimodal_ood_2hop": 0.125,
+            "mean_reasoning_ood": 0.0792
+          },
+          "K=8": {
+            "math_ood_d3": 0.1125,
+            "s5_ood_len10": 0.0,
+            "multimodal_ood_2hop": 0.125,
+            "mean_reasoning_ood": 0.0792
+          },
+          "K=8_verifier_selected": {
+            "math_ood_d3": 0.1125,
+            "s5_ood_len10": 0.0,
+            "multimodal_ood_2hop": 0.125,
+            "mean_reasoning_ood": 0.0792
+          }
+        },
+        "composite_id_acc": 0.1222,
+        "composite_ood_acc": 0.1108
+      },
+      "arc_ood_ttt": {
+        "zeroshot_grid_exact": 0.0,
+        "zeroshot_cell_acc": 0.6016,
+        "ttt_grid_exact": 0.0,
+        "ttt_cell_acc": 0.6055
+      },
+      "planning": {
+        "myopic_H1": {
+          "goal_rate": 0.0,
+          "trap_rate": 0.6625,
+          "mean_return": -0.2926
+        },
+        "reactive_policy_H0": {
+          "goal_rate": 0.0,
+          "trap_rate": 0.225,
+          "mean_return": -0.1911
+        },
+        "world_model_mpc_H6": {
+          "goal_rate": 0.0,
+          "trap_rate": 0.1875,
+          "mean_return": -0.1731
+        }
+      }
+    }
+  },
+  "continual_5phase": {
+    "naive_adamw": {
+      "final_avg_acc": 0.0275,
+      "backward_transfer": -0.1547,
+      "phase5_forward_acc": 0.1375,
+      "dormant_unit_frac": 0.2073,
+      "final_per_phase": {
+        "P1_episodic": 0.0,
+        "P2_s5_state": 0.0,
+        "P3_comp_math": 0.0,
+        "P4_causal_do": 0.0,
+        "P5_multimodal": 0.1375
+      },
+      "diagonal_peak": [
+        0.2625,
+        0.0,
+        0.1187,
+        0.2375,
+        0.1375
+      ]
+    },
+    "high_l2_rigid": {
+      "final_avg_acc": 0.04,
+      "backward_transfer": -0.1578,
+      "phase5_forward_acc": 0.2,
+      "dormant_unit_frac": 0.0399,
+      "final_per_phase": {
+        "P1_episodic": 0.0,
+        "P2_s5_state": 0.0,
+        "P3_comp_math": 0.0,
+        "P4_causal_do": 0.0,
+        "P5_multimodal": 0.2
+      },
+      "diagonal_peak": [
+        0.2875,
+        0.0125,
+        0.1,
+        0.2313,
+        0.2
+      ]
+    },
+    "uniform_replay": {
+      "final_avg_acc": 0.1262,
+      "backward_transfer": -0.0266,
+      "phase5_forward_acc": 0.1812,
+      "dormant_unit_frac": 0.0014,
+      "final_per_phase": {
+        "P1_episodic": 0.1812,
+        "P2_s5_state": 0.0,
+        "P3_comp_math": 0.0375,
+        "P4_causal_do": 0.2313,
+        "P5_multimodal": 0.1812
+      },
+      "diagonal_peak": [
+        0.2375,
+        0.0,
+        0.1,
+        0.2188,
+        0.1812
+      ]
+    },
+    "cortex_plasticity": {
+      "final_avg_acc": 0.1488,
+      "backward_transfer": 0.0016,
+      "phase5_forward_acc": 0.1812,
+      "dormant_unit_frac": 0.0036,
+      "final_per_phase": {
+        "P1_episodic": 0.25,
+        "P2_s5_state": 0.0,
+        "P3_comp_math": 0.0813,
+        "P4_causal_do": 0.2313,
+        "P5_multimodal": 0.1812
+      },
+      "diagonal_peak": [
+        0.2562,
+        0.0,
+        0.0813,
+        0.2188,
+        0.1812
+      ]
+    }
+  }
+}

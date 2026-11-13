@@ -1,0 +1,36 @@
+[exp] EXP_FEEDBACK=27:4:0.1
+0.00.516.570 W common_fit_params: failed to fit params to free device memory: n_gpu_layers already set by user to 30, abort
+0.01.948.840 W llama_context: EXP_FEEDBACK with dst <= src: clamping n_ubatch to 1
+0.01.962.743 I cmn          init: llama threadpool init, n_threads = 4
+0.02.084.864 I 
+0.02.084.936 I system_info: n_threads = 4 (n_threads_batch = 4) / 16 | CUDA : ARCHS = 890 | USE_GRAPHS = 1 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | 
+0.02.084.937 I perplexity: tokenizing the input ..
+0.02.474.633 I perplexity: tokenization took 389.69 ms
+0.02.474.867 I perplexity: calculating perplexity over 20 chunks, n_ctx=512, batch_size=512, n_seq=1
+0.28.698.499 I perplexity: 26.22 seconds per pass - ETA 8.73 minutes
+[1]8815.9769,[2]10862.7866,[3]5260.3647,[4]6284.4789,[5]6628.5124,[6]8009.1055,[7]8949.2944,[8]8742.4929,[9]8713.7832,[10]8949.3488,[11]9382.1989,[12]9688.4183,[13]9505.4711,[14]9101.1726,[15]9034.1858,[16]9278.7768,[17]8494.1340,[18]8321.9704,[19]8042.7435,[20]7936.6679,
+8.47.781.877 I Final estimate: PPL = 7936.6679 +/- 462.80129
+
+	Command being timed: "env EXP_FEEDBACK=27:4:0.1 llama.cpp-exp/build/bin/llama-perplexity -m /home/mevlec/Data/exp/agi-exi/models/Qwen3.5-9B-Q4_K_M.gguf -c 512 --chunks 20 -ngl 30 -b 512 -f /home/mevlec/Data/exp/agi-exi/data/wikitext-2-raw/wiki.test.raw -s 1"
+	User time (seconds): 1175.20
+	System time (seconds): 7.55
+	Percent of CPU this job got: 224%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 8:47.96
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 5856108
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 176540
+	Voluntary context switches: 4129971
+	Involuntary context switches: 14939
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 88
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

@@ -1,0 +1,291 @@
+{
+  "steps": 4500,
+  "batch_size": 120,
+  "episodes_seen": 540000,
+  "models": {
+    "H0_transformer": {
+      "s5_id_len6": {
+        "acc": 0.2188,
+        "ece": 0.0004,
+        "auroc": 0.6038
+      },
+      "s5_ood_len10": {
+        "acc": 0.2125,
+        "ece": 0.0061,
+        "auroc": 0.5092
+      },
+      "s5_ood_len13": {
+        "acc": 0.2437,
+        "ece": 0.026,
+        "auroc": 0.5115
+      },
+      "math_id_depth2": {
+        "acc": 0.125,
+        "ece": 0.0202,
+        "auroc": 0.7405
+      },
+      "math_ood_depth3": {
+        "acc": 0.1156,
+        "ece": 0.0351,
+        "auroc": 0.7104
+      },
+      "math_ood_depth4": {
+        "acc": 0.1031,
+        "ece": 0.0441,
+        "auroc": 0.6829
+      },
+      "causal_id_mixed": {
+        "acc": 1.0,
+        "ece": 0.0004,
+        "auroc": 0.5
+      },
+      "causal_ood_scm": {
+        "acc": 0.4375,
+        "ece": 0.5618,
+        "auroc": 0.5788
+      },
+      "causal_ood_do_only": {
+        "acc": 1.0,
+        "ece": 0.0004,
+        "auroc": 0.5
+      },
+      "id_mean": 0.4479,
+      "ood_mean": 0.3521
+    },
+    "H1_synapse_mem": {
+      "s5_id_len6": {
+        "acc": 0.2125,
+        "ece": 0.0032,
+        "auroc": 0.515
+      },
+      "s5_ood_len10": {
+        "acc": 0.2062,
+        "ece": 0.0045,
+        "auroc": 0.5509
+      },
+      "s5_ood_len13": {
+        "acc": 0.2344,
+        "ece": 0.0247,
+        "auroc": 0.5719
+      },
+      "math_id_depth2": {
+        "acc": 0.1375,
+        "ece": 0.0249,
+        "auroc": 0.6968
+      },
+      "math_ood_depth3": {
+        "acc": 0.1219,
+        "ece": 0.1049,
+        "auroc": 0.6703
+      },
+      "math_ood_depth4": {
+        "acc": 0.1281,
+        "ece": 0.1717,
+        "auroc": 0.6547
+      },
+      "causal_id_mixed": {
+        "acc": 1.0,
+        "ece": 0.0006,
+        "auroc": 0.5
+      },
+      "causal_ood_scm": {
+        "acc": 0.55,
+        "ece": 0.4482,
+        "auroc": 0.4883
+      },
+      "causal_ood_do_only": {
+        "acc": 1.0,
+        "ece": 0.0005,
+        "auroc": 0.5
+      },
+      "id_mean": 0.45,
+      "ood_mean": 0.3734
+    },
+    "H2_latent_ponder": {
+      "s5_id_len6": {
+        "acc": 0.2437,
+        "ece": 0.0259,
+        "auroc": 0.4676
+      },
+      "s5_ood_len10": {
+        "acc": 0.2188,
+        "ece": 0.0259,
+        "auroc": 0.4639
+      },
+      "s5_ood_len13": {
+        "acc": 0.2437,
+        "ece": 0.0385,
+        "auroc": 0.5363
+      },
+      "math_id_depth2": {
+        "acc": 0.1156,
+        "ece": 0.0424,
+        "auroc": 0.7365
+      },
+      "math_ood_depth3": {
+        "acc": 0.0906,
+        "ece": 0.0391,
+        "auroc": 0.7801
+      },
+      "math_ood_depth4": {
+        "acc": 0.1125,
+        "ece": 0.034,
+        "auroc": 0.6842
+      },
+      "causal_id_mixed": {
+        "acc": 1.0,
+        "ece": 0.0,
+        "auroc": 0.5
+      },
+      "causal_ood_scm": {
+        "acc": 0.55,
+        "ece": 0.4498,
+        "auroc": 0.5736
+      },
+      "causal_ood_do_only": {
+        "acc": 1.0,
+        "ece": 0.0,
+        "auroc": 0.5
+      },
+      "compute_scaling": {
+        "K=1": {
+          "s5_len10": 0.2156,
+          "math_d3": 0.0813,
+          "causal_do": 1.0,
+          "mean": 0.4323
+        },
+        "K=2": {
+          "s5_len10": 0.2125,
+          "math_d3": 0.0906,
+          "causal_do": 1.0,
+          "mean": 0.4344
+        },
+        "K=3": {
+          "s5_len10": 0.2156,
+          "math_d3": 0.0938,
+          "causal_do": 1.0,
+          "mean": 0.4365
+        },
+        "K=4": {
+          "s5_len10": 0.2188,
+          "math_d3": 0.0906,
+          "causal_do": 1.0,
+          "mean": 0.4365
+        },
+        "K=6": {
+          "s5_len10": 0.2188,
+          "math_d3": 0.0813,
+          "causal_do": 1.0,
+          "mean": 0.4334
+        },
+        "K=8": {
+          "s5_len10": 0.2156,
+          "math_d3": 0.0844,
+          "causal_do": 1.0,
+          "mean": 0.4333
+        },
+        "K=8_verifier_selected": {
+          "s5_len10": 0.2156,
+          "math_d3": 0.0813,
+          "causal_do": 1.0,
+          "mean": 0.4323
+        }
+      },
+      "id_mean": 0.4531,
+      "ood_mean": 0.3693
+    },
+    "H3_cortex_agi": {
+      "s5_id_len6": {
+        "acc": 0.2313,
+        "ece": 0.0405,
+        "auroc": 0.5146
+      },
+      "s5_ood_len10": {
+        "acc": 0.1844,
+        "ece": 0.0044,
+        "auroc": 0.4815
+      },
+      "s5_ood_len13": {
+        "acc": 0.1844,
+        "ece": 0.0233,
+        "auroc": 0.5259
+      },
+      "math_id_depth2": {
+        "acc": 0.1219,
+        "ece": 0.0165,
+        "auroc": 0.7286
+      },
+      "math_ood_depth3": {
+        "acc": 0.1062,
+        "ece": 0.0655,
+        "auroc": 0.72
+      },
+      "math_ood_depth4": {
+        "acc": 0.1313,
+        "ece": 0.0796,
+        "auroc": 0.6535
+      },
+      "causal_id_mixed": {
+        "acc": 1.0,
+        "ece": 0.0,
+        "auroc": 0.5
+      },
+      "causal_ood_scm": {
+        "acc": 0.5188,
+        "ece": 0.4793,
+        "auroc": 0.6854
+      },
+      "causal_ood_do_only": {
+        "acc": 1.0,
+        "ece": 0.0,
+        "auroc": 0.5
+      },
+      "compute_scaling": {
+        "K=1": {
+          "s5_len10": 0.1875,
+          "math_d3": 0.1156,
+          "causal_do": 1.0,
+          "mean": 0.4344
+        },
+        "K=2": {
+          "s5_len10": 0.1875,
+          "math_d3": 0.1125,
+          "causal_do": 1.0,
+          "mean": 0.4333
+        },
+        "K=3": {
+          "s5_len10": 0.1875,
+          "math_d3": 0.1125,
+          "causal_do": 1.0,
+          "mean": 0.4333
+        },
+        "K=4": {
+          "s5_len10": 0.1844,
+          "math_d3": 0.1062,
+          "causal_do": 1.0,
+          "mean": 0.4302
+        },
+        "K=6": {
+          "s5_len10": 0.1812,
+          "math_d3": 0.1094,
+          "causal_do": 1.0,
+          "mean": 0.4302
+        },
+        "K=8": {
+          "s5_len10": 0.1812,
+          "math_d3": 0.1125,
+          "causal_do": 1.0,
+          "mean": 0.4312
+        },
+        "K=8_verifier_selected": {
+          "s5_len10": 0.1875,
+          "math_d3": 0.1156,
+          "causal_do": 1.0,
+          "mean": 0.4344
+        }
+      },
+      "id_mean": 0.4511,
+      "ood_mean": 0.3542
+    }
+  }
+}

@@ -1,0 +1,405 @@
+0.00.016.046 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.016.423 W srv  llama_server: -----------------
+0.00.016.424 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.016.424 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.016.425 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.016.425 W srv  llama_server: -----------------
+0.00.017.823 I srv    load_model: loading model '/home/mevlec/Data/exp/agi-exi/models/Qwen3.5-9B-Q4_K_M.gguf'
+[exp] EXP_LAYER_MAP=3,7,11,15,19,23,27,31
+0.00.827.650 W model has unused tensor blk.0.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.654 W model has unused tensor blk.0.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.656 W model has unused tensor blk.0.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.827.658 W model has unused tensor blk.0.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.827.660 W model has unused tensor blk.0.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.827.661 W model has unused tensor blk.0.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.827.663 W model has unused tensor blk.0.ssm_a (size = 128 bytes) -- ignoring
+0.00.827.665 W model has unused tensor blk.0.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.827.667 W model has unused tensor blk.0.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.827.668 W model has unused tensor blk.0.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.827.670 W model has unused tensor blk.0.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.827.671 W model has unused tensor blk.0.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.827.673 W model has unused tensor blk.0.ffn_down.weight (size = 41287680 bytes) -- ignoring
+0.00.827.675 W model has unused tensor blk.0.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.827.678 W model has unused tensor blk.1.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.679 W model has unused tensor blk.1.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.681 W model has unused tensor blk.1.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.827.683 W model has unused tensor blk.1.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.827.684 W model has unused tensor blk.1.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.827.686 W model has unused tensor blk.1.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.827.687 W model has unused tensor blk.1.ssm_a (size = 128 bytes) -- ignoring
+0.00.827.689 W model has unused tensor blk.1.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.827.690 W model has unused tensor blk.1.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.827.692 W model has unused tensor blk.1.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.827.693 W model has unused tensor blk.1.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.827.695 W model has unused tensor blk.1.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.827.696 W model has unused tensor blk.1.ffn_down.weight (size = 41287680 bytes) -- ignoring
+0.00.827.698 W model has unused tensor blk.1.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.827.700 W model has unused tensor blk.2.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.702 W model has unused tensor blk.2.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.703 W model has unused tensor blk.2.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.827.705 W model has unused tensor blk.2.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.827.706 W model has unused tensor blk.2.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.827.708 W model has unused tensor blk.2.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.827.709 W model has unused tensor blk.2.ssm_a (size = 128 bytes) -- ignoring
+0.00.827.711 W model has unused tensor blk.2.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.827.712 W model has unused tensor blk.2.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.827.714 W model has unused tensor blk.2.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.827.715 W model has unused tensor blk.2.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.827.717 W model has unused tensor blk.2.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.827.718 W model has unused tensor blk.2.ffn_down.weight (size = 41287680 bytes) -- ignoring
+0.00.827.720 W model has unused tensor blk.2.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.827.723 W model has unused tensor blk.4.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.725 W model has unused tensor blk.4.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.727 W model has unused tensor blk.4.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.827.728 W model has unused tensor blk.4.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.827.729 W model has unused tensor blk.4.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.827.731 W model has unused tensor blk.4.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.827.732 W model has unused tensor blk.4.ssm_a (size = 128 bytes) -- ignoring
+0.00.827.733 W model has unused tensor blk.4.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.827.735 W model has unused tensor blk.4.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.827.736 W model has unused tensor blk.4.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.827.737 W model has unused tensor blk.4.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.827.739 W model has unused tensor blk.4.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.827.740 W model has unused tensor blk.4.ffn_down.weight (size = 28311552 bytes) -- ignoring
+0.00.827.741 W model has unused tensor blk.4.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.827.744 W model has unused tensor blk.5.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.745 W model has unused tensor blk.5.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.746 W model has unused tensor blk.5.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.827.748 W model has unused tensor blk.5.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.827.749 W model has unused tensor blk.5.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.827.751 W model has unused tensor blk.5.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.827.752 W model has unused tensor blk.5.ssm_a (size = 128 bytes) -- ignoring
+0.00.827.753 W model has unused tensor blk.5.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.827.755 W model has unused tensor blk.5.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.827.756 W model has unused tensor blk.5.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.827.757 W model has unused tensor blk.5.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.827.759 W model has unused tensor blk.5.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.827.760 W model has unused tensor blk.5.ffn_down.weight (size = 28311552 bytes) -- ignoring
+0.00.827.761 W model has unused tensor blk.5.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.827.764 W model has unused tensor blk.6.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.765 W model has unused tensor blk.6.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.767 W model has unused tensor blk.6.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.827.768 W model has unused tensor blk.6.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.827.769 W model has unused tensor blk.6.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.827.771 W model has unused tensor blk.6.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.827.772 W model has unused tensor blk.6.ssm_a (size = 128 bytes) -- ignoring
+0.00.827.773 W model has unused tensor blk.6.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.827.774 W model has unused tensor blk.6.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.827.776 W model has unused tensor blk.6.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.827.777 W model has unused tensor blk.6.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.827.778 W model has unused tensor blk.6.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.827.780 W model has unused tensor blk.6.ffn_down.weight (size = 41287680 bytes) -- ignoring
+0.00.827.781 W model has unused tensor blk.6.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.827.784 W model has unused tensor blk.8.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.785 W model has unused tensor blk.8.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.786 W model has unused tensor blk.8.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.827.788 W model has unused tensor blk.8.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.827.789 W model has unused tensor blk.8.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.827.797 W model has unused tensor blk.8.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.827.798 W model has unused tensor blk.8.ssm_a (size = 128 bytes) -- ignoring
+0.00.827.800 W model has unused tensor blk.8.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.827.801 W model has unused tensor blk.8.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.827.803 W model has unused tensor blk.8.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.827.804 W model has unused tensor blk.8.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.827.805 W model has unused tensor blk.8.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.827.807 W model has unused tensor blk.8.ffn_down.weight (size = 28311552 bytes) -- ignoring
+0.00.827.808 W model has unused tensor blk.8.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.827.811 W model has unused tensor blk.9.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.812 W model has unused tensor blk.9.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.814 W model has unused tensor blk.9.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.827.815 W model has unused tensor blk.9.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.827.816 W model has unused tensor blk.9.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.827.818 W model has unused tensor blk.9.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.827.819 W model has unused tensor blk.9.ssm_a (size = 128 bytes) -- ignoring
+0.00.827.820 W model has unused tensor blk.9.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.827.822 W model has unused tensor blk.9.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.827.823 W model has unused tensor blk.9.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.827.825 W model has unused tensor blk.9.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.827.826 W model has unused tensor blk.9.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.827.827 W model has unused tensor blk.9.ffn_down.weight (size = 41287680 bytes) -- ignoring
+0.00.827.829 W model has unused tensor blk.9.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.827.831 W model has unused tensor blk.10.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.833 W model has unused tensor blk.10.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.834 W model has unused tensor blk.10.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.827.836 W model has unused tensor blk.10.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.827.837 W model has unused tensor blk.10.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.827.839 W model has unused tensor blk.10.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.827.840 W model has unused tensor blk.10.ssm_a (size = 128 bytes) -- ignoring
+0.00.827.841 W model has unused tensor blk.10.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.827.843 W model has unused tensor blk.10.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.827.844 W model has unused tensor blk.10.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.827.845 W model has unused tensor blk.10.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.827.847 W model has unused tensor blk.10.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.827.848 W model has unused tensor blk.10.ffn_down.weight (size = 28311552 bytes) -- ignoring
+0.00.827.850 W model has unused tensor blk.10.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.827.852 W model has unused tensor blk.12.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.854 W model has unused tensor blk.12.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.855 W model has unused tensor blk.12.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.827.856 W model has unused tensor blk.12.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.827.858 W model has unused tensor blk.12.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.827.859 W model has unused tensor blk.12.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.827.861 W model has unused tensor blk.12.ssm_a (size = 128 bytes) -- ignoring
+0.00.827.862 W model has unused tensor blk.12.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.827.864 W model has unused tensor blk.12.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.827.865 W model has unused tensor blk.12.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.827.866 W model has unused tensor blk.12.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.827.868 W model has unused tensor blk.12.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.827.869 W model has unused tensor blk.12.ffn_down.weight (size = 41287680 bytes) -- ignoring
+0.00.827.871 W model has unused tensor blk.12.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.827.873 W model has unused tensor blk.13.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.874 W model has unused tensor blk.13.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.876 W model has unused tensor blk.13.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.827.877 W model has unused tensor blk.13.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.827.879 W model has unused tensor blk.13.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.827.880 W model has unused tensor blk.13.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.827.881 W model has unused tensor blk.13.ssm_a (size = 128 bytes) -- ignoring
+0.00.827.883 W model has unused tensor blk.13.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.827.884 W model has unused tensor blk.13.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.827.886 W model has unused tensor blk.13.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.827.887 W model has unused tensor blk.13.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.827.888 W model has unused tensor blk.13.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.827.890 W model has unused tensor blk.13.ffn_down.weight (size = 28311552 bytes) -- ignoring
+0.00.827.891 W model has unused tensor blk.13.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.827.893 W model has unused tensor blk.14.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.895 W model has unused tensor blk.14.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.896 W model has unused tensor blk.14.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.827.898 W model has unused tensor blk.14.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.827.899 W model has unused tensor blk.14.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.827.901 W model has unused tensor blk.14.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.827.902 W model has unused tensor blk.14.ssm_a (size = 128 bytes) -- ignoring
+0.00.827.904 W model has unused tensor blk.14.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.827.905 W model has unused tensor blk.14.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.827.907 W model has unused tensor blk.14.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.827.908 W model has unused tensor blk.14.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.827.909 W model has unused tensor blk.14.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.827.911 W model has unused tensor blk.14.ffn_down.weight (size = 28311552 bytes) -- ignoring
+0.00.827.912 W model has unused tensor blk.14.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.827.915 W model has unused tensor blk.16.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.916 W model has unused tensor blk.16.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.918 W model has unused tensor blk.16.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.827.919 W model has unused tensor blk.16.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.827.921 W model has unused tensor blk.16.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.827.922 W model has unused tensor blk.16.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.827.924 W model has unused tensor blk.16.ssm_a (size = 128 bytes) -- ignoring
+0.00.827.925 W model has unused tensor blk.16.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.827.927 W model has unused tensor blk.16.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.827.928 W model has unused tensor blk.16.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.827.930 W model has unused tensor blk.16.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.827.931 W model has unused tensor blk.16.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.827.933 W model has unused tensor blk.16.ffn_down.weight (size = 28311552 bytes) -- ignoring
+0.00.827.934 W model has unused tensor blk.16.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.827.937 W model has unused tensor blk.17.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.938 W model has unused tensor blk.17.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.940 W model has unused tensor blk.17.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.827.941 W model has unused tensor blk.17.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.827.943 W model has unused tensor blk.17.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.827.944 W model has unused tensor blk.17.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.827.945 W model has unused tensor blk.17.ssm_a (size = 128 bytes) -- ignoring
+0.00.827.947 W model has unused tensor blk.17.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.827.948 W model has unused tensor blk.17.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.827.950 W model has unused tensor blk.17.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.827.951 W model has unused tensor blk.17.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.827.953 W model has unused tensor blk.17.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.827.954 W model has unused tensor blk.17.ffn_down.weight (size = 28311552 bytes) -- ignoring
+0.00.827.956 W model has unused tensor blk.17.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.827.958 W model has unused tensor blk.18.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.960 W model has unused tensor blk.18.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.961 W model has unused tensor blk.18.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.827.963 W model has unused tensor blk.18.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.827.964 W model has unused tensor blk.18.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.827.966 W model has unused tensor blk.18.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.827.967 W model has unused tensor blk.18.ssm_a (size = 128 bytes) -- ignoring
+0.00.827.968 W model has unused tensor blk.18.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.827.970 W model has unused tensor blk.18.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.827.971 W model has unused tensor blk.18.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.827.973 W model has unused tensor blk.18.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.827.974 W model has unused tensor blk.18.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.827.976 W model has unused tensor blk.18.ffn_down.weight (size = 41287680 bytes) -- ignoring
+0.00.827.977 W model has unused tensor blk.18.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.827.980 W model has unused tensor blk.20.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.981 W model has unused tensor blk.20.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.827.983 W model has unused tensor blk.20.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.827.985 W model has unused tensor blk.20.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.827.986 W model has unused tensor blk.20.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.827.988 W model has unused tensor blk.20.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.827.989 W model has unused tensor blk.20.ssm_a (size = 128 bytes) -- ignoring
+0.00.827.991 W model has unused tensor blk.20.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.827.992 W model has unused tensor blk.20.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.827.994 W model has unused tensor blk.20.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.827.995 W model has unused tensor blk.20.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.827.997 W model has unused tensor blk.20.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.827.998 W model has unused tensor blk.20.ffn_down.weight (size = 28311552 bytes) -- ignoring
+0.00.828.000 W model has unused tensor blk.20.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.828.003 W model has unused tensor blk.21.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.828.004 W model has unused tensor blk.21.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.828.006 W model has unused tensor blk.21.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.828.007 W model has unused tensor blk.21.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.828.009 W model has unused tensor blk.21.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.828.011 W model has unused tensor blk.21.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.828.012 W model has unused tensor blk.21.ssm_a (size = 128 bytes) -- ignoring
+0.00.828.014 W model has unused tensor blk.21.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.828.015 W model has unused tensor blk.21.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.828.017 W model has unused tensor blk.21.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.828.018 W model has unused tensor blk.21.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.828.020 W model has unused tensor blk.21.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.828.021 W model has unused tensor blk.21.ffn_down.weight (size = 41287680 bytes) -- ignoring
+0.00.828.023 W model has unused tensor blk.21.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.828.025 W model has unused tensor blk.22.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.828.027 W model has unused tensor blk.22.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.828.028 W model has unused tensor blk.22.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.828.030 W model has unused tensor blk.22.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.828.032 W model has unused tensor blk.22.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.828.033 W model has unused tensor blk.22.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.828.035 W model has unused tensor blk.22.ssm_a (size = 128 bytes) -- ignoring
+0.00.828.036 W model has unused tensor blk.22.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.828.038 W model has unused tensor blk.22.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.828.039 W model has unused tensor blk.22.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.828.041 W model has unused tensor blk.22.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.828.043 W model has unused tensor blk.22.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.828.044 W model has unused tensor blk.22.ffn_down.weight (size = 28311552 bytes) -- ignoring
+0.00.828.046 W model has unused tensor blk.22.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.828.048 W model has unused tensor blk.24.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.828.050 W model has unused tensor blk.24.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.828.051 W model has unused tensor blk.24.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.828.053 W model has unused tensor blk.24.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.828.054 W model has unused tensor blk.24.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.828.056 W model has unused tensor blk.24.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.828.057 W model has unused tensor blk.24.ssm_a (size = 128 bytes) -- ignoring
+0.00.828.059 W model has unused tensor blk.24.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.828.060 W model has unused tensor blk.24.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.828.062 W model has unused tensor blk.24.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.828.063 W model has unused tensor blk.24.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.828.065 W model has unused tensor blk.24.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.828.066 W model has unused tensor blk.24.ffn_down.weight (size = 41287680 bytes) -- ignoring
+0.00.828.068 W model has unused tensor blk.24.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.828.070 W model has unused tensor blk.25.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.828.072 W model has unused tensor blk.25.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.828.073 W model has unused tensor blk.25.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.828.075 W model has unused tensor blk.25.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.828.077 W model has unused tensor blk.25.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.828.078 W model has unused tensor blk.25.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.828.079 W model has unused tensor blk.25.ssm_a (size = 128 bytes) -- ignoring
+0.00.828.081 W model has unused tensor blk.25.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.828.082 W model has unused tensor blk.25.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.828.084 W model has unused tensor blk.25.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.828.085 W model has unused tensor blk.25.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.828.087 W model has unused tensor blk.25.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.828.088 W model has unused tensor blk.25.ffn_down.weight (size = 28311552 bytes) -- ignoring
+0.00.828.090 W model has unused tensor blk.25.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.828.093 W model has unused tensor blk.26.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.828.094 W model has unused tensor blk.26.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.828.096 W model has unused tensor blk.26.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.828.097 W model has unused tensor blk.26.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.828.099 W model has unused tensor blk.26.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.828.100 W model has unused tensor blk.26.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.828.102 W model has unused tensor blk.26.ssm_a (size = 128 bytes) -- ignoring
+0.00.828.103 W model has unused tensor blk.26.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.828.105 W model has unused tensor blk.26.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.828.106 W model has unused tensor blk.26.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.828.108 W model has unused tensor blk.26.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.828.109 W model has unused tensor blk.26.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.828.111 W model has unused tensor blk.26.ffn_down.weight (size = 28311552 bytes) -- ignoring
+0.00.828.112 W model has unused tensor blk.26.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.828.115 W model has unused tensor blk.28.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.828.117 W model has unused tensor blk.28.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.828.118 W model has unused tensor blk.28.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.828.120 W model has unused tensor blk.28.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.828.122 W model has unused tensor blk.28.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.828.124 W model has unused tensor blk.28.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.828.125 W model has unused tensor blk.28.ssm_a (size = 128 bytes) -- ignoring
+0.00.828.127 W model has unused tensor blk.28.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.828.128 W model has unused tensor blk.28.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.828.130 W model has unused tensor blk.28.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.828.131 W model has unused tensor blk.28.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.828.133 W model has unused tensor blk.28.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.828.134 W model has unused tensor blk.28.ffn_down.weight (size = 41287680 bytes) -- ignoring
+0.00.828.136 W model has unused tensor blk.28.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.828.139 W model has unused tensor blk.29.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.828.140 W model has unused tensor blk.29.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.828.142 W model has unused tensor blk.29.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.828.144 W model has unused tensor blk.29.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.828.145 W model has unused tensor blk.29.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.828.147 W model has unused tensor blk.29.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.828.148 W model has unused tensor blk.29.ssm_a (size = 128 bytes) -- ignoring
+0.00.828.150 W model has unused tensor blk.29.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.828.152 W model has unused tensor blk.29.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.828.153 W model has unused tensor blk.29.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.828.155 W model has unused tensor blk.29.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.828.157 W model has unused tensor blk.29.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.828.158 W model has unused tensor blk.29.ffn_down.weight (size = 41287680 bytes) -- ignoring
+0.00.828.160 W model has unused tensor blk.29.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.00.828.163 W model has unused tensor blk.30.attn_norm.weight (size = 16384 bytes) -- ignoring
+0.00.828.165 W model has unused tensor blk.30.post_attention_norm.weight (size = 16384 bytes) -- ignoring
+0.00.828.166 W model has unused tensor blk.30.attn_qkv.weight (size = 23068672 bytes) -- ignoring
+0.00.828.168 W model has unused tensor blk.30.attn_gate.weight (size = 9437184 bytes) -- ignoring
+0.00.828.170 W model has unused tensor blk.30.ssm_conv1d.weight (size = 131072 bytes) -- ignoring
+0.00.828.171 W model has unused tensor blk.30.ssm_dt.bias (size = 128 bytes) -- ignoring
+0.00.828.173 W model has unused tensor blk.30.ssm_a (size = 128 bytes) -- ignoring
+0.00.828.175 W model has unused tensor blk.30.ssm_beta.weight (size = 139264 bytes) -- ignoring
+0.00.828.176 W model has unused tensor blk.30.ssm_alpha.weight (size = 139264 bytes) -- ignoring
+0.00.828.178 W model has unused tensor blk.30.ssm_norm.weight (size = 512 bytes) -- ignoring
+0.00.828.180 W model has unused tensor blk.30.ssm_out.weight (size = 11534336 bytes) -- ignoring
+0.00.828.181 W model has unused tensor blk.30.ffn_gate.weight (size = 28311552 bytes) -- ignoring
+0.00.828.183 W model has unused tensor blk.30.ffn_down.weight (size = 41287680 bytes) -- ignoring
+0.00.828.185 W model has unused tensor blk.30.ffn_up.weight (size = 28311552 bytes) -- ignoring
+0.01.356.186 I cmn          init: llama threadpool init, n_threads = 4
+/home/mevlec/Data/exp/agi-exi/llama.cpp-exp/ggml/src/ggml-backend.cpp:204: GGML_ASSERT(buffer) failed
+[New LWP 1315501]
+[New LWP 1315463]
+[New LWP 1315462]
+[New LWP 1315326]
+[New LWP 1315325]
+[New LWP 1315324]
+[New LWP 1315323]
+[New LWP 1315322]
+[New LWP 1315321]
+[New LWP 1315320]
+[New LWP 1315319]
+[New LWP 1315318]
+[New LWP 1315317]
+[New LWP 1315316]
+[New LWP 1315315]
+[New LWP 1315314]
+[New LWP 1315313]
+[New LWP 1315312]
+[New LWP 1315311]
+[New LWP 1315310]
+[New LWP 1315309]
+[New LWP 1315308]
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <https://debuginfod.ubuntu.com>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/usr/lib/x86_64-linux-gnu/libthread_db.so.1".
+__syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+⚠️ warning: 56	../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S: No such file or directory
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+56	in ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S
+#1  0x000079d9b88a039c in __internal_syscall_cancel (a1=<optimized out>, a2=<optimized out>, a3=<optimized out>, a4=<optimized out>, a5=0, a6=0, nr=61) at ./nptl/cancellation.c:49
+⚠️ warning: 49	./nptl/cancellation.c: No such file or directory
+#2  __syscall_cancel (a1=<optimized out>, a2=<optimized out>, a3=<optimized out>, a4=<optimized out>, a5=a5@entry=0, a6=a6@entry=0, nr=61) at ./nptl/cancellation.c:75
+75	in ./nptl/cancellation.c
+#3  0x000079d9b891cacf in __GI___wait4 (pid=<optimized out>, stat_loc=<optimized out>, options=<optimized out>, usage=<optimized out>) at ../sysdeps/unix/sysv/linux/wait4.c:30
+⚠️ warning: 30	../sysdeps/unix/sysv/linux/wait4.c: No such file or directory
+#4  0x00005f05a1008f03 in ggml_print_backtrace ()
+#5  0x00005f05a10090b0 in ggml_abort ()
+#6  0x00005f05a10246d7 in ggml_backend_buffer_get_type.part ()
+#7  0x00005f05a1025b79 in ggml_backend_buffer_is_host ()
+#8  0x00005f059fec1730 in llm_graph_input_mem_hybrid::set_input(llama_ubatch const*) ()
+#9  0x00005f059fec8060 in llm_graph_result::set_inputs(llama_ubatch const*) ()
+#10 0x00005f059feb262c in llama_context::process_ubatch(llama_ubatch const&, llm_graph_type, llama_memory_context_i*, ggml_status&) ()
+#11 0x00005f059feb96c6 in llama_context::decode(llama_batch const&) ()
+#12 0x00005f059febad92 in llama_decode ()
+#13 0x00005f059fbfe027 in common_init_from_params(common_params&, bool) ()
+#14 0x00005f059fab0357 in server_context_impl::load_model(common_params&) ()
+#15 0x00005f059f9fc24f in llama_server(common_params&, int, char**) ()
+#16 0x00005f059f9fe7ee in llama_server(int, char**) ()
+#17 0x000079d9b882a601 in __libc_start_call_main (main=main@entry=0x5f059f96c270 <main>, argc=argc@entry=11, argv=argv@entry=0x7ffd4c002378) at ../sysdeps/nptl/libc_start_call_main.h:59
+⚠️ warning: 59	../sysdeps/nptl/libc_start_call_main.h: No such file or directory
+#18 0x000079d9b882a718 in __libc_start_main_impl (main=0x5f059f96c270 <main>, argc=11, argv=0x7ffd4c002378, init=<optimized out>, fini=<optimized out>, rtld_fini=<optimized out>, stack_end=0x7ffd4c002368) at ../csu/libc-start.c:360
+⚠️ warning: 360	../csu/libc-start.c: No such file or directory
+#19 0x00005f059f9f43f5 in _start ()
+[Inferior 1 (process 1315306) detached]

@@ -1,0 +1,35 @@
+[exp] EXP_LAYER_SCALE=10:0.5
+0.00.495.206 W common_fit_params: failed to fit params to free device memory: n_gpu_layers already set by user to 30, abort
+0.01.947.323 I cmn          init: llama threadpool init, n_threads = 4
+0.02.023.736 I 
+0.02.023.808 I system_info: n_threads = 4 (n_threads_batch = 4) / 16 | CUDA : ARCHS = 890 | USE_GRAPHS = 1 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | 
+0.02.023.810 I perplexity: tokenizing the input ..
+0.02.436.790 I perplexity: tokenization took 412.976 ms
+0.02.437.044 I perplexity: calculating perplexity over 20 chunks, n_ctx=512, batch_size=2048, n_seq=4
+0.05.082.727 I perplexity: 2.65 seconds per pass - ETA 0.22 minutes
+[1]5.4683,[2]7.5798,[3]7.5495,[4]7.3342,[5]7.3072,[6]7.6067,[7]7.9361,[8]8.4883,[9]8.8977,[10]9.2072,[11]9.0386,[12]9.0568,[13]9.4930,[14]8.9852,[15]8.8720,[16]8.9409,[17]8.3959,[18]8.3927,[19]8.3442,[20]8.3045,
+0.15.623.278 I Final estimate: PPL = 8.3045 +/- 0.30023
+
+	Command being timed: "env EXP_LAYER_SCALE=10:0.5 /home/mevlec/Data/exp/agi-exi/llama.cpp-exp/build/bin/llama-perplexity -m /home/mevlec/Data/exp/agi-exi/models/Qwen3.5-9B-Q4_K_M.gguf -c 512 --chunks 20 -ngl 30 -f /home/mevlec/Data/exp/agi-exi/data/wikitext-2-raw/wiki.test.raw -s 1"
+	User time (seconds): 22.28
+	System time (seconds): 0.79
+	Percent of CPU this job got: 145%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:15.85
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 5856052
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 387421
+	Voluntary context switches: 3738
+	Involuntary context switches: 871
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 8
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

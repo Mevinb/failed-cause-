@@ -1,0 +1,35 @@
+[exp] EXP_SSM_DECAY=0.5
+0.00.492.684 W common_fit_params: failed to fit params to free device memory: n_gpu_layers already set by user to 30, abort
+0.01.914.231 I cmn          init: llama threadpool init, n_threads = 4
+0.02.001.996 I 
+0.02.002.062 I system_info: n_threads = 4 (n_threads_batch = 4) / 16 | CUDA : ARCHS = 890 | USE_GRAPHS = 1 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | 
+0.02.002.064 I perplexity: tokenizing the input ..
+0.02.410.773 I perplexity: tokenization took 408.703 ms
+0.02.411.066 I perplexity: calculating perplexity over 20 chunks, n_ctx=512, batch_size=2048, n_seq=4
+0.05.082.641 I perplexity: 2.67 seconds per pass - ETA 0.22 minutes
+[1]5.7099,[2]8.0309,[3]7.9524,[4]7.5869,[5]7.4921,[6]7.7717,[7]8.0934,[8]8.6423,[9]9.0272,[10]9.3665,[11]9.1928,[12]9.2137,[13]9.6707,[14]9.1558,[15]9.0667,[16]9.1168,[17]8.5509,[18]8.5592,[19]8.5136,[20]8.4680,
+0.15.681.591 I Final estimate: PPL = 8.4680 +/- 0.30774
+
+	Command being timed: "env EXP_SSM_DECAY=0.5 /home/mevlec/Data/exp/agi-exi/llama.cpp-exp/build/bin/llama-perplexity -m /home/mevlec/Data/exp/agi-exi/models/Qwen3.5-9B-Q4_K_M.gguf -c 512 --chunks 20 -ngl 30 -f /home/mevlec/Data/exp/agi-exi/data/wikitext-2-raw/wiki.test.raw -s 1"
+	User time (seconds): 22.24
+	System time (seconds): 0.88
+	Percent of CPU this job got: 145%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:15.92
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 5855456
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 387454
+	Voluntary context switches: 3850
+	Involuntary context switches: 964
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 8
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

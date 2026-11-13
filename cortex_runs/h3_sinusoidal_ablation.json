@@ -1,0 +1,16 @@
+{
+  "seed0": {
+    "causal_id": 0.2042,
+    "causal_ood_do": 0.2333,
+    "causal_ood_scm": 0.2,
+    "episodic_ood_gap160": 0.125,
+    "s5_ood_len10": 0.2375
+  },
+  "seed1": {
+    "causal_id": 0.25,
+    "causal_ood_do": 0.2042,
+    "causal_ood_scm": 0.2458,
+    "episodic_ood_gap160": 0.0833,
+    "s5_ood_len10": 0.2625
+  }
+}

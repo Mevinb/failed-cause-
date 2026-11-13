@@ -20,7 +20,7 @@
 - [ ] **Offline Sleep-Phase Consolidation:** Distill high-surprise episodic buffer trajectories into slow structural weights during periodic offline consolidation cycles while resetting fast episodic matrices.
 
 ## Stage 1.5 — Gen-2 Verified Mechanisms & Open Attribution Work *(Inserted Post-Hoc, 2026-11-13)*
-- [x] **Sinusoidal depth encoding** — stable ponder to K=16 (0.232 vs K6 0.251) and, per slot-kill + seed-1 replication, the **driver of the ~150× causal-grok sample-efficiency gain**. *Mechanistic follow-up:* `H3_sinusoidal_abl` (running) isolates depth-sharing vs slots definitively.
+- [x] **Sinusoidal depth encoding** — stable ponder to K=16 (0.232 vs K6 0.251). Its causal-attribution was tested and overturned (Exp #015d): `H3+sinusoidal` (no slots) fails to grok do() on 2 seeds (0.20–0.25) → the **slot bank is the training-time scaffold** that enables the causal breakthrough. Verified role of sinusoidal: K-extrapolation stability only.
 - [x] **FiLM program conditioning** — pathway verified functional; but exact ARC solve **0%** (falsified for exact program induction — needs discrete search, not gradient refinement).
 - [ ] **Adaptive halting:** verifier/`dz`-norm-based per-episode stopping (ponder curve saturates at K=6 — spend compute only where it helps).
 - [ ] **Subgoal world-model repair:** milestone heads need convergence or replacement with a symbolic subgoal state (has_key/door_open/goal decoded from z); current staged search underperforms flat MPC.

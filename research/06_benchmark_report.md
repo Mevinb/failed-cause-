@@ -144,10 +144,12 @@ Sequential training across `P1 (Episodic) -> P2 (S5) -> P3 (Math) -> P4 (Causal)
 |---|---:|---|
 | `H3` (discrete step_emb, delta matrix only) | 0.275 | Gen-1 baseline — needs 540k eps to grok |
 | `H4` intact (slots + sinusoidal + FiLM) | 0.983–0.988 | Groks inside 3.6k-step budget |
-| `H4` + `slot_gate.bias=−20` (slots killed) | 0.95 | **Slots contribute only ~4 pts** |
+| `H4` + `slot_gate.bias=−20` (slots killed at eval only) | 0.95 | Eval-time slot read ≈ −4 pts — scaffold already internalized |
 | `H4` retrained `seed=1` | **1.000** | **Not init lottery — replicates** |
+| `H3_sinusoidal_abl` (H3 memory + sinusoidal reasoner, **never had slots**) `seed=0` | 0.233 | **Sinusoidal alone does NOT grok** |
+| `H3_sinusoidal_abl` `seed=1` | 0.204 | Confirmed on second seed |
 
-**Verdict:** the **sinusoidal depth encoding** is the causal-breakthrough mechanism (~150× sample-efficiency on `do()`), not the slot bank and not luck. Hypothesis: random `k_train ∈ {2..6}` gives discrete embeddings only ~1/5 of episodes each, while smooth sin/cos depth shares structure across all depths every step → the refinement operator groks far earlier. The slot bank's verified contribution is episodic recall (below). FiLM is inert in this eval (`program=None`).
+**Verdict (after the full evidence matrix):** the **hippocampal slot bank is the causal-breakthrough enabler — as a *training-time developmental scaffold***. It holds interference-free landmark bindings across episodes, letting the network *learn* the store→retrieve binding operator; once learned, the delta-matrix pathway partially subserves it (hence only −4 pts on eval-time kill). Never training with slots → no grok under any reasoner (0.20–0.25). This is a direct computational analog of **hippocampal→neocortical systems consolidation**: fast discrete episodic store necessary for *acquisition*, distributed substrate partially sufficient for *execution*. Sinusoidal depth encoding's verified role is K-extrapolation stability (§4.3), not causal reasoning — an interim attribution to it was tested and overturned (Exp #015d). FiLM inert (`program=None`).
 
 ### 4.3 Ponder Curve — Out-of-Support Depth Extrapolation (Wall 3)
 

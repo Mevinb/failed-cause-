@@ -356,3 +356,11 @@ Every experiment conducted in this laboratory—including negative results, bugs
   - 10 walls (2x training density): **90% goal, 0% traps, +2.30**
 - Interpretation: the conv-equivariant transition learned *local* grid rules (walls block; key->flag; door+key->open; goal->reward) that transfer to maze topologies outside the training distribution — the 90% is not a same-distribution artifact. 0% traps maintained under both densities.
 - Caveat: n=40 per condition (within-binomial noise ~10-15%); the two conditions are consistent with a flat ~80-90% OOD band rather than a monotone trend.
+
+#### Exp #029 REPLICATION (v12, seed 1): CONFIRMED — oracle-ceiling learned planning reproduces across training seeds
+- Identical recipe to v11 (253k transitions, 18% progressed, 16k steps, SS-4, aux-agent, plan-metric selection), seed 1.
+- Optimization path smoother than v11 (no early-phase noise; trans_cell 0.99+ by 4500).
+- Selection curve STRONGER: step6000 0.875, step8000 0.812, **step10000 0.938**, step12000 0.688, step14000 0.812, step16000 0.938 → step10000 selected (vs v11's 0.812 peak).
+- Held-out 40 maps: **plan_raw goal_rate 0.90 (36/40), 0% traps, +2.25** — same goal rate as v11 and the symbolic oracle.
+- **Verdict: the progressed-regime data intervention is a robust recipe, not a lucky draw.** Two independent training seeds (plus within-run checkpoint robustness at 3+ checkpoints ≥0.81 selection score each) all reach 90%.
+- Artifact: `cortex_runs/discrete_wm_v12.pt` (= step10000), `discrete_wm_v12_step*.pt`, `discrete_wm_eval13_v12.json`, `logs/dwm12.log`.

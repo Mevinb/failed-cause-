@@ -21,3 +21,136 @@ step 8500/16000 loss 0.171 | enc_cell 1.0000 trans_cell 0.9944 trans_flag 0.9727
 step 9000/16000 loss 0.134 | enc_cell 1.0000 trans_cell 0.9942 trans_flag 0.9688
 step 9500/16000 loss 0.643 | enc_cell 1.0000 trans_cell 0.9897 trans_flag 0.9453
 step 10000/16000 loss 0.113 | enc_cell 1.0000 trans_cell 0.9953 trans_flag 0.9844
+step 10500/16000 loss 0.143 | enc_cell 1.0000 trans_cell 0.9944 trans_flag 0.9727
+step 11000/16000 loss 0.194 | enc_cell 1.0000 trans_cell 0.9950 trans_flag 0.9805
+step 11500/16000 loss 0.159 | enc_cell 1.0000 trans_cell 0.9956 trans_flag 0.9766
+step 12000/16000 loss 0.110 | enc_cell 1.0000 trans_cell 0.9946 trans_flag 0.9805
+step 12500/16000 loss 0.037 | enc_cell 1.0000 trans_cell 0.9976 trans_flag 0.9961
+step 13000/16000 loss 0.183 | enc_cell 1.0000 trans_cell 0.9927 trans_flag 0.9648
+step 13500/16000 loss 0.204 | enc_cell 1.0000 trans_cell 0.9946 trans_flag 0.9844
+step 14000/16000 loss 0.239 | enc_cell 1.0000 trans_cell 0.9920 trans_flag 0.9648
+step 14500/16000 loss 0.118 | enc_cell 1.0000 trans_cell 0.9962 trans_flag 0.9805
+step 15000/16000 loss 0.099 | enc_cell 1.0000 trans_cell 0.9963 trans_flag 0.9844
+step 15500/16000 loss 0.201 | enc_cell 1.0000 trans_cell 0.9918 trans_flag 0.9688
+step 16000/16000 loss 0.150 | enc_cell 1.0000 trans_cell 0.9941 trans_flag 0.9727
+[discrete_wm] saved cortex_runs/discrete_wm_v12.pt
+[select:plan] cortex_runs/discrete_wm_v12_step2000.pt: score 0.000
+[select:plan] cortex_runs/discrete_wm_v12_step4000.pt: score 0.250
+[select:plan] cortex_runs/discrete_wm_v12_step6000.pt: score 0.875
+[select:plan] cortex_runs/discrete_wm_v12_step8000.pt: score 0.812
+[select:plan] cortex_runs/discrete_wm_v12_step10000.pt: score 0.938
+[select:plan] cortex_runs/discrete_wm_v12_step12000.pt: score 0.688
+[select:plan] cortex_runs/discrete_wm_v12_step14000.pt: score 0.812
+[select:plan] cortex_runs/discrete_wm_v12_step16000.pt: score 0.938
+[select:plan] cortex_runs/discrete_wm_v12.pt: score 0.938
+[select:plan] chose cortex_runs/discrete_wm_v12_step10000.pt
+[discrete_wm] rollout-fidelity eval: 40 held-out maps, depth 14
+[discrete_wm] plan raw: {'goal_rate': 0.9, 'trap_rate': 0.0, 'mean_return': 2.2458, 'mean_steps': 12.12}
+{
+ "exact_d1": 1.0,
+ "agent_d1": 1.0,
+ "landmark_d1": 1.0,
+ "exact_oracle_d1": 1.0,
+ "exact_fact_d1": 0.775,
+ "agent_fact_d1": 0.775,
+ "landmark_fact_d1": 0.775,
+ "exact_d2": 0.975,
+ "agent_d2": 1.0,
+ "landmark_d2": 0.975,
+ "exact_oracle_d2": 0.975,
+ "exact_fact_d2": 0.675,
+ "agent_fact_d2": 0.675,
+ "landmark_fact_d2": 0.675,
+ "exact_d3": 0.925,
+ "agent_d3": 0.975,
+ "landmark_d3": 0.95,
+ "exact_oracle_d3": 0.925,
+ "exact_fact_d3": 0.425,
+ "agent_fact_d3": 0.425,
+ "landmark_fact_d3": 0.425,
+ "exact_d4": 0.85,
+ "agent_d4": 0.95,
+ "landmark_d4": 0.925,
+ "exact_oracle_d4": 0.85,
+ "exact_fact_d4": 0.25,
+ "agent_fact_d4": 0.25,
+ "landmark_fact_d4": 0.3,
+ "exact_d5": 0.7179,
+ "agent_d5": 0.8718,
+ "landmark_d5": 0.8462,
+ "exact_oracle_d5": 0.7179,
+ "exact_fact_d5": 0.0769,
+ "agent_fact_d5": 0.1026,
+ "landmark_fact_d5": 0.1026,
+ "exact_d6": 0.6923,
+ "agent_d6": 0.8205,
+ "landmark_d6": 0.7949,
+ "exact_oracle_d6": 0.6923,
+ "exact_fact_d6": 0.0513,
+ "agent_fact_d6": 0.1026,
+ "landmark_fact_d6": 0.1538,
+ "exact_d7": 0.6842,
+ "agent_d7": 0.7632,
+ "landmark_d7": 0.7632,
+ "exact_oracle_d7": 0.6842,
+ "exact_fact_d7": 0.0263,
+ "agent_fact_d7": 0.0789,
+ "landmark_fact_d7": 0.0789,
+ "exact_d8": 0.6286,
+ "agent_d8": 0.7143,
+ "landmark_d8": 0.6286,
+ "exact_oracle_d8": 0.6286,
+ "exact_fact_d8": 0.0286,
+ "agent_fact_d8": 0.0286,
+ "landmark_fact_d8": 0.0286,
+ "exact_d9": 0.6562,
+ "agent_d9": 0.75,
+ "landmark_d9": 0.7812,
+ "exact_oracle_d9": 0.6562,
+ "exact_fact_d9": 0.0,
+ "agent_fact_d9": 0.0,
+ "landmark_fact_d9": 0.0312,
+ "exact_d10": 0.6452,
+ "agent_d10": 0.7742,
+ "landmark_d10": 0.7742,
+ "exact_oracle_d10": 0.6452,
+ "exact_fact_d10": 0.0,
+ "agent_fact_d10": 0.1613,
+ "landmark_fact_d10": 0.0323,
+ "exact_d11": 0.625,
+ "agent_d11": 0.7083,
+ "landmark_d11": 0.6667,
+ "exact_oracle_d11": 0.625,
+ "exact_fact_d11": 0.0417,
+ "agent_fact_d11": 0.125,
+ "landmark_fact_d11": 0.0417,
+ "exact_d12": 0.5789,
+ "agent_d12": 0.6842,
+ "landmark_d12": 0.7368,
+ "exact_oracle_d12": 0.5789,
+ "exact_fact_d12": 0.1053,
+ "agent_fact_d12": 0.2632,
+ "landmark_fact_d12": 0.1053,
+ "exact_d13": 0.6,
+ "agent_d13": 0.6,
+ "landmark_d13": 0.7,
+ "exact_oracle_d13": 0.6,
+ "exact_fact_d13": 0.0,
+ "agent_fact_d13": 0.4,
+ "landmark_fact_d13": 0.0,
+ "exact_d14": 0.75,
+ "agent_d14": 0.75,
+ "landmark_d14": 0.75,
+ "exact_oracle_d14": 0.75,
+ "exact_fact_d14": 0.0,
+ "agent_fact_d14": 0.5,
+ "landmark_fact_d14": 0.0,
+ "steps": 16000,
+ "n_transitions": 253016,
+ "plan_raw": {
+  "goal_rate": 0.9,
+  "trap_rate": 0.0,
+  "mean_return": 2.2458,
+  "mean_steps": 12.12
+ }
+}

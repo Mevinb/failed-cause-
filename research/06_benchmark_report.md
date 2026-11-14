@@ -207,6 +207,8 @@ Gap-406 recall **2.4× chance**, gap-807 **1.7× chance**; `val_loss` beats the 
 
 **`hippocampus_la` (learned write allocation, ST estimator) — FALSIFIED for recall** (Exp #024): best 4k val_loss (1.8398) but ≤ w1 recall at every gap — the end-to-end objective teaches *LM-relevant* selection, not rare-fact retention ("will this be queried in 400 tokens" is not inferable at write time). Remaining levers: retrieval-aligned auxiliary write objectives, mid-depth second bank, better merge/eviction policy.
 
+**`hippocampus_nov` (retrieval-aligned novelty selection) — first non-falsified write lever, small + directional** (Exp #028): identical val_loss (1.8453) but recall **≥ w1 at every retrieval gap** (32/96/192/400/800: +1.0/+0.8/+0.2/+1.8/+0.2; gap-0 −2.6 — same early dip w1 heals by 24k). Mechanism: score writes by `surprise + ‖v − bank_read(k)‖` — the slot goes to the fact the bank can't already reconstruct. Effect ~+1pt is inside the rotation CI → treated as *directional hypothesis pending seed-1 replication*; if confirmed, the 24k matched run decides whether it compounds.
+
 ### 4.6 Gen-2 Continual 5-Phase (seed-0 suite, H3)
 
 `naive_adamw` FAA 2.75% / BWT −0.166 / dormant 8.3% → **`cortex_plasticity` FAA 19.4% / BWT −0.028 / dormant 0.86%** (≈5× retention, ≈10× fewer dead units). H4 standalone eval in `cortex_runs/continual_H4_gen2.json`.

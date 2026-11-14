@@ -22,6 +22,34 @@ import torch.nn.functional as F
 from cortex.planning import ACTIONS, COLOR_BASE, KeyDoorTrapEnv, _bfs, collect_world_model_dataset
 
 GRID = 36
+
+
+def collect_progressed_transitions(n_envs: int, seed_start: int, rng_seed: int = 0, rollout_len: int = 8) -> list[dict]:
+    """Progressed-regime transitions: the SAME map layouts, but episodes START from
+    has_key=True / door_open=True with the agent repositioned to a random free cell.
+    Fixes the flag>=1 data scarcity behind the mid-episode ranking residual (Exp #027:
+    per-step oracle agreement 42% at flag=3 vs 75% at flag=1 — progressed states are
+    the rarest training regimes)."""
+    rng = random.Random(rng_seed)
+    transitions = []
+    for i in range(n_envs):
+        for hk, do in ((True, False), (True, True)):
+            env = KeyDoorTrapEnv(seed_start + i)      # same layout as the base episode
+            env.has_key, env.door_open = hk, do
+            free = [(r, c) for r in range(6) for c in range(6) if (r, c) not in env.walls]
+            env.agent = rng.choice(free)
+            obs = env.obs()
+            for _ in range(rollout_len):
+                if env.done:
+                    break
+                a = rng.randrange(4)
+                nxt, rew, done, trapped = env.step(a)
+                transitions.append({
+                    "obs": obs, "act": a, "next_obs": nxt,
+                    "rew": rew, "trapped": float(trapped), "done": float(done), "ep": i,
+                })
+                obs = nxt
+    return transitions
 N_CELL = 8
 N_FLAG = 4
 N_ACT = 5
@@ -562,6 +590,7 @@ def main():
     ap.add_argument("--aux-agent", type=int, default=1, help="agent-existence auxiliary loss")
     ap.add_argument("--ss-depth", type=int, default=SS_DEPTH)
     ap.add_argument("--ckpt-every", type=int, default=0, help="save ckpt every N steps for fidelity selection")
+    ap.add_argument("--progressed-envs", type=int, default=0, help="extra envs of progressed-regime (flag>=1) transitions, same map seeds")
     ap.add_argument("--select-metric", default="fidelity", choices=["fidelity", "plan"])
     ap.add_argument("--plan-modes", default=None, help="comma list: run eval_learned_planning per mode")
     ap.add_argument("--out", default="cortex_runs/discrete_wm_eval.json")
@@ -575,6 +604,10 @@ def main():
     else:
         print(f"[discrete_wm] collecting {args.n_envs} env trajectories...", flush=True)
         transitions = collect_world_model_dataset(n_envs=args.n_envs, seed_start=10000)
+        if args.progressed_envs:
+            prog = collect_progressed_transitions(args.progressed_envs, seed_start=10000)
+            print(f"[discrete_wm] +{len(prog)} progressed-regime transitions", flush=True)
+            transitions += prog
         print(f"[discrete_wm] {len(transitions)} transitions; training {args.steps} steps on {args.device}", flush=True)
         train(wm, transitions, args.steps, args.bs, args.device, args.seed, aux_agent=bool(args.aux_agent), ss_depth=args.ss_depth,
               ckpt_every=args.ckpt_every, ckpt_prefix=args.ckpt_out.replace(".pt", ""))

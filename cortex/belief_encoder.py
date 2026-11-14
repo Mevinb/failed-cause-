@@ -123,12 +123,17 @@ def train_belief(be: BeliefEncoder, eps: list[dict], steps: int, bs: int, R: int
         for ep, t in batch:
             pobs0 = torch.tensor(ep[t]["pobs"], device=device).unsqueeze(0)
             b = be.init_belief(pobs0)
+            seen = torch.zeros(GRID, dtype=torch.bool, device=device)
+            for kk in range(t):
+                seen |= torch.tensor(ep[kk]["pobs"], device=device) != FOG
             for u in range(2):
                 k = t + u
                 po = torch.tensor(ep[k]["pobs"], device=device).unsqueeze(0)
+                seen |= po[0] != FOG
                 ac = torch.tensor([ep[k]["act"]], device=device)
                 logits, flag_l = be(b, po, ac)
-                tgt = torch.tensor(ep[k]["true_next"], device=device).unsqueeze(0)
+                true_next = torch.tensor(ep[k]["true_next"], device=device)
+                tgt = torch.where(seen, true_next, torch.full_like(true_next, FOG)).unsqueeze(0)
                 loss = loss + F.cross_entropy(logits.reshape(-1, N_BEL), tgt.reshape(-1))
                 loss = loss + 0.3 * F.cross_entropy(flag_l, torch.tensor([ep[k]["flag_next"]], device=device))
                 acc_n += int((logits.argmax(-1) == tgt).sum().item())
@@ -146,25 +151,34 @@ def eval_belief_accuracy(be: BeliefEncoder, eps: list[dict], R: int, device: str
     """Roll the belief forward through whole episodes; measure board accuracy on
     KNOWN cells and how well uncertainty marks truly-unknown content."""
     tot = hit = 0
-    fog_seen = fog_known_correct = fog_n = 0
+    seen_hit = seen_tot = fog_mark_seen = fog_mark_unseen = fog_n = 0
     rng = random.Random(123)
     for i in range(min(n, len(eps))):
         ep = eps[i]
         b = be.init_belief(torch.tensor(ep[0]["pobs"], device=device).unsqueeze(0))
+        seen = torch.zeros(GRID, dtype=torch.bool, device=device)
         for k, rec in enumerate(ep):
             po = torch.tensor(rec["pobs"], device=device).unsqueeze(0)
+            seen |= po[0] != FOG
             ac = torch.tensor([rec["act"]], device=device)
             logits, fl = be(b, po, ac)
-            board = belief_to_board(logits)
+            pred = logits.argmax(-1)[0]
             true = rec["true_next"]
             for j in range(GRID):
                 tot += 1
-                hit += int(board[j] == true[j])
-            # where belief says FOG(8), does the argmax-under-fog...: count fog-marked cells
-            fog_mark = [j for j in range(GRID) if logits.argmax(-1)[0, j].item() == FOG]
-            fog_n += len(fog_mark)
+                hit += int(pred[j].item() == true[j] or (pred[j].item() == FOG and not seen[j]))
+                if seen[j]:
+                    seen_tot += 1
+                    seen_hit += int(pred[j].item() == true[j])
+                elif pred[j].item() == FOG:
+                    fog_mark_unseen += 1
+                else:
+                    fog_mark_seen += 1  # committed a guess on an unseen cell
+            fog_n += int((pred == FOG).sum().item())
             b = F.one_hot(logits.argmax(-1), N_BEL).float().detach()
-    return {"board_acc": hit / max(1, tot), "mean_fog_cells": fog_n / max(1, len(eps))}
+    return {"board_acc": hit / max(1, tot), "seen_acc": seen_hit / max(1, seen_tot),
+            "unseen_fog_recall": fog_mark_unseen / max(1, fog_mark_unseen + fog_mark_seen),
+            "mean_fog_cells": fog_n / max(1, len(eps))}
 
 
 def main():

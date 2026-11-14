@@ -172,10 +172,13 @@ For each head $h$ with decoupled, RoPE-free normalized query/key $q_t, k_t \in \
 - `H4` 5-phase continual standalone eval — **done**: FAA 0.175 / BWT −0.081 / dormant 0.0% (`cortex_runs/continual_H4_gen2.json`).
 - `hippocampus_w3_4k` (`n_write_per_chunk=3`) gate run — **falsified** (≤w1 at every recall gap; write-rate is not the bottleneck).
 - `hippocampus_la_4k` (ST-learned write allocation) — **falsified for recall** (LM improves to 1.8398, recall regresses at every gap — LM gradient selects prediction-relevant, not retrieval-relevant, tokens).
-- `hippocampus_nov_4k` (retrieval-aligned novelty selection: `surprise + ‖v − bank_read(k)‖`, zero new params, detached scoring) — **running** at the 4k gate vs `hippocampus_4k`/`la`/`w3`.
+- `hippocampus_nov_4k` (retrieval-aligned novelty selection: `surprise + ‖v − bank_read(k)‖`, zero new params, detached scoring) — **RESOLVED POSITIVE at 24k, 2 seeds**: gap-800 recall +6.7/+4.0 vs w1 (46.7/44.0 vs 40.0), mid-gaps neutral, val_loss matched — first write-selection lever with a replicated effect (`runs/hippocampus_nov_24k{,_s1}`).
 - Next memory levers: retrieval-aligned aux write objectives, second slot bank at mid-depth, multi-fact saturation study.
 - Adaptive halting RESOLVED for compute-saving (Exp #030): per-step accuracy PEAKS EARLY then degrades with more pondering (s5 0.283@K4 -> 0.183@K16 — over-pondering hurts OOD); `dz` is a convergence signal not a correctness signal — halting at dz<tau saves ~2.7x compute AND beats fixed-K16. Trained scalar-feature halt head (Exp #031) recovers ~50% of the oracle-K gap on multimodal only; full recovery needs state-aware halting (open).
-- Wall-2 learned-dynamics: **SOLVED at oracle ceiling** (90%, Exp #029). Remaining scope: richer dynamics, partial observability, latent-imagination variants.
+- Wall-2 learned-dynamics: **SOLVED at oracle ceiling** (90%, Exp #029; v12 seed-1 replication 90%, 8/10-wall OOD holds). Remaining scope: richer dynamics, partial observability, latent-imagination variants.
+- POMDP line (Exp #032–#036): masking the trap kills the planner (0%/27.5% — visible trap was load-bearing); rule-belief+frontier 67.5–80%; **particle-belief EV beam 72.5%@R2 / 87.5%@R3** (info-seeking emerges from EV lookahead); learned `BeliefEncoder` reached 91.9% board acc but its argmax-committed belief **poisoned the e2e stack (7.5%, Exp #036)** — CE softmax carries no usable uncertainty (wrong guesses are MORE confident). **FOG-supervised retrain fixed the tracker** (`belief_enc_fog.pt`: 97.7% seen-acc, 94% unseen-fog-recall); e2e re-run is the queued next step.
 - `H4_cortex_v2` autonomous evolution archive — done: all 4 mutants rejected, gen0 champion stands (`cortex_runs/evolution_summary_H4_cortex_v2.json`).
+
+**PAUSED (user request):** next queued item = e2e POMDP re-run with `belief_enc_fog.pt` (`python -m cortex.probe_e2e_pomdp --be-ckpt cortex_runs/belief_enc_fog.pt --radii 2,3 --device cuda`); then learned-prior particle proposals, state-aware halting, 24k write-selection follow-ups (retrieval-aligned aux objectives).
 
 *(See `research/MASTER_EXPERIMENT_LOG.md` Exp #013–#016 for the chronological record.)*

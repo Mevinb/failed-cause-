@@ -1,0 +1,9 @@
+[discrete_wm] collecting 12000 env trajectories...
+[discrete_wm] +46306 progressed-regime transitions
+[discrete_wm] 253016 transitions; training 16000 steps on cuda
+step 500/16000 loss 0.656 | enc_cell 1.0000 trans_cell 0.9222 trans_flag 0.9688
+step 1000/16000 loss 0.559 | enc_cell 1.0000 trans_cell 0.9695 trans_flag 0.9648
+step 1500/16000 loss 0.218 | enc_cell 1.0000 trans_cell 0.9808 trans_flag 0.9766
+step 2000/16000 loss 0.205 | enc_cell 1.0000 trans_cell 0.9839 trans_flag 0.9805
+step 2500/16000 loss 0.779 | enc_cell 1.0000 trans_cell 0.9820 trans_flag 0.9180
+step 3000/16000 loss 0.704 | enc_cell 1.0000 trans_cell 0.9829 trans_flag 0.9375

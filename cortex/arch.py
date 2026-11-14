@@ -725,6 +725,7 @@ class H4CortexV2(H3CortexAGI):
             "logits": step_logits[-1],
             "step_logits": step_logits,
             "conf_logits": out["conf_logits"],
+            "dz": out["dz"],
             "latent": self.norm_out(out["states"][-1]),
             "surprise": surps[-1],
         }

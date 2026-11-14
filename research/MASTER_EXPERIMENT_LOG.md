@@ -441,3 +441,21 @@ Every experiment conducted in this laboratory—including negative results, bugs
   | rule know + uniform particles (Exp #034) | 72.5% / 0% traps | 87.5% / 0% traps |
   | **rule know + learned-prior particles** | **80.0% / 0% traps / +2.05 / 13.7 st** | **90.0% / 0% traps / +2.25 / 12.3 st** |
 - **Interpretation — the division of labor discovered, not designed:** tracking where truth is available is dominated by rules; *learning pays exactly where truth is unavailable* (the prior over unseen cells). At R=3 the system **matches the full-observability 90% ceiling** — fog costs nothing once beliefs have a learned prior. The complete stack is now: partial obs → exact-tracker `know` + learned-prior → particle-consistent boards → learned dynamics → EV beam with emergent information-seeking. Every stage after perception is learned-or-uniform prior; the only hand-coded piece left is the obs-truth accumulation, which in this env is optimal by construction.
+
+### Exp #037 — Moving-landmark POMDP: when obs-truth goes stale (RUNNING)
+- **Artifact:** `KeyDoorTrapEnv(move_prob, move_radius)` in `cortex/planning.py`; `belief_enc_move.pt`; `e2e_move_*.json`
+- **Motivation:** Exp #036's resolution ("learned belief = prior, not tracker") holds in a *statics* world — the rule tracker is optimal by construction there. The fair test of learned belief *dynamics* is a world where obs-truth accumulation goes stale: landmarks relocate while unseen.
+- **Setup:** each step, every live landmark teleports with p=0.15 to a free cell within Manhattan ≤3 (local motion — gives the learned prior structure to exploit vs uniform); relocations revert if they break solvability. `know` entries for landmark types (≥3) expire after `stale_T=5` steps unobserved; statics (empty/wall) persist. World model fixed at v11 (does NOT know motion — bounds the ceiling).
+- **Conditions (R=2, 40 maps):** uniform prior | learned prior from static-trained `belief_enc_fog` (wrong-world) | learned prior from move-trained `belief_enc_move` (seen_acc 92.9%, fog_recall 85.6%).
+- **Result — uniform prior:** **40.0% goals / 7.5% traps / +1.07** — motion costs −32.5pts vs static (72.5%) and *reintroduces trap deaths* (the trap relocates unseen → the beam walks into it). Learned-prior variants: RUNNING.
+
+#### Exp #037 final — learned prior +7.5pts under motion; the WORLD MODEL becomes the binding constraint
+- **Results (R=2, 40 maps, p=0.15 local relocations):**
+  | prior | goals | traps | return | steps |
+  |---|---|---|---|---|
+  | uniform | 40.0% | 7.5% | +1.07 | 16.0 |
+  | learned `belief_enc_move` | **47.5%** | **5.0%** | **+1.27** | 15.6 |
+  | learned `belief_enc_fog` (static-trained) | ≈identical trajectories (killed at map 8: 5/8 same outcomes) | | | |
+- **Prior-quality eval (120 held-out moving episodes):** unseen-landmark top-1 = **26.0% (move-trained) vs 26.6% (static-trained)**, mean dist err 2.84/2.91 vs ~3.9 uniform — the two priors are statistically indistinguishable: both encode *map statistics* (where landmarks sit relative to seen structure), not motion dynamics. FOG-supervised training teaches "unseen → FOG"; the residual landmark mass is a spatial kernel, not a dynamics model.
+- **Findings:** (1) the learned prior still helps under motion (+7.5pts goals, −2.5pts traps vs uniform) — landmark-position statistics survive relocation radius 3; (2) **motion-trained belief dynamics did not materialize** — local relocations are essentially unpredictable beyond their kernel, and no trajectory signal in the data teaches "where it went"; (3) **the new binding constraint is the world model**: v11's transition assumes statics — under motion its imagined boards are wrong-by-construction, bounding planning regardless of belief quality; (4) staleness-expiry kept traps survivable (5% vs 7.5% uniform) but both >0 — moving traps are the hardest case (unseen lethal motion).
+- **Named residual / next:** a motion-aware world model (train T on moving-landmark data → imagined boards carry the uncertainty kernel) and a *correlated-motion* regime (e.g., trap drifts toward the agent) where tracking genuinely outperforms position statistics. In this env's isotropic local teleport, ~26% prior top-1 may be near the information-theoretic cap — worth checking vs the analytic optimum before claiming belief failure.

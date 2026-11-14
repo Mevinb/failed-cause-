@@ -18,9 +18,11 @@ class KeyDoorTrapEnv:
 
     size = 6
 
-    def __init__(self, seed: int, n_walls: int = 5):
+    def __init__(self, seed: int, n_walls: int = 5, move_prob: float = 0.0, move_radius: int = 3):
         self.rng = random.Random(seed)
         self.n_walls = n_walls
+        self.move_prob = move_prob
+        self.move_radius = move_radius
         self.reset()
 
     def reset(self):
@@ -125,7 +127,40 @@ class KeyDoorTrapEnv:
                     self.done = True
         if self.steps >= 18:
             self.done = True
+        if not self.done and self.move_prob > 0:
+            self._maybe_move_landmarks()
         return self.obs(), rew, self.done, self.trapped
+
+    def _maybe_move_landmarks(self):
+        """Each live landmark relocates with prob move_prob to a free cell within
+        Manhattan move_radius of its current cell. Reverted if it breaks the
+        agent->key->door->goal solvability chain."""
+        for attr in ("key", "door", "goal", "trap"):
+            if attr == "key" and self.has_key:
+                continue
+            if attr == "door" and self.door_open:
+                continue
+            if self.rng.random() >= self.move_prob:
+                continue
+            old = getattr(self, attr)
+            cands = [
+                (r, c)
+                for r in range(self.size)
+                for c in range(self.size)
+                if abs(r - old[0]) + abs(c - old[1]) <= self.move_radius
+                and (r, c) not in self.walls
+                and (r, c) != self.agent
+                and (r, c) not in (self.key, self.door, self.goal, self.trap)
+            ]
+            if not cands:
+                continue
+            new = self.rng.choice(cands)
+            setattr(self, attr, new)
+            p1 = self._bfs(self.agent, self.key, blocked=self.walls | {self.trap, self.door})
+            p2 = self._bfs(self.key, self.door, blocked=self.walls | {self.trap})
+            p3 = self._bfs(self.door, self.goal, blocked=self.walls | {self.trap})
+            if not (p1 is not None and p2 is not None and p3 is not None):
+                setattr(self, attr, old)
 
 
 def encode_obs_batch(obs_list, device: str) -> dict[str, torch.Tensor]:

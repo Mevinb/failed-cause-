@@ -1,0 +1,8 @@
+[R=2 map 0] goal=False trap=False ret=0.13 steps=18
+[R=2 map 1] goal=False trap=True ret=0.21 steps=18
+[R=2 map 2] goal=False trap=False ret=0.44 steps=18
+[R=2 map 3] goal=True trap=False ret=2.49 steps=14
+[R=2 map 4] goal=True trap=False ret=2.45 steps=18
+[R=2 map 5] goal=True trap=False ret=2.50 steps=13
+[R=2 map 6] goal=False trap=False ret=0.44 steps=18
+[R=2 map 7] goal=True trap=False ret=2.52 steps=11

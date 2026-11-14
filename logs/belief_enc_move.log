@@ -1,0 +1,31 @@
+[belief] 32536 steps of fog-R=2 data
+[belief] step 250 loss 1.9476 cell_acc 0.7692
+[belief] step 500 loss 1.8740 cell_acc 0.7703
+[belief] step 750 loss 1.7664 cell_acc 0.7820
+[belief] step 1000 loss 1.7636 cell_acc 0.7771
+[belief] step 1250 loss 1.7115 cell_acc 0.7705
+[belief] step 1500 loss 1.6205 cell_acc 0.7919
+[belief] step 1750 loss 1.6996 cell_acc 0.7767
+[belief] step 2000 loss 1.5315 cell_acc 0.8056
+[belief] step 2250 loss 1.4821 cell_acc 0.8092
+[belief] step 2500 loss 1.5730 cell_acc 0.8030
+[belief] step 2750 loss 1.5259 cell_acc 0.8034
+[belief] step 3000 loss 1.5437 cell_acc 0.7918
+[belief] step 3250 loss 1.6007 cell_acc 0.7886
+[belief] step 3500 loss 1.5236 cell_acc 0.7931
+[belief] step 3750 loss 1.4415 cell_acc 0.8012
+[belief] step 4000 loss 1.4157 cell_acc 0.8064
+[belief] step 4250 loss 1.5290 cell_acc 0.7894
+[belief] step 4500 loss 1.5872 cell_acc 0.7781
+[belief] step 4750 loss 1.6042 cell_acc 0.7835
+[belief] step 5000 loss 1.5290 cell_acc 0.8010
+[belief] step 5250 loss 1.3459 cell_acc 0.8237
+[belief] step 5500 loss 1.4541 cell_acc 0.8101
+[belief] step 5750 loss 1.5234 cell_acc 0.7995
+[belief] step 6000 loss 1.4095 cell_acc 0.8087
+{
+ "board_acc": 0.9445719824507703,
+ "seen_acc": 0.9288261484248064,
+ "unseen_fog_recall": 0.856369087919528,
+ "mean_fog_cells": 90.05666666666667
+}

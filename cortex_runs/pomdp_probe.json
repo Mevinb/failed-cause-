@@ -1,0 +1,14 @@
+{
+ "R2": {
+  "goal_rate": 0.675,
+  "trap_rate": 0.0,
+  "mean_return": 1.7195,
+  "mean_steps": 14.1
+ },
+ "R3": {
+  "goal_rate": 0.8,
+  "trap_rate": 0.0,
+  "mean_return": 2.022,
+  "mean_steps": 12.85
+ }
+}

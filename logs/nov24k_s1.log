@@ -1,0 +1,12 @@
+hippocampus_nov_24k_s1: hippocampus_nov, 17.3M parameters, steps 0-24000 x 8192 tokens (197M tokens in total, 0.43 passes over the data)
+step   100/24000  loss 7.267  lr 1.2e-04  8k tok/s  elapsed 1m40s  left ~399m52s
+step   200/24000  loss 4.538  lr 2.4e-04  8k tok/s  elapsed 3m18s  left ~393m04s
+step   300/24000  loss 3.623  lr 3.6e-04  11k tok/s  elapsed 4m32s  left ~358m35s
+step   400/24000  loss 3.226  lr 4.8e-04  7k tok/s  elapsed 6m24s  left ~378m31s
+step   500/24000  loss 3.020  lr 6.0e-04  12k tok/s  elapsed 7m32s  left ~354m11s
+step   600/24000  loss 2.867  lr 6.0e-04  9k tok/s  elapsed 8m58s  left ~349m57s
+step   700/24000  loss 2.700  lr 6.0e-04  9k tok/s  elapsed 10m33s  left ~351m26s
+step   800/24000  loss 2.614  lr 6.0e-04  7k tok/s  elapsed 12m24s  left ~359m55s
+step   900/24000  loss 2.546  lr 6.0e-04  11k tok/s  elapsed 13m37s  left ~349m52s
+step  1000/24000  loss 2.479  lr 6.0e-04  25k tok/s  elapsed 14m11s  left ~326m13s
+step  1100/24000  loss 2.424  lr 6.0e-04  25k tok/s  elapsed 14m44s  left ~306m45s

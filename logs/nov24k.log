@@ -1,0 +1,46 @@
+hippocampus_nov_24k: hippocampus_nov, 17.3M parameters, steps 0-24000 x 8192 tokens (197M tokens in total, 0.43 passes over the data)
+step   100/24000  loss 7.235  lr 1.2e-04  28k tok/s  elapsed 0m29s  left ~116m10s
+step   200/24000  loss 4.540  lr 2.4e-04  28k tok/s  elapsed 0m58s  left ~115m26s
+step   300/24000  loss 3.611  lr 3.6e-04  28k tok/s  elapsed 1m27s  left ~115m35s
+step   400/24000  loss 3.236  lr 4.8e-04  27k tok/s  elapsed 1m57s  left ~116m00s
+step   500/24000  loss 3.016  lr 6.0e-04  26k tok/s  elapsed 2m29s  left ~116m47s
+step   600/24000  loss 2.860  lr 6.0e-04  18k tok/s  elapsed 3m14s  left ~126m06s
+step   700/24000  loss 2.746  lr 6.0e-04  18k tok/s  elapsed 3m59s  left ~132m46s
+step   800/24000  loss 2.630  lr 6.0e-04  19k tok/s  elapsed 4m43s  left ~136m48s
+step   900/24000  loss 2.556  lr 6.0e-04  19k tok/s  elapsed 5m27s  left ~139m59s
+step  1000/24000  loss 2.476  lr 6.0e-04  18k tok/s  elapsed 6m11s  left ~142m31s
+step  1100/24000  loss 2.412  lr 6.0e-04  18k tok/s  elapsed 6m56s  left ~144m22s
+step  1200/24000  loss 2.384  lr 6.0e-04  18k tok/s  elapsed 7m41s  left ~146m07s
+step  1300/24000  loss 2.339  lr 6.0e-04  19k tok/s  elapsed 8m25s  left ~147m02s
+step  1400/24000  loss 2.288  lr 6.0e-04  18k tok/s  elapsed 9m10s  left ~148m03s
+step  1500/24000  loss 2.272  lr 6.0e-04  18k tok/s  elapsed 9m55s  left ~148m47s
+step  1600/24000  loss 2.249  lr 6.0e-04  18k tok/s  elapsed 10m40s  left ~149m21s
+step  1700/24000  loss 2.210  lr 6.0e-04  19k tok/s  elapsed 11m23s  left ~149m28s
+step  1800/24000  loss 2.203  lr 6.0e-04  19k tok/s  elapsed 12m07s  left ~149m31s
+step  1900/24000  loss 2.161  lr 6.0e-04  20k tok/s  elapsed 12m48s  left ~149m04s
+step  2000/24000  loss 2.153  lr 5.9e-04  18k tok/s  elapsed 13m33s  left ~149m09s
+
+--- step 2000: validation loss 2.1855 (perplexity 8.90), checkpoint saved. Sample:
+Once upon a time there were two friends, Tom and Tom. Tom was a little ant. Tom loved to play with his toy cars. 
+One day, Tom was playing with his cars when he made a big noise. Tom was confused! He had no idea what was happening.
+Tom said, "Oh my red car! Let's go play hide-and-seek!"
+Tom thought of a plan. He said, "Let's play hide and seek again!"
+So they both started running around
+---
+
+step  2100/24000  loss 2.122  lr 5.9e-04  19k tok/s  elapsed 14m26s  left ~150m33s
+step  2200/24000  loss 2.109  lr 5.9e-04  19k tok/s  elapsed 15m10s  left ~150m18s
+step  2300/24000  loss 2.103  lr 5.9e-04  19k tok/s  elapsed 15m52s  left ~149m49s
+step  2400/24000  loss 2.087  lr 5.9e-04  19k tok/s  elapsed 16m36s  left ~149m27s
+step  2500/24000  loss 2.057  lr 5.9e-04  18k tok/s  elapsed 17m21s  left ~149m19s
+step  2600/24000  loss 2.056  lr 5.9e-04  18k tok/s  elapsed 18m06s  left ~148m59s
+step  2700/24000  loss 2.073  lr 5.9e-04  19k tok/s  elapsed 18m50s  left ~148m37s
+step  2800/24000  loss 2.025  lr 5.9e-04  19k tok/s  elapsed 19m34s  left ~148m13s
+step  2900/24000  loss 2.025  lr 5.9e-04  19k tok/s  elapsed 20m18s  left ~147m44s
+step  3000/24000  loss 2.028  lr 5.9e-04  19k tok/s  elapsed 21m01s  left ~147m10s
+step  3100/24000  loss 2.026  lr 5.8e-04  19k tok/s  elapsed 21m45s  left ~146m38s
+step  3200/24000  loss 2.017  lr 5.8e-04  18k tok/s  elapsed 22m29s  left ~146m11s
+step  3300/24000  loss 1.983  lr 5.8e-04  19k tok/s  elapsed 23m13s  left ~145m41s
+step  3400/24000  loss 1.972  lr 5.8e-04  19k tok/s  elapsed 23m56s  left ~145m06s
+step  3500/24000  loss 1.980  lr 5.8e-04  18k tok/s  elapsed 24m42s  left ~144m43s
+step  3600/24000  loss 1.955  lr 5.8e-04  19k tok/s  elapsed 25m26s  left ~144m08s

@@ -295,7 +295,7 @@ def train_value(vn: ValueNet, transitions: list[dict], steps: int = 1500, bs: in
     return vn
 
 
-def select_action_learned(wm: DiscreteBoardWM, obs_toks: list[int], horizon: int = 16, beam_width: int = 64, gamma: float = 0.97, device: str = "cpu", mode: str = "raw", vn: ValueNet | None = None) -> int:
+def select_action_learned(wm: DiscreteBoardWM, obs_toks: list[int], horizon: int = 16, beam_width: int = 64, gamma: float = 0.97, device: str = "cpu", mode: str = "raw", vn: ValueNet | None = None, s0: torch.Tensor | None = None, return_scores: bool = False):
     """Fully-learned beam-search MPC: exact symbolic search structure (Exp #018)
     but the transition is the LEARNED conv dynamics T(s,a) — no hand-coded rules.
     Node = (hard_state, score, first_action, terminal). Terminal = trapped (the
@@ -303,12 +303,16 @@ def select_action_learned(wm: DiscreteBoardWM, obs_toks: list[int], horizon: int
     mode 'raw': per-cell argmax rollout; 'surg': argmax + one-agent constraint only;
     'pin': factored step, learned flag; 'fact': factored step, derived flag;
     'staged': raw + popcount(flag) milestone-progress bonus (Exp-#025: failures are
-    stage-transition stalls — never reaching the flag flip, not mid-path drift)."""
-    x = torch.tensor([obs_toks], dtype=torch.long, device=device)
-    s0 = wm.encode(x, hard=True)
+    stage-transition stalls — never reaching the flag flip, not mid-path drift).
+    s0: optional pre-built initial state (belief-planning injects candidate boards).
+    return_scores: return {first_action: best_score} for maximin aggregation."""
+    if s0 is None:
+        x = torch.tensor([obs_toks], dtype=torch.long, device=device)
+        s0 = wm.encode(x, hard=True)
     st0 = extract_statics(decode_state(s0)[0]) if mode in ("pin", "fact") else None
     nodes = [(s0, 0.0, -1, False)]
     best_first, best_score = 0, -1e9
+    fa_scores: dict[int, float] = {}
     for h in range(horizon):
         cands = []
         for st, sc, first_a, term in nodes:
@@ -362,10 +366,14 @@ def select_action_learned(wm: DiscreteBoardWM, obs_toks: list[int], horizon: int
             nodes.append((sn, nsc, fa, term))
             if score > best_score and fa >= 0:
                 best_score, best_first = score, fa
+            if fa >= 0 and score > fa_scores.get(fa, -1e9):
+                fa_scores[fa] = score
             if len(nodes) >= beam_width:
                 break
         if not nodes:
             break
+    if return_scores:
+        return fa_scores
     return best_first
 
 

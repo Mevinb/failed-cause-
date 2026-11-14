@@ -174,7 +174,7 @@ For each head $h$ with decoupled, RoPE-free normalized query/key $q_t, k_t \in \
 - `hippocampus_la_4k` (ST-learned write allocation) — **falsified for recall** (LM improves to 1.8398, recall regresses at every gap — LM gradient selects prediction-relevant, not retrieval-relevant, tokens).
 - `hippocampus_nov_4k` (retrieval-aligned novelty selection: `surprise + ‖v − bank_read(k)‖`, zero new params, detached scoring) — **running** at the 4k gate vs `hippocampus_4k`/`la`/`w3`.
 - Next memory levers: retrieval-aligned aux write objectives, second slot bank at mid-depth, multi-fact saturation study.
-- Next reasoner lever: adaptive halting on the `dz` signal (ponder curve saturates at K=6 — spend compute only where it helps).
+- Adaptive halting RESOLVED for compute-saving (Exp #030): per-step accuracy PEAKS EARLY then degrades with more pondering (s5 0.283@K4 -> 0.183@K16 — over-pondering hurts OOD); `dz` is a convergence signal not a correctness signal — halting at dz<tau saves ~2.7x compute AND beats fixed-K16. Trained scalar-feature halt head (Exp #031) recovers ~50% of the oracle-K gap on multimodal only; full recovery needs state-aware halting (open).
 - Wall-2 learned-dynamics: **SOLVED at oracle ceiling** (90%, Exp #029). Remaining scope: richer dynamics, partial observability, latent-imagination variants.
 - `H4_cortex_v2` autonomous evolution archive — done: all 4 mutants rejected, gen0 champion stands (`cortex_runs/evolution_summary_H4_cortex_v2.json`).
 

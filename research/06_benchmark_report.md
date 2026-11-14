@@ -212,3 +212,5 @@ Gap-406 recall **2.4× chance**, gap-807 **1.7× chance**; `val_loss` beats the 
 ### 4.6 Gen-2 Continual 5-Phase (seed-0 suite, H3)
 
 `naive_adamw` FAA 2.75% / BWT −0.166 / dormant 8.3% → **`cortex_plasticity` FAA 19.4% / BWT −0.028 / dormant 0.86%** (≈5× retention, ≈10× fewer dead units). H4 standalone eval in `cortex_runs/continual_H4_gen2.json`.
+
+**PLATEAU BROKEN — learned planning reaches the oracle ceiling (Exp #029, v11):** Exp #027's named residual (ranking noise concentrated in flag≥1 states, the rarest training transitions) → progressed-regime data augmentation: same map layouts, episodes starting from `has_key`/`door_open` (+46.3k transitions, 18%). Result on the same 40 held-out maps: **`plan_raw` goal_rate 0.90 (36/40), 0% traps, +2.29 return — fully-learned dynamics now MATCHES `symbolic_oracle` (90%, +2.28)**. Replicated in a fresh process (0.90). The plateau was a training-*coverage* gap — beam lookahead lives in progressed states the natural data barely contains — not capacity/scoring/search/selection. `plan_val` 85% (the learned ValueNet is no longer needed once the model itself is strong).

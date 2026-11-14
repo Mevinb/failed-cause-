@@ -593,6 +593,8 @@ def main():
     ap.add_argument("--progressed-envs", type=int, default=0, help="extra envs of progressed-regime (flag>=1) transitions, same map seeds")
     ap.add_argument("--select-metric", default="fidelity", choices=["fidelity", "plan"])
     ap.add_argument("--plan-modes", default=None, help="comma list: run eval_learned_planning per mode")
+    ap.add_argument("--value-ckpt", default=None, help="ValueNet checkpoint for mode=val planning")
+    ap.add_argument("--value-envs", type=int, default=0, help="train a ValueNet on this many envs after wm training")
     ap.add_argument("--out", default="cortex_runs/discrete_wm_eval.json")
     args = ap.parse_args()
 
@@ -626,9 +628,18 @@ def main():
     res["steps"] = args.steps
     if not args.load:
         res["n_transitions"] = len(transitions)
+    vn = None
+    if args.value_ckpt:
+        vn = ValueNet().to(args.device)
+        vn.load_state_dict(torch.load(args.value_ckpt, map_location=args.device))
+        vn.eval()
+    elif args.value_envs:
+        vtrans = collect_world_model_dataset(n_envs=args.value_envs, seed_start=10000)
+        vn = train_value(ValueNet(), vtrans, device=args.device)
+        torch.save(vn.state_dict(), args.ckpt_out.replace(".pt", "_value.pt"))
     if args.plan_modes:
         for mode in args.plan_modes.split(","):
-            pres = eval_learned_planning(wm, args.eval_maps, args.device, mode=mode)
+            pres = eval_learned_planning(wm, args.eval_maps, args.device, mode=mode, vn=vn)
             res[f"plan_{mode}"] = pres
             print(f"[discrete_wm] plan {mode}: {pres}", flush=True)
     print(json.dumps(res, indent=1), flush=True)

@@ -80,6 +80,7 @@ def main():
     ap.add_argument("--tau", type=float, default=0.7)
     ap.add_argument("--hard-feedback", action="store_true")
     ap.add_argument("--move-prob", type=float, default=0.0)
+    ap.add_argument("--trap-hunt", type=float, default=0.0)
     ap.add_argument("--stale-T", type=int, default=5)
     ap.add_argument("--uniform-prior", action="store_true")
     ap.add_argument("--device", default="cpu")
@@ -98,7 +99,7 @@ def main():
         g = t = 0
         rets, ns = [], []
         for m in range(a.n_maps):
-            env = KeyDoorTrapEnv(a.seed0 + m, move_prob=a.move_prob)
+            env = KeyDoorTrapEnv(a.seed0 + m, move_prob=a.move_prob, trap_hunt=a.trap_hunt)
             goal, trapped, ret, n = run_e2e_map(wm, be, env, R, a.particles, a.tau, a.device, rng_seed=1000 + m, soft=not a.hard_feedback, stale_T=a.stale_T, uniform=a.uniform_prior)
             g += int(goal); t += int(trapped); rets.append(ret); ns.append(n)
             print(f"[R={R} map {m}] goal={goal} trap={trapped} ret={ret:.2f} steps={n}", flush=True)

@@ -18,11 +18,12 @@ class KeyDoorTrapEnv:
 
     size = 6
 
-    def __init__(self, seed: int, n_walls: int = 5, move_prob: float = 0.0, move_radius: int = 3):
+    def __init__(self, seed: int, n_walls: int = 5, move_prob: float = 0.0, move_radius: int = 3, trap_hunt: float = 0.0):
         self.rng = random.Random(seed)
         self.n_walls = n_walls
         self.move_prob = move_prob
         self.move_radius = move_radius
+        self.trap_hunt = trap_hunt
         self.reset()
 
     def reset(self):
@@ -129,7 +130,34 @@ class KeyDoorTrapEnv:
             self.done = True
         if not self.done and self.move_prob > 0:
             self._maybe_move_landmarks()
+        if not self.done and not self.trapped and self.trap_hunt > 0:
+            self._maybe_hunt()
         return self.obs(), rew, self.done, self.trapped
+
+    def _maybe_hunt(self):
+        """Correlated motion: the trap stalks the agent — with prob trap_hunt it
+        steps one cell Manhattan-greedy toward the agent (blocked by walls /
+        landmarks / the agent's own cell). Predictable dynamics: a learned
+        belief can in principle TRACK it between observations."""
+        if self.rng.random() >= self.trap_hunt:
+            return
+        tr, tc = self.trap
+        ar, ac = self.agent
+        # greedy axis choice; tie-break by the larger gap, rng on equal gaps
+        dr = (ar > tr) - (ar < tr)
+        dc = (ac > tc) - (ac < tc)
+        axes = [(dr, 0), (0, dc)] if abs(ar - tr) >= abs(ac - tc) else [(0, dc), (dr, 0)]
+        if dr == 0:
+            axes = [(0, dc)]
+        if dc == 0:
+            axes = [(dr, 0)]
+        for d in axes:
+            nr, nc = tr + d[0], tc + d[1]
+            if (0 <= nr < self.size and 0 <= nc < self.size
+                    and (nr, nc) not in self.walls
+                    and (nr, nc) not in (self.agent, self.key, self.door, self.goal)):
+                self.trap = (nr, nc)
+                return
 
     def _maybe_move_landmarks(self):
         """Each live landmark relocates with prob move_prob to a free cell within

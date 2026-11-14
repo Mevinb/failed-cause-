@@ -40,12 +40,12 @@ def fog_cells(true_cells: list[int], agent_rc: tuple, R: int) -> list[int]:
     return out
 
 
-def collect_belief_dataset(n_envs: int, R: int, seed_start: int = 20000, move_prob: float = 0.0) -> list[dict]:
+def collect_belief_dataset(n_envs: int, R: int, seed_start: int = 20000, move_prob: float = 0.0, trap_hunt: float = 0.0) -> list[dict]:
     """Fog-R trajectories with (partial_obs, action, true_next_belief) records."""
     rng = random.Random(seed_start)
     eps = []
     for i in range(n_envs):
-        env = KeyDoorTrapEnv(seed_start + i, move_prob=move_prob)
+        env = KeyDoorTrapEnv(seed_start + i, move_prob=move_prob, trap_hunt=trap_hunt)
         obs = env.reset()
         seq = []
         for t in range(len(env.optimal_actions)):
@@ -188,6 +188,7 @@ def main():
     ap.add_argument("--n-envs", type=int, default=3000)
     ap.add_argument("--R", type=int, default=2)
     ap.add_argument("--move-prob", type=float, default=0.0)
+    ap.add_argument("--trap-hunt", type=float, default=0.0)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--ckpt-out", default="cortex_runs/belief_enc.pt")
@@ -195,8 +196,8 @@ def main():
     a = ap.parse_args()
 
     torch.manual_seed(a.seed)
-    eps = collect_belief_dataset(a.n_envs, a.R, move_prob=a.move_prob)
-    held = collect_belief_dataset(300, a.R, seed_start=60000, move_prob=a.move_prob)
+    eps = collect_belief_dataset(a.n_envs, a.R, move_prob=a.move_prob, trap_hunt=a.trap_hunt)
+    held = collect_belief_dataset(300, a.R, seed_start=60000, move_prob=a.move_prob, trap_hunt=a.trap_hunt)
     print(f"[belief] {sum(len(e) for e in eps)} steps of fog-R={a.R} data", flush=True)
     be = train_belief(BeliefEncoder(), eps, a.steps, a.bs, a.R, a.device, a.seed)
     torch.save(be.state_dict(), a.ckpt_out)

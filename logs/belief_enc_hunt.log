@@ -1,0 +1,16 @@
+[belief] 32777 steps of fog-R=2 data
+[belief] step 250 loss 1.9353 cell_acc 0.7600
+[belief] step 500 loss 1.7625 cell_acc 0.7604
+[belief] step 750 loss 1.5973 cell_acc 0.7755
+[belief] step 1000 loss 1.4928 cell_acc 0.7847
+[belief] step 1250 loss 1.4457 cell_acc 0.7911
+[belief] step 1500 loss 1.4116 cell_acc 0.8108
+[belief] step 1750 loss 1.3271 cell_acc 0.8001
+[belief] step 2000 loss 1.4668 cell_acc 0.7925
+[belief] step 2250 loss 1.4311 cell_acc 0.7725
+[belief] step 2500 loss 1.3487 cell_acc 0.8007
+[belief] step 2750 loss 1.3381 cell_acc 0.8092
+[belief] step 3000 loss 1.3323 cell_acc 0.7952
+[belief] step 3250 loss 1.2777 cell_acc 0.8019
+[belief] step 3500 loss 1.2600 cell_acc 0.8092
+[belief] step 3750 loss 1.3406 cell_acc 0.8150

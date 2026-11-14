@@ -52,21 +52,23 @@ def run_map(wm, env, mode, device, max_steps=18):
             mobs = masked_obs(obs, env.trap)
             if mode == "masked":
                 a = select_action_learned(wm, mobs[0], device=device, mode="raw")
-            else:  # maximin
+            else:  # maximin / ev
                 if not cands:
                     a = select_action_learned(wm, mobs[0], device=device, mode="raw")
                 else:
-                    per_a = {a_: 1e9 for a_ in range(4)}
+                    agg = min if mode == "maximin" else (lambda xs: sum(xs) / len(xs))
+                    per_a = {a_: [] for a_ in range(4)}
                     for c in cands:
                         s0 = belief_s0(wm, mobs[0], c, device)
                         sc = select_action_learned(wm, mobs[0], device=device, mode="raw", s0=s0, return_scores=True)
                         for a_ in range(4):
-                            per_a[a_] = min(per_a[a_], sc.get(a_, -1e9))
+                            per_a[a_].append(sc.get(a_, -1e9))
+                    per_a = {a_: agg(v) for a_, v in per_a.items()}
                     a = max(per_a, key=per_a.get)
         obs, r, done, trapped = env.step(a)
         ret += r
         n += 1
-        if mode == "maximin" and not trapped:
+        if mode in ("maximin", "ev") and not trapped:
             ar, ac = env.agent
             cands = [c for c in cands if c != ar * 6 + ac]
     return env.agent == env.goal and env.door_open, env.trapped, ret, n
@@ -79,6 +81,7 @@ def main():
     ap.add_argument("--seed0", type=int, default=50000)
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--out", default="cortex_runs/uncertainty_probe.json")
+    ap.add_argument("--modes", default="visible,masked,maximin")
     a = ap.parse_args()
 
     wm = DiscreteBoardWM().to(a.device)
@@ -86,7 +89,7 @@ def main():
     wm.eval()
 
     report = {}
-    for mode in ["visible", "masked", "maximin"]:
+    for mode in a.modes.split(","):
         g = t = 0
         rets = []
         for m in range(a.n_maps):

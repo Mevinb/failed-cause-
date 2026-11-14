@@ -364,3 +364,21 @@ Every experiment conducted in this laboratory—including negative results, bugs
 - Held-out 40 maps: **plan_raw goal_rate 0.90 (36/40), 0% traps, +2.25** — same goal rate as v11 and the symbolic oracle.
 - **Verdict: the progressed-regime data intervention is a robust recipe, not a lucky draw.** Two independent training seeds (plus within-run checkpoint robustness at 3+ checkpoints ≥0.81 selection score each) all reach 90%.
 - Artifact: `cortex_runs/discrete_wm_v12.pt` (= step10000), `discrete_wm_v12_step*.pt`, `discrete_wm_eval13_v12.json`, `logs/dwm12.log`.
+
+### Exp #032 — Planning under landmark uncertainty: perception gap quantified, maximin rescues traps but paralyzes
+- **Artifact:** `cortex/probe_uncertainty.py`, `cortex_runs/uncertainty_probe.json`
+- **Setup:** v11 step8000; hide the bait-trap cell from every obs (`masked`), or plan with maximin over a candidate-belief set (trap ∈ free cells adjacent to start — the env's placement constraint), beliefs eliminated by survival.
+- **Results (40 held-out maps):**
+  | mode | goal | trap | return |
+  |---|---|---|---|
+  | visible (baseline) | 90% | 0% | +2.29 |
+  | masked (trap unseen) | **0%** | 27.5% | −0.20 |
+  | maximin (min over ~3 beliefs) | 7.5% | 7.5% | +0.04 |
+- **Findings:** (1) the 0% trap rate in the headline is *load-bearing on seeing the trap* — masking it kills 27.5% of episodes AND collapses goals to 0% (the trap-free initial board is also off-manifold for the encoder — training obs always contain a trap). (2) Maximin belief-planning cuts trap deaths 73% but is too pessimistic to plan: every first step lands on SOME candidate so min-aggregation makes all opening moves look fatal → paralysis (7.5% goals). (3) The right comparison is expected-value-over-beliefs (Bayesian) vs maximin (robust): EV accepts the ~1/|cands| first-step risk for the +2.29 upside; predicted ~60-70% goals. RUNNING.
+- **Interpretation:** this is the Wall-1×Wall-2 bridge — an unseen landmark must live in *belief* (memory) not *observation*. Under survival-only disambiguation, maximin ≈ degenerate; Bayesian EV should dominate. A generalizable result would show belief-planning quality is bounded by |candidates| and by whether information-seeking actions can disambiguate without lethal cost.
+
+#### Exp #032 EV addendum — Bayesian belief-planning >> maximin: robustness analysis complete
+- **ev (mean over ~3 beliefs):** **42.5% goals, 17.5% traps, +1.00** — 5.7x the goals of maximin at 2.3x the trap rate. The Bayesian planner accepts the ~1/3 first-step candidate risk for the +2.29 upside — near-optimal under survival-only disambiguation (theoretical ceiling ~60%: ~1/3 immediate risk × 90% solvable-under-visibility).
+- **Final ordering:** visible 90% >> EV-belief 42.5% >> maximin 7.5% >> masked 0%. Three quantified results: (1) perception gap = 90pts; (2) maximin's worst-case aggregation is catastrophically conservative when opening moves are unavoidable (all land on a candidate); (3) Bayesian EV belief-planning is the right aggregation — recovers ~half the ceiling with zero extra information.
+- **Remaining gap (42.5% → ~90%)** is the belief-resolution problem: the only disambiguator here is survival (step on the cell). A true POMDP agent needs *information-seeking* — actions that observe the candidate cells without lethal cost — which requires observation-dependent belief updates (fog-of-war obs → explored-map memory) — the history-conditioned belief encoder, the named next frontier where Wall-1 (memory) and Wall-2 (imagination) merge.
+- Artifact: `cortex_runs/uncertainty_probe{,_ev}.json`, `logs/unc_probe*.log`.

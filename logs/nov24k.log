@@ -44,3 +44,285 @@ step  3300/24000  loss 1.983  lr 5.8e-04  19k tok/s  elapsed 23m13s  left ~145m4
 step  3400/24000  loss 1.972  lr 5.8e-04  19k tok/s  elapsed 23m56s  left ~145m06s
 step  3500/24000  loss 1.980  lr 5.8e-04  18k tok/s  elapsed 24m42s  left ~144m43s
 step  3600/24000  loss 1.955  lr 5.8e-04  19k tok/s  elapsed 25m26s  left ~144m08s
+step  3700/24000  loss 1.974  lr 5.8e-04  19k tok/s  elapsed 26m10s  left ~143m34s
+step  3800/24000  loss 1.954  lr 5.7e-04  19k tok/s  elapsed 26m54s  left ~143m00s
+step  3900/24000  loss 1.939  lr 5.7e-04  18k tok/s  elapsed 27m38s  left ~142m27s
+step  4000/24000  loss 1.935  lr 5.7e-04  19k tok/s  elapsed 28m22s  left ~141m52s
+
+--- step 4000: validation loss 1.9775 (perplexity 7.22), checkpoint saved. Sample:
+Once upon a time, there was a little girl named Annie. She was three years old and very excited to go on a safari. She went outside with her mommy and daddy to visit her camp. 
+When they arrived, Annie was so excited to see the new animals. She saw lots of new things to explore and some of them. 
+Suddenly, they heard a loud noise. It was a big, strong bear! Annie was scared and wanted to run away, but her parents said it was ok.
+---
+
+step  4100/24000  loss 1.939  lr 5.7e-04  20k tok/s  elapsed 29m13s  left ~141m51s
+step  4200/24000  loss 1.909  lr 5.7e-04  15k tok/s  elapsed 30m07s  left ~142m01s
+step  4300/24000  loss 1.938  lr 5.7e-04  12k tok/s  elapsed 31m14s  left ~143m08s
+step  4400/24000  loss 1.923  lr 5.6e-04  15k tok/s  elapsed 32m09s  left ~143m16s
+step  4500/24000  loss 1.925  lr 5.6e-04  9k tok/s  elapsed 33m36s  left ~145m39s
+step  4600/24000  loss 1.922  lr 5.6e-04  10k tok/s  elapsed 34m57s  left ~147m25s
+step  4700/24000  loss 1.894  lr 5.6e-04  9k tok/s  elapsed 36m29s  left ~149m50s
+step  4800/24000  loss 1.903  lr 5.6e-04  8k tok/s  elapsed 38m12s  left ~152m50s
+step  4900/24000  loss 1.917  lr 5.5e-04  15k tok/s  elapsed 39m06s  left ~152m27s
+step  5000/24000  loss 1.894  lr 5.5e-04  8k tok/s  elapsed 40m54s  left ~155m25s
+step  5100/24000  loss 1.881  lr 5.5e-04  11k tok/s  elapsed 42m10s  left ~156m17s
+step  5200/24000  loss 1.893  lr 5.5e-04  9k tok/s  elapsed 43m45s  left ~158m11s
+step  5300/24000  loss 1.866  lr 5.5e-04  8k tok/s  elapsed 45m23s  left ~160m09s
+step  5400/24000  loss 1.861  lr 5.4e-04  10k tok/s  elapsed 46m46s  left ~161m05s
+step  5500/24000  loss 1.871  lr 5.4e-04  11k tok/s  elapsed 47m59s  left ~161m26s
+step  5600/24000  loss 1.870  lr 5.4e-04  9k tok/s  elapsed 49m26s  left ~162m25s
+step  5700/24000  loss 1.863  lr 5.4e-04  8k tok/s  elapsed 51m14s  left ~164m29s
+step  5800/24000  loss 1.853  lr 5.4e-04  8k tok/s  elapsed 52m53s  left ~165m57s
+step  5900/24000  loss 1.858  lr 5.3e-04  8k tok/s  elapsed 54m30s  left ~167m12s
+step  6000/24000  loss 1.857  lr 5.3e-04  14k tok/s  elapsed 55m29s  left ~166m28s
+
+--- step 6000: validation loss 1.8818 (perplexity 6.57), checkpoint saved. Sample:
+Once upon a time there were two friends, Tom and Jane. They were both very good friends, so they lived in a peaceful village. 
+They were always playing together in the park when one day Tom noticed something disgusting. It was a big snake! Tom was scared and started to run away. Jane followed Tom and ran towards him. 
+Tom was so scared that he ran away. Jane got scared, she ran as fast as she could. She ran after Tom and shouted for help. 
+Tom
+---
+
+step  6100/24000  loss 1.830  lr 5.3e-04  7k tok/s  elapsed 57m30s  left ~168m44s
+step  6200/24000  loss 1.825  lr 5.3e-04  9k tok/s  elapsed 59m03s  left ~169m33s
+step  6300/24000  loss 1.832  lr 5.2e-04  10k tok/s  elapsed 60m25s  left ~169m45s
+step  6400/24000  loss 1.821  lr 5.2e-04  12k tok/s  elapsed 61m36s  left ~169m24s
+step  6500/24000  loss 1.838  lr 5.2e-04  13k tok/s  elapsed 62m39s  left ~168m42s
+step  6600/24000  loss 1.819  lr 5.2e-04  9k tok/s  elapsed 64m15s  left ~169m25s
+step  6700/24000  loss 1.819  lr 5.1e-04  8k tok/s  elapsed 65m52s  left ~170m06s
+step  6800/24000  loss 1.817  lr 5.1e-04  11k tok/s  elapsed 67m07s  left ~169m46s
+step  6900/24000  loss 1.814  lr 5.1e-04  8k tok/s  elapsed 68m56s  left ~170m51s
+step  7000/24000  loss 1.818  lr 5.0e-04  7k tok/s  elapsed 70m47s  left ~171m55s
+step  7100/24000  loss 1.812  lr 5.0e-04  9k tok/s  elapsed 72m14s  left ~171m57s
+step  7200/24000  loss 1.805  lr 5.0e-04  11k tok/s  elapsed 73m29s  left ~171m29s
+step  7300/24000  loss 1.793  lr 5.0e-04  8k tok/s  elapsed 75m17s  left ~172m14s
+step  7400/24000  loss 1.786  lr 4.9e-04  10k tok/s  elapsed 76m39s  left ~171m57s
+step  7500/24000  loss 1.806  lr 4.9e-04  10k tok/s  elapsed 77m58s  left ~171m32s
+step  7600/24000  loss 1.779  lr 4.9e-04  9k tok/s  elapsed 79m33s  left ~171m40s
+step  7700/24000  loss 1.798  lr 4.8e-04  11k tok/s  elapsed 80m49s  left ~171m06s
+step  7800/24000  loss 1.792  lr 4.8e-04  8k tok/s  elapsed 82m26s  left ~171m14s
+step  7900/24000  loss 1.783  lr 4.8e-04  9k tok/s  elapsed 84m00s  left ~171m12s
+step  8000/24000  loss 1.782  lr 4.8e-04  24k tok/s  elapsed 84m33s  left ~169m07s
+
+--- step 8000: validation loss 1.8214 (perplexity 6.18), checkpoint saved. Sample:
+Once upon a time there were two small boys, a boy and a girl. They were playing in the park one day when they noticed a huge, shiny stone on the ground. The boy decided to buy it and so he shouted with joy. The girl said no, because it was a great stone.
+The boy didn't want to share, so he grabbed the stone from the girl and ran away. The girl chased after him, but she wouldn't listen. She ran and ran until she came across a big
+---
+
+step  8100/24000  loss 1.767  lr 4.7e-04  15k tok/s  elapsed 85m35s  left ~168m01s
+step  8200/24000  loss 1.775  lr 4.7e-04  12k tok/s  elapsed 86m41s  left ~167m03s
+step  8300/24000  loss 1.741  lr 4.7e-04  15k tok/s  elapsed 87m36s  left ~165m42s
+step  8400/24000  loss 1.762  lr 4.6e-04  8k tok/s  elapsed 89m22s  left ~165m58s
+step  8500/24000  loss 1.786  lr 4.6e-04  12k tok/s  elapsed 90m33s  left ~165m08s
+step  8600/24000  loss 1.765  lr 4.6e-04  7k tok/s  elapsed 92m25s  left ~165m30s
+step  8700/24000  loss 1.778  lr 4.5e-04  8k tok/s  elapsed 94m06s  left ~165m30s
+step  8800/24000  loss 1.758  lr 4.5e-04  8k tok/s  elapsed 95m45s  left ~165m24s
+step  8900/24000  loss 1.775  lr 4.5e-04  7k tok/s  elapsed 97m36s  left ~165m37s
+step  9000/24000  loss 1.773  lr 4.4e-04  9k tok/s  elapsed 99m13s  left ~165m22s
+step  9100/24000  loss 1.766  lr 4.4e-04  12k tok/s  elapsed 100m21s  left ~164m19s
+step  9200/24000  loss 1.753  lr 4.4e-04  8k tok/s  elapsed 102m09s  left ~164m19s
+step  9300/24000  loss 1.723  lr 4.3e-04  7k tok/s  elapsed 104m01s  left ~164m26s
+step  9400/24000  loss 1.729  lr 4.3e-04  7k tok/s  elapsed 105m52s  left ~164m26s
+step  9500/24000  loss 1.752  lr 4.3e-04  12k tok/s  elapsed 107m00s  left ~163m19s
+step  9600/24000  loss 1.732  lr 4.2e-04  8k tok/s  elapsed 108m38s  left ~162m57s
+step  9700/24000  loss 1.727  lr 4.2e-04  8k tok/s  elapsed 110m23s  left ~162m44s
+step  9800/24000  loss 1.735  lr 4.2e-04  7k tok/s  elapsed 112m13s  left ~162m36s
+step  9900/24000  loss 1.752  lr 4.1e-04  7k tok/s  elapsed 114m03s  left ~162m26s
+step 10000/24000  loss 1.736  lr 4.1e-04  12k tok/s  elapsed 115m11s  left ~161m16s
+
+--- step 10000: validation loss 1.7692 (perplexity 5.87), checkpoint saved. Sample:
+Once upon a time, there was a little girl named Lily. She loved to go to the park with her mom and dad. One day, when they were playing, they saw a big, heavy dog. The dog was barking loudly, and Lily felt scared. 
+Her mom asked, "What happened, doggy? Why are you so nervous?" 
+Lily replied, "I'm scared of the dog, but I want to see what it was." 
+Her mom said, "It's okay,
+---
+
+step 10100/24000  loss 1.718  lr 4.1e-04  23k tok/s  elapsed 116m03s  left ~159m42s
+step 10200/24000  loss 1.706  lr 4.0e-04  25k tok/s  elapsed 116m35s  left ~157m45s
+step 10300/24000  loss 1.719  lr 4.0e-04  26k tok/s  elapsed 117m07s  left ~155m46s
+step 10400/24000  loss 1.736  lr 4.0e-04  26k tok/s  elapsed 117m38s  left ~153m49s
+step 10500/24000  loss 1.718  lr 3.9e-04  27k tok/s  elapsed 118m08s  left ~151m54s
+step 10600/24000  loss 1.725  lr 3.9e-04  26k tok/s  elapsed 118m40s  left ~150m00s
+step 10700/24000  loss 1.704  lr 3.9e-04  26k tok/s  elapsed 119m11s  left ~148m09s
+step 10800/24000  loss 1.708  lr 3.8e-04  25k tok/s  elapsed 119m44s  left ~146m20s
+step 10900/24000  loss 1.710  lr 3.8e-04  26k tok/s  elapsed 120m16s  left ~144m32s
+step 11000/24000  loss 1.709  lr 3.7e-04  26k tok/s  elapsed 120m47s  left ~142m45s
+step 11100/24000  loss 1.717  lr 3.7e-04  26k tok/s  elapsed 121m19s  left ~141m00s
+step 11200/24000  loss 1.699  lr 3.7e-04  26k tok/s  elapsed 121m50s  left ~139m15s
+step 11300/24000  loss 1.697  lr 3.6e-04  26k tok/s  elapsed 122m22s  left ~137m32s
+step 11400/24000  loss 1.698  lr 3.6e-04  26k tok/s  elapsed 122m53s  left ~135m49s
+step 11500/24000  loss 1.694  lr 3.6e-04  26k tok/s  elapsed 123m25s  left ~134m09s
+step 11600/24000  loss 1.680  lr 3.5e-04  26k tok/s  elapsed 123m56s  left ~132m29s
+step 11700/24000  loss 1.680  lr 3.5e-04  26k tok/s  elapsed 124m27s  left ~130m50s
+step 11800/24000  loss 1.696  lr 3.5e-04  27k tok/s  elapsed 124m58s  left ~129m13s
+step 11900/24000  loss 1.689  lr 3.4e-04  27k tok/s  elapsed 125m29s  left ~127m35s
+step 12000/24000  loss 1.704  lr 3.4e-04  26k tok/s  elapsed 126m00s  left ~126m00s
+
+--- step 12000: validation loss 1.7242 (perplexity 5.61), checkpoint saved. Sample:
+Once upon a time, there was a little girl named Lily. She was very tired and wanted to rest. She climbed on a big rock and sat on top of it. She closed her eyes and saw the sun in the sky. 
+Suddenly, she heard a loud noise. "What's that?" she asked. 
+"That's a storm," said her mom. "It'll pass over there, but it won't stop. We have to be careful and stay safe." 
+Lily was excited
+---
+
+step 12100/24000  loss 1.681  lr 3.4e-04  25k tok/s  elapsed 126m41s  left ~124m35s
+step 12200/24000  loss 1.660  lr 3.3e-04  26k tok/s  elapsed 127m12s  left ~123m02s
+step 12300/24000  loss 1.680  lr 3.3e-04  27k tok/s  elapsed 127m43s  left ~121m29s
+step 12400/24000  loss 1.675  lr 3.2e-04  26k tok/s  elapsed 128m15s  left ~119m58s
+step 12500/24000  loss 1.683  lr 3.2e-04  26k tok/s  elapsed 128m46s  left ~118m28s
+step 12600/24000  loss 1.674  lr 3.2e-04  25k tok/s  elapsed 129m18s  left ~116m59s
+step 12700/24000  loss 1.663  lr 3.1e-04  26k tok/s  elapsed 129m51s  left ~115m32s
+step 12800/24000  loss 1.658  lr 3.1e-04  26k tok/s  elapsed 130m22s  left ~114m04s
+step 12900/24000  loss 1.652  lr 3.1e-04  26k tok/s  elapsed 130m53s  left ~112m37s
+step 13000/24000  loss 1.671  lr 3.0e-04  26k tok/s  elapsed 131m24s  left ~111m11s
+step 13100/24000  loss 1.640  lr 3.0e-04  27k tok/s  elapsed 131m55s  left ~109m45s
+step 13200/24000  loss 1.660  lr 3.0e-04  27k tok/s  elapsed 132m25s  left ~108m21s
+step 13300/24000  loss 1.639  lr 2.9e-04  26k tok/s  elapsed 132m56s  left ~106m57s
+step 13400/24000  loss 1.655  lr 2.9e-04  26k tok/s  elapsed 133m28s  left ~105m34s
+step 13500/24000  loss 1.658  lr 2.9e-04  26k tok/s  elapsed 133m59s  left ~104m13s
+step 13600/24000  loss 1.660  lr 2.8e-04  26k tok/s  elapsed 134m30s  left ~102m51s
+step 13700/24000  loss 1.663  lr 2.8e-04  26k tok/s  elapsed 135m02s  left ~101m31s
+step 13800/24000  loss 1.653  lr 2.7e-04  26k tok/s  elapsed 135m33s  left ~100m12s
+step 13900/24000  loss 1.641  lr 2.7e-04  26k tok/s  elapsed 136m05s  left ~98m53s
+step 14000/24000  loss 1.638  lr 2.7e-04  26k tok/s  elapsed 136m37s  left ~97m35s
+
+--- step 14000: validation loss 1.6867 (perplexity 5.40), checkpoint saved. Sample:
+Once upon a time, there was a little girl named Lily. She loved to play outside and explore the world around her. One day, she found a big hill and decided to climb it. When she made her way up, she found a whole new world. It was so pretty and had lots of trees and flowers.
+But then, she heard a loud noise. It was a big bear! The bear was very angry and started to chase Lily. She was scared and didn't know what to do. She
+---
+
+step 14100/24000  loss 1.631  lr 2.6e-04  26k tok/s  elapsed 137m16s  left ~96m23s
+step 14200/24000  loss 1.625  lr 2.6e-04  26k tok/s  elapsed 137m48s  left ~95m06s
+step 14300/24000  loss 1.634  lr 2.6e-04  26k tok/s  elapsed 138m19s  left ~93m49s
+step 14400/24000  loss 1.642  lr 2.5e-04  25k tok/s  elapsed 138m52s  left ~92m34s
+step 14500/24000  loss 1.628  lr 2.5e-04  26k tok/s  elapsed 139m24s  left ~91m19s
+step 14600/24000  loss 1.639  lr 2.5e-04  26k tok/s  elapsed 139m55s  left ~90m05s
+step 14700/24000  loss 1.628  lr 2.4e-04  26k tok/s  elapsed 140m27s  left ~88m51s
+step 14800/24000  loss 1.643  lr 2.4e-04  26k tok/s  elapsed 140m58s  left ~87m38s
+step 14900/24000  loss 1.649  lr 2.4e-04  26k tok/s  elapsed 141m29s  left ~86m24s
+step 15000/24000  loss 1.619  lr 2.3e-04  26k tok/s  elapsed 142m00s  left ~85m12s
+step 15100/24000  loss 1.633  lr 2.3e-04  26k tok/s  elapsed 142m32s  left ~84m01s
+step 15200/24000  loss 1.633  lr 2.3e-04  26k tok/s  elapsed 143m03s  left ~82m49s
+step 15300/24000  loss 1.614  lr 2.2e-04  26k tok/s  elapsed 143m35s  left ~81m38s
+step 15400/24000  loss 1.613  lr 2.2e-04  26k tok/s  elapsed 144m06s  left ~80m28s
+step 15500/24000  loss 1.640  lr 2.2e-04  26k tok/s  elapsed 144m38s  left ~79m19s
+step 15600/24000  loss 1.612  lr 2.1e-04  26k tok/s  elapsed 145m09s  left ~78m09s
+step 15700/24000  loss 1.623  lr 2.1e-04  26k tok/s  elapsed 145m40s  left ~77m00s
+step 15800/24000  loss 1.617  lr 2.1e-04  27k tok/s  elapsed 146m11s  left ~75m52s
+step 15900/24000  loss 1.617  lr 2.0e-04  26k tok/s  elapsed 146m42s  left ~74m44s
+step 16000/24000  loss 1.631  lr 2.0e-04  26k tok/s  elapsed 147m14s  left ~73m37s
+
+--- step 16000: validation loss 1.6518 (perplexity 5.22), checkpoint saved. Sample:
+Once upon a time there were two friends, Tom and Tom. Tom was always looking for fun, but Tom wished he was wearing his favourite cap. Tom had a great idea – he wanted to hang it up on his bedroom wall! 
+So Tom went out to find something to hang it on. He found a lovely red bow by the wall and hung it on the wall. Tom was so proud of his cap! 
+Every day Tom would hang the cap on the wall, making sure it was safe.
+---
+
+step 16100/24000  loss 1.602  lr 2.0e-04  26k tok/s  elapsed 147m54s  left ~72m34s
+step 16200/24000  loss 1.615  lr 1.9e-04  26k tok/s  elapsed 148m25s  left ~71m28s
+step 16300/24000  loss 1.611  lr 1.9e-04  26k tok/s  elapsed 148m57s  left ~70m21s
+step 16400/24000  loss 1.606  lr 1.9e-04  26k tok/s  elapsed 149m28s  left ~69m16s
+step 16500/24000  loss 1.599  lr 1.8e-04  26k tok/s  elapsed 149m59s  left ~68m10s
+step 16600/24000  loss 1.606  lr 1.8e-04  25k tok/s  elapsed 150m31s  left ~67m06s
+step 16700/24000  loss 1.590  lr 1.8e-04  26k tok/s  elapsed 151m02s  left ~66m01s
+step 16800/24000  loss 1.599  lr 1.8e-04  27k tok/s  elapsed 151m33s  left ~64m57s
+step 16900/24000  loss 1.608  lr 1.7e-04  27k tok/s  elapsed 152m04s  left ~63m53s
+step 17000/24000  loss 1.587  lr 1.7e-04  26k tok/s  elapsed 152m35s  left ~62m49s
+step 17100/24000  loss 1.598  lr 1.7e-04  25k tok/s  elapsed 153m07s  left ~61m47s
+step 17200/24000  loss 1.589  lr 1.6e-04  27k tok/s  elapsed 153m38s  left ~60m44s
+step 17300/24000  loss 1.600  lr 1.6e-04  26k tok/s  elapsed 154m09s  left ~59m42s
+step 17400/24000  loss 1.564  lr 1.6e-04  26k tok/s  elapsed 154m41s  left ~58m40s
+step 17500/24000  loss 1.594  lr 1.6e-04  26k tok/s  elapsed 155m12s  left ~57m38s
+step 17600/24000  loss 1.588  lr 1.5e-04  26k tok/s  elapsed 155m44s  left ~56m37s
+step 17700/24000  loss 1.592  lr 1.5e-04  26k tok/s  elapsed 156m15s  left ~55m36s
+step 17800/24000  loss 1.579  lr 1.5e-04  26k tok/s  elapsed 156m45s  left ~54m36s
+step 17900/24000  loss 1.602  lr 1.4e-04  26k tok/s  elapsed 157m17s  left ~53m35s
+step 18000/24000  loss 1.567  lr 1.4e-04  26k tok/s  elapsed 157m47s  left ~52m35s
+
+--- step 18000: validation loss 1.6191 (perplexity 5.05), checkpoint saved. Sample:
+Once upon a time, there was a little girl named Lily. She was very weak and could not walk much. One day, she went for a walk in the park with her mom. They saw a big tree with lots of leaves. 
+Lily's mom said, "Be careful, Lily. Don't fall." Lily nodded and walked slowly to play in the leaves. Suddenly, her arm broke! She was very sad and started to cry. 
+Her mom said, "Don't worry, Lily.
+---
+
+step 18100/24000  loss 1.587  lr 1.4e-04  27k tok/s  elapsed 158m27s  left ~51m39s
+step 18200/24000  loss 1.565  lr 1.4e-04  26k tok/s  elapsed 158m58s  left ~50m39s
+step 18300/24000  loss 1.575  lr 1.3e-04  26k tok/s  elapsed 159m29s  left ~49m40s
+step 18400/24000  loss 1.577  lr 1.3e-04  26k tok/s  elapsed 160m00s  left ~48m41s
+step 18500/24000  loss 1.568  lr 1.3e-04  26k tok/s  elapsed 160m31s  left ~47m43s
+step 18600/24000  loss 1.572  lr 1.3e-04  27k tok/s  elapsed 161m02s  left ~46m45s
+step 18700/24000  loss 1.565  lr 1.3e-04  26k tok/s  elapsed 161m33s  left ~45m47s
+step 18800/24000  loss 1.569  lr 1.2e-04  26k tok/s  elapsed 162m04s  left ~44m49s
+step 18900/24000  loss 1.554  lr 1.2e-04  26k tok/s  elapsed 162m36s  left ~43m52s
+step 19000/24000  loss 1.570  lr 1.2e-04  26k tok/s  elapsed 163m07s  left ~42m55s
+step 19100/24000  loss 1.568  lr 1.2e-04  26k tok/s  elapsed 163m38s  left ~41m58s
+step 19200/24000  loss 1.549  lr 1.1e-04  26k tok/s  elapsed 164m10s  left ~41m02s
+step 19300/24000  loss 1.568  lr 1.1e-04  26k tok/s  elapsed 164m42s  left ~40m06s
+step 19400/24000  loss 1.557  lr 1.1e-04  26k tok/s  elapsed 165m13s  left ~39m10s
+step 19500/24000  loss 1.565  lr 1.1e-04  26k tok/s  elapsed 165m44s  left ~38m14s
+step 19600/24000  loss 1.552  lr 1.1e-04  26k tok/s  elapsed 166m16s  left ~37m19s
+step 19700/24000  loss 1.537  lr 1.0e-04  26k tok/s  elapsed 166m47s  left ~36m24s
+step 19800/24000  loss 1.564  lr 1.0e-04  27k tok/s  elapsed 167m18s  left ~35m29s
+step 19900/24000  loss 1.558  lr 1.0e-04  26k tok/s  elapsed 167m49s  left ~34m34s
+step 20000/24000  loss 1.566  lr 9.8e-05  25k tok/s  elapsed 168m22s  left ~33m40s
+
+--- step 20000: validation loss 1.5959 (perplexity 4.93), checkpoint saved. Sample:
+Once upon a time, there was a little girl named Lily. She was very excited because she was going on a trip to the park. She packed her backpack with her favorite doll, Her doll, and her favorite book.
+When they arrived at the park, Lily was very alert as they walked down the path. She looked at the flowers, played on the swings, and played on the slide. She had so much fun!
+As they were leaving the park, Lily's mom came to her and said,
+---
+
+step 20100/24000  loss 1.557  lr 9.6e-05  25k tok/s  elapsed 169m02s  left ~32m48s
+step 20200/24000  loss 1.557  lr 9.4e-05  26k tok/s  elapsed 169m33s  left ~31m53s
+step 20300/24000  loss 1.550  lr 9.2e-05  26k tok/s  elapsed 170m05s  left ~31m00s
+step 20400/24000  loss 1.551  lr 9.1e-05  26k tok/s  elapsed 170m37s  left ~30m06s
+step 20500/24000  loss 1.538  lr 8.9e-05  26k tok/s  elapsed 171m08s  left ~29m13s
+step 20600/24000  loss 1.561  lr 8.7e-05  26k tok/s  elapsed 171m40s  left ~28m20s
+step 20700/24000  loss 1.552  lr 8.6e-05  26k tok/s  elapsed 172m11s  left ~27m27s
+step 20800/24000  loss 1.550  lr 8.4e-05  26k tok/s  elapsed 172m42s  left ~26m34s
+step 20900/24000  loss 1.558  lr 8.3e-05  27k tok/s  elapsed 173m13s  left ~25m41s
+step 21000/24000  loss 1.552  lr 8.1e-05  27k tok/s  elapsed 173m43s  left ~24m49s
+step 21100/24000  loss 1.555  lr 8.0e-05  26k tok/s  elapsed 174m14s  left ~23m56s
+step 21200/24000  loss 1.543  lr 7.9e-05  27k tok/s  elapsed 174m45s  left ~23m04s
+step 21300/24000  loss 1.545  lr 7.7e-05  27k tok/s  elapsed 175m15s  left ~22m13s
+step 21400/24000  loss 1.534  lr 7.6e-05  26k tok/s  elapsed 175m47s  left ~21m21s
+step 21500/24000  loss 1.544  lr 7.5e-05  26k tok/s  elapsed 176m18s  left ~20m30s
+step 21600/24000  loss 1.532  lr 7.4e-05  26k tok/s  elapsed 176m49s  left ~19m38s
+step 21700/24000  loss 1.548  lr 7.3e-05  26k tok/s  elapsed 177m20s  left ~18m47s
+step 21800/24000  loss 1.543  lr 7.2e-05  26k tok/s  elapsed 177m51s  left ~17m56s
+step 21900/24000  loss 1.536  lr 7.1e-05  26k tok/s  elapsed 178m23s  left ~17m06s
+step 22000/24000  loss 1.545  lr 7.0e-05  26k tok/s  elapsed 178m55s  left ~16m15s
+
+--- step 22000: validation loss 1.5789 (perplexity 4.85), checkpoint saved. Sample:
+Once upon a time, there was a little girl named Lily. She was very excited to go to the park with her family. She put on her shoes and got ready to go. Her mom said, "We're going to the park today, Lily." Lily was happy and held her mom's hand tightly.
+At the park, Lily saw a lot of other kids playing and having fun. She got bored of playing with them. She started to cry. Her mom said, "Lily, it's time to
+---
+
+step 22100/24000  loss 1.535  lr 6.9e-05  25k tok/s  elapsed 179m36s  left ~15m26s
+step 22200/24000  loss 1.556  lr 6.8e-05  26k tok/s  elapsed 180m07s  left ~14m36s
+step 22300/24000  loss 1.542  lr 6.7e-05  26k tok/s  elapsed 180m39s  left ~13m46s
+step 22400/24000  loss 1.526  lr 6.6e-05  25k tok/s  elapsed 181m11s  left ~12m56s
+step 22500/24000  loss 1.551  lr 6.5e-05  26k tok/s  elapsed 181m43s  left ~12m06s
+step 22600/24000  loss 1.525  lr 6.5e-05  26k tok/s  elapsed 182m15s  left ~11m17s
+step 22700/24000  loss 1.544  lr 6.4e-05  26k tok/s  elapsed 182m46s  left ~10m28s
+step 22800/24000  loss 1.535  lr 6.3e-05  26k tok/s  elapsed 183m17s  left ~9m38s
+step 22900/24000  loss 1.515  lr 6.3e-05  26k tok/s  elapsed 183m49s  left ~8m49s
+step 23000/24000  loss 1.533  lr 6.2e-05  26k tok/s  elapsed 184m21s  left ~8m00s
+step 23100/24000  loss 1.526  lr 6.2e-05  26k tok/s  elapsed 184m52s  left ~7m12s
+step 23200/24000  loss 1.524  lr 6.2e-05  26k tok/s  elapsed 185m24s  left ~6m23s
+step 23300/24000  loss 1.546  lr 6.1e-05  26k tok/s  elapsed 185m56s  left ~5m35s
+step 23400/24000  loss 1.543  lr 6.1e-05  26k tok/s  elapsed 186m27s  left ~4m46s
+step 23500/24000  loss 1.531  lr 6.1e-05  26k tok/s  elapsed 186m58s  left ~3m58s
+step 23600/24000  loss 1.538  lr 6.0e-05  26k tok/s  elapsed 187m29s  left ~3m10s
+step 23700/24000  loss 1.516  lr 6.0e-05  26k tok/s  elapsed 188m01s  left ~2m22s
+step 23800/24000  loss 1.531  lr 6.0e-05  26k tok/s  elapsed 188m33s  left ~1m35s
+step 23900/24000  loss 1.525  lr 6.0e-05  26k tok/s  elapsed 189m04s  left ~0m47s
+step 24000/24000  loss 1.524  lr 6.0e-05  26k tok/s  elapsed 189m36s  left ~0m00s
+
+--- step 24000: FINAL validation loss 1.5140 (perplexity 4.55); with the memory wiped before every window: 1.6157, checkpoint saved. Sample:
+Once upon a time there were two friends, Tom and Tom. Tom was always looking for fun, but Tom was afraid to try new things.
+One day, Tom was in Tom's room playing with his favourite toy. Suddenly, a big, bright light shone in Tom's bedroom. It was a ghost! Tom was scared, but he was also curious. He asked Tom to come out and see.
+Tom opened the door and saw that it had a funny face. He asked Tom, "What are you
+---
+
+DONE

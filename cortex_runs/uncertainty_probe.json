@@ -1,0 +1,12 @@
+{
+ "masked": {
+  "goal_rate": 0.0,
+  "trap_rate": 0.275,
+  "mean_return": -0.2035
+ },
+ "maximin": {
+  "goal_rate": 0.075,
+  "trap_rate": 0.075,
+  "mean_return": 0.04
+ }
+}

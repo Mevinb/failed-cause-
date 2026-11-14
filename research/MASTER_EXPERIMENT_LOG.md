@@ -349,3 +349,10 @@ Every experiment conducted in this laboratory—including negative results, bugs
 - **Result:** multimodal: `halt_thr0.7` 0.481 vs oracle 0.550, best fixed rule 0.431-0.456 — recovers ~50% of the gap; s5: all rules 0.20-0.22 vs oracle 0.375 — no recovery; math: no headroom (oracle 0.12). The head is the single best non-oracle rule only where ID features transfer (multimodal).
 - **Interpretation:** scalar features carry usable correctness signal on some tasks but not s5 — where the optimal-depth decision needs state-level information (what the verifier tried and failed to exploit OOD). Verdict: PARTIAL — the oracle-K gap is real and partly recoverable by a learned signal, but scalar features are insufficient for the hardest case. Options: richer features (per-token conf trajectory, z-norm), or train the halt head jointly inside the model (a training change — deferred; GPU budget better spent on v12 replication + Wall-1 resolution).
 - **Wall-3 ledger:** dz-halting CONFIRMED (compute-saver that beats full-depth OOD); trained-head halting PARTIAL (works where features transfer); full oracle-K recovery UNRESOLVED — needs state-aware halting, not scalar features.
+
+#### Exp #029 addendum — structural OOD: learned planner holds up under 2x wall density
+- `eval_learned_planning` gained `n_walls` (env parametrized 5 -> N walls; eval maps only emit solvable BFS-checked layouts). v11 step8000, fresh eval seeds (60000+):
+  - 8 walls (1.6x training density): **80% goal, 0% traps, +1.98**
+  - 10 walls (2x training density): **90% goal, 0% traps, +2.30**
+- Interpretation: the conv-equivariant transition learned *local* grid rules (walls block; key->flag; door+key->open; goal->reward) that transfer to maze topologies outside the training distribution — the 90% is not a same-distribution artifact. 0% traps maintained under both densities.
+- Caveat: n=40 per condition (within-binomial noise ~10-15%); the two conditions are consistent with a flat ~80-90% OOD band rather than a monotone trend.

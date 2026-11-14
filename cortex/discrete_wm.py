@@ -370,14 +370,15 @@ def select_action_learned(wm: DiscreteBoardWM, obs_toks: list[int], horizon: int
 
 
 @torch.no_grad()
-def eval_learned_planning(wm: DiscreteBoardWM, n_maps: int, device: str, seed0: int = 50000, horizon: int = 16, max_steps: int = 18, mode: str = "raw", vn: ValueNet | None = None) -> dict:
+def eval_learned_planning(wm: DiscreteBoardWM, n_maps: int, device: str, seed0: int = 50000, horizon: int = 16, max_steps: int = 18, mode: str = "raw", vn: ValueNet | None = None, n_walls: int = 5) -> dict:
     """Held-out planning with the FULLY-LEARNED pipeline: obs -> encode -> learned-T
-    beam search -> env step. Same protocol as evaluate_planning's symbolic modes."""
+    beam search -> env step. Same protocol as evaluate_planning's symbolic modes.
+    `n_walls` > 5 = structural OOD (denser mazes than the training distribution)."""
     wm.eval()
     goals = traps = steps_sum = 0
     rets = []
     for m in range(n_maps):
-        env = KeyDoorTrapEnv(seed0 + m)
+        env = KeyDoorTrapEnv(seed0 + m, n_walls=n_walls)
         obs = env.reset()
         ret, n_steps = 0.0, 0
         while not env.done and n_steps < max_steps:
@@ -593,6 +594,8 @@ def main():
     ap.add_argument("--progressed-envs", type=int, default=0, help="extra envs of progressed-regime (flag>=1) transitions, same map seeds")
     ap.add_argument("--select-metric", default="fidelity", choices=["fidelity", "plan"])
     ap.add_argument("--plan-modes", default=None, help="comma list: run eval_learned_planning per mode")
+    ap.add_argument("--eval-walls", type=int, default=5, help="wall count for planning eval maps (>5 = structural OOD)")
+    ap.add_argument("--eval-seed0", type=int, default=50000, help="eval map seed base")
     ap.add_argument("--value-ckpt", default=None, help="ValueNet checkpoint for mode=val planning")
     ap.add_argument("--value-envs", type=int, default=0, help="train a ValueNet on this many envs after wm training")
     ap.add_argument("--out", default="cortex_runs/discrete_wm_eval.json")
@@ -639,7 +642,7 @@ def main():
         torch.save(vn.state_dict(), args.ckpt_out.replace(".pt", "_value.pt"))
     if args.plan_modes:
         for mode in args.plan_modes.split(","):
-            pres = eval_learned_planning(wm, args.eval_maps, args.device, mode=mode, vn=vn)
+            pres = eval_learned_planning(wm, args.eval_maps, args.device, seed0=args.eval_seed0, mode=mode, vn=vn, n_walls=args.eval_walls)
             res[f"plan_{mode}"] = pres
             print(f"[discrete_wm] plan {mode}: {pres}", flush=True)
     print(json.dumps(res, indent=1), flush=True)

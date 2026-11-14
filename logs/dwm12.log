@@ -7,3 +7,17 @@ step 1500/16000 loss 0.218 | enc_cell 1.0000 trans_cell 0.9808 trans_flag 0.9766
 step 2000/16000 loss 0.205 | enc_cell 1.0000 trans_cell 0.9839 trans_flag 0.9805
 step 2500/16000 loss 0.779 | enc_cell 1.0000 trans_cell 0.9820 trans_flag 0.9180
 step 3000/16000 loss 0.704 | enc_cell 1.0000 trans_cell 0.9829 trans_flag 0.9375
+step 3500/16000 loss 0.055 | enc_cell 1.0000 trans_cell 0.9914 trans_flag 0.9961
+step 4000/16000 loss 0.073 | enc_cell 1.0000 trans_cell 0.9934 trans_flag 1.0000
+step 4500/16000 loss 0.080 | enc_cell 1.0000 trans_cell 0.9967 trans_flag 1.0000
+step 5000/16000 loss 0.161 | enc_cell 1.0000 trans_cell 0.9932 trans_flag 0.9688
+step 5500/16000 loss 0.444 | enc_cell 1.0000 trans_cell 0.9928 trans_flag 0.9609
+step 6000/16000 loss 0.065 | enc_cell 1.0000 trans_cell 0.9976 trans_flag 0.9961
+step 6500/16000 loss 0.161 | enc_cell 1.0000 trans_cell 0.9914 trans_flag 0.9688
+step 7000/16000 loss 0.345 | enc_cell 1.0000 trans_cell 0.9941 trans_flag 0.9688
+step 7500/16000 loss 0.187 | enc_cell 1.0000 trans_cell 0.9942 trans_flag 0.9648
+step 8000/16000 loss 0.367 | enc_cell 1.0000 trans_cell 0.9929 trans_flag 0.9570
+step 8500/16000 loss 0.171 | enc_cell 1.0000 trans_cell 0.9944 trans_flag 0.9727
+step 9000/16000 loss 0.134 | enc_cell 1.0000 trans_cell 0.9942 trans_flag 0.9688
+step 9500/16000 loss 0.643 | enc_cell 1.0000 trans_cell 0.9897 trans_flag 0.9453
+step 10000/16000 loss 0.113 | enc_cell 1.0000 trans_cell 0.9953 trans_flag 0.9844

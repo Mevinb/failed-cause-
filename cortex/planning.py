@@ -18,15 +18,16 @@ class KeyDoorTrapEnv:
 
     size = 6
 
-    def __init__(self, seed: int):
+    def __init__(self, seed: int, n_walls: int = 5):
         self.rng = random.Random(seed)
+        self.n_walls = n_walls
         self.reset()
 
     def reset(self):
         S = self.size
         while True:
             self.walls = set()
-            for _ in range(5):
+            for _ in range(self.n_walls):
                 self.walls.add((self.rng.randrange(S), self.rng.randrange(S)))
             free = [(r, c) for r in range(S) for c in range(S) if (r, c) not in self.walls]
             if len(free) < 10:

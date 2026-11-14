@@ -1,0 +1,4 @@
+  [R=2] map 0: goal=True trapped=False steps=14
+  [R=2] map 1: goal=False trapped=False steps=18
+  [R=2] map 2: goal=True trapped=False steps=18
+  [R=2] map 3: goal=True trapped=False steps=18

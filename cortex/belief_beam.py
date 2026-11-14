@@ -63,10 +63,11 @@ def milestone_target(know_cells: dict, flag: int) -> int:
     return -1
 
 
-def sample_particles(know: dict, flag: int, agent_rc: tuple, K: int, rng: random.Random, n_walls: int = 5):
+def sample_particles(know: dict, flag: int, agent_rc: tuple, K: int, rng: random.Random, n_walls: int = 5, prior=None):
     """K board samples consistent with knowledge: seen cells fixed; unseen
     landmark cells (key/door/goal not yet consumed, unseen walls, unseen trap)
-    drawn uniformly over unseen non-wall cells."""
+    drawn over unseen cells — uniformly, or weighted by a learned per-cell
+    type prior (`prior`: sequence of 36 sequences of 9 probs) when given."""
     parts = []
     for _ in range(K):
         g = [0] * 36
@@ -88,7 +89,11 @@ def sample_particles(know: dict, flag: int, agent_rc: tuple, K: int, rng: random
         for v in need:
             if not free:
                 break
-            j = rng.choice(free)
+            if prior is not None:
+                w = [max(1e-6, prior[j][v]) for j in free]
+                j = rng.choices(free, weights=w)[0]
+            else:
+                j = rng.choice(free)
             g[j] = v
             free.remove(j)
         ag = agent_rc[0] * 6 + agent_rc[1]

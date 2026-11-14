@@ -12,7 +12,7 @@ from pathlib import Path
 
 import torch
 
-from cortex.belief_beam import sample_particles, select_action_belief
+from cortex.belief_beam import knowledge_from_obs, sample_particles, select_action_belief
 from cortex.belief_encoder import BeliefEncoder, fog_cells
 from cortex.discrete_wm import DiscreteBoardWM, parse_state
 from cortex.planning import KeyDoorTrapEnv
@@ -25,9 +25,16 @@ def run_e2e_map(wm, be, env, R, K, tau, device, max_steps=18, rng_seed=0, soft=T
     obs = env.reset()
     ret, n = 0.0, 0
     belief = None
+    know: dict = {}
     while not env.done and n < max_steps:
         cells_t, flag = parse_state(obs[0])
         pobs = fog_cells(cells_t, env.agent, R)
+        knowledge_from_obs(know, pobs, env.agent, R)
+        # consumed landmarks are gone from the world: purge stale knowledge
+        if flag & 1:
+            know = {k: v for k, v in know.items() if v != 3}
+        if flag & 2:
+            know = {k: v for k, v in know.items() if v != 4}
         po = torch.tensor(pobs, device=device).unsqueeze(0)
         if belief is None:
             belief = be.init_belief(po)
@@ -38,17 +45,8 @@ def run_e2e_map(wm, be, env, R, K, tau, device, max_steps=18, rng_seed=0, soft=T
                 belief = torch.nn.functional.softmax(logits, -1)
             else:
                 belief = torch.nn.functional.one_hot(logits.argmax(-1), 9).float()
-        conf = belief.max(-1).values[0]
-        ids = belief.argmax(-1)[0]
-        know = {}
-        for j in range(36):
-            v = ids[j].item()
-            if conf[j].item() > tau and v < FOG:
-                know[divmod(j, 6)] = v
-        # agent cell is always observed
-        ar, ac = env.agent
-        know[(ar, ac)] = 0
-        particles = sample_particles(know, flag, env.agent, K, rng)
+        prior = belief[0].tolist()  # [36,9] learned per-cell type prior for unseen cells
+        particles = sample_particles(know, flag, env.agent, K, rng, prior=prior)
         know_p = [dict(know) for _ in particles]
         scores = select_action_belief(wm, particles, know_p, flag, R, device=device)
         a = max(scores, key=scores.get) if scores else rng.randrange(4)
@@ -88,6 +86,7 @@ def main():
             env = KeyDoorTrapEnv(a.seed0 + m)
             goal, trapped, ret, n = run_e2e_map(wm, be, env, R, a.particles, a.tau, a.device, rng_seed=1000 + m, soft=not a.hard_feedback)
             g += int(goal); t += int(trapped); rets.append(ret); ns.append(n)
+            print(f"[R={R} map {m}] goal={goal} trap={trapped} ret={ret:.2f} steps={n}", flush=True)
         report[f"R{R}"] = {"goal_rate": round(g / a.n_maps, 4), "trap_rate": round(t / a.n_maps, 4),
                           "mean_return": round(sum(rets) / len(rets), 4),
                           "mean_steps": round(sum(ns) / len(ns), 2)}

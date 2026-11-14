@@ -1,0 +1,26 @@
+{
+ "sel4000_raw": {
+  "goal_rate": 0.55,
+  "trap_rate": 0.0,
+  "mean_return": 1.4432,
+  "mean_steps": 14.28
+ },
+ "sel4000_agflag": {
+  "goal_rate": 0.475,
+  "trap_rate": 0.0,
+  "mean_return": 1.1847,
+  "mean_steps": 14.2
+ },
+ "final16000_raw": {
+  "goal_rate": 0.55,
+  "trap_rate": 0.0,
+  "mean_return": 1.3277,
+  "mean_steps": 14.2
+ },
+ "final16000_agflag": {
+  "goal_rate": 0.25,
+  "trap_rate": 0.0,
+  "mean_return": 0.6062,
+  "mean_steps": 15.97
+ }
+}

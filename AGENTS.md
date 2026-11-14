@@ -167,6 +167,16 @@ Modular 11-subsystem cognitive architecture (`SYNAPSE-1` / `H3_cortex_agi`) comp
   (0% OOD) — conv equivariance is the key prior. Exp #025: all eval-time manifold projections
   (pin/fact/surg) and staged milestone scoring FALSIFIED — SS robustified T to its own error
   distribution; residual = agent evaporation (~26% imagined boards) → agent-existence aux loss (Exp #026).
+  Exp #026/#027 findings: full-board dedup +25pts on mature models (the symbolic `(ag,flag)` key
+  collapses distinct imagined boards); fidelity-selection ANTI-selects for planning → use
+  `--select-metric plan` (disjoint sel seeds 70000+); recipe has a robust-vs-memorization basin
+  lottery ACROSS runs (v8=0% at identical TF acc) AND WITHIN runs (v10: loss spike @10.5k, planning
+  dead zone steps 6k–12k, partial recovery). Beam scoring/heads calibrated (within-class Spearman
+  +0.87; pooled −0.51 was a Simpson's artifact); beam width 256 FALSIFIED (0/18 rescues); myopic
+  greedy on true board = 0/40 — imagined lookahead adds real value. `ValueNet` (milestone-dist
+  potential, MAE 0.37 steps) leaf scoring = small gain. Learned planning plateau ~55-62.5% (v10 best:
+  57.5% w/ value head, best-ever fidelity d6 0.744/d12 0.526); residual = mid-episode action-ranking
+  noise compounding over ~12-step plans (per-step oracle agreement ~53% mid-episode vs 87.5% at t0).
 - Full 8-domain benchmark suite (ID + OOD across Episodic Recall, $S_5$ State Tracking, Compositional Math, 2D ARC Grid Rule Induction + Test-Time Plasticity, Confounded Causal `do`-Calculus, Multimodal 2D Grounding, Key-Door-BaitTrap-Goal World-Model Beam MPC, and 5-Phase Continual Learning with dormant-neuron tracking):
   `.venv/bin/python cortex/run_suite.py --steps 3600 --batch 36 --seed 0`
 - Post-grokking algebraic/causal stress test & $K=1..8$ compute scaling:

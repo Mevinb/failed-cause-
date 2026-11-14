@@ -199,8 +199,75 @@ def factored_step(wm: DiscreteBoardWM, s: torch.Tensor, a: torch.Tensor, st: dic
     return s2, rew, tr, agent, flag
 
 
-@torch.no_grad()
-def select_action_learned(wm: DiscreteBoardWM, obs_toks: list[int], horizon: int = 16, beam_width: int = 64, gamma: float = 0.97, device: str = "cpu", mode: str = "raw") -> int:
+class ValueNet(nn.Module):
+    """V(s) -> BFS distance to the current milestone target, trained on TRUE parsed
+    transitions. Beam leaves get a learned potential instead of _bfs on possibly-
+    corrupt imagined boards (Exp #027: scoring/dedup/selection/search-budget all
+    cleared as the residual; the flat-horizon leaf value is what remains)."""
+
+    def __init__(self):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Conv2d(N_CELL + N_FLAG, 64, 3, padding=1), nn.ReLU(),
+            nn.Conv2d(64, 64, 3, padding=1), nn.ReLU(),
+            nn.Flatten(), nn.Linear(64 * 36, 128), nn.ReLU(), nn.Linear(128, 1),
+        )
+
+    def forward(self, s: torch.Tensor) -> torch.Tensor:
+        cells, flags = DiscreteBoardWM.split_state(s)
+        B = s.shape[0]
+        x = torch.cat(
+            [
+                cells.transpose(1, 2).reshape(B, N_CELL, 6, 6),
+                flags.unsqueeze(-1).unsqueeze(-1).expand(B, N_FLAG, 6, 6),
+            ],
+            1,
+        )
+        return self.net(x).squeeze(-1)
+
+
+def milestone_dist(cells: list[int], flag: int) -> float:
+    """Env-exact steps to the CURRENT milestone target (key -> door -> goal)."""
+    hk, do = flag & 1, (flag >> 1) & 1
+    if 2 not in cells:
+        return 12.0
+    ag = cells.index(2)
+    tgt = (
+        cells.index(3) if (not hk and 3 in cells)
+        else cells.index(4) if (not do and 4 in cells)
+        else cells.index(5) if 5 in cells
+        else ag
+    )
+    d = _bfs(cells, ag, set() if hk else {4})
+    v = d[tgt] if 0 <= tgt < len(d) and d[tgt] >= 0 else 12
+    return float(min(v, 12))
+
+
+def train_value(vn: ValueNet, transitions: list[dict], steps: int = 1500, bs: int = 256, device: str = "cuda", seed: int = 0) -> ValueNet:
+    rng = random.Random(seed)
+    vn.to(device).train()
+    opt = torch.optim.AdamW(vn.parameters(), lr=3e-4)
+    for it in range(steps):
+        batch = rng.sample(transitions, bs)
+        with torch.no_grad():
+            ss, yy = [], []
+            for b in batch:
+                c, f = parse_state(b["obs"][0])
+                ss.append(c)
+                yy.append(milestone_dist(c, f))
+            cells_b = torch.tensor(ss, dtype=torch.long, device=device)
+            flags_b = torch.tensor([f for _, f in (parse_state(b["obs"][0]) for b in batch)], dtype=torch.long, device=device)
+            s = onehot_from_parsed(cells_b, flags_b)
+            y = torch.tensor(yy, device=device)
+        loss = F.mse_loss(vn(s), y)
+        opt.zero_grad(); loss.backward(); opt.step()
+        if (it + 1) % 300 == 0:
+            print(f"[value] step {it+1} loss {loss.item():.4f}", flush=True)
+    vn.eval()
+    return vn
+
+
+def select_action_learned(wm: DiscreteBoardWM, obs_toks: list[int], horizon: int = 16, beam_width: int = 64, gamma: float = 0.97, device: str = "cpu", mode: str = "raw", vn: ValueNet | None = None) -> int:
     """Fully-learned beam-search MPC: exact symbolic search structure (Exp #018)
     but the transition is the LEARNED conv dynamics T(s,a) — no hand-coded rules.
     Node = (hard_state, score, first_action, terminal). Terminal = trapped (the
@@ -220,7 +287,7 @@ def select_action_learned(wm: DiscreteBoardWM, obs_toks: list[int], horizon: int
             if term:
                 continue
             for a in range(4):
-                if mode in ("raw", "staged", "agflag"):
+                if mode in ("raw", "staged", "agflag", "val"):
                     sn, r, tr = wm.step(st, torch.tensor([a], device=device), hard=True)
                 elif mode == "surg":
                     sn, r, tr = surgical_step(wm, st, torch.tensor([a], device=device))
@@ -241,14 +308,17 @@ def select_action_learned(wm: DiscreteBoardWM, obs_toks: list[int], horizon: int
                 else:
                     if mode == "staged":
                         score += 3.0 * bin(flag).count("1")
-                    ag = cells.index(2) if 2 in cells else -1
-                    key_pos = cells.index(3) if 3 in cells else -1
-                    door_pos = cells.index(4) if 4 in cells else -1
-                    goal_pos = cells.index(5) if 5 in cells else -1
-                    tgt = key_pos if not hk else (door_pos if not do else goal_pos)
-                    blocked = set() if hk else {4}
-                    d = _bfs(cells, ag, blocked)
-                    score -= 0.06 * (d[tgt] if 0 <= tgt < len(d) and d[tgt] >= 0 else 12)
+                    if mode == "val" and vn is not None:
+                        score -= 0.3 * vn(sn).item()
+                    else:
+                        ag = cells.index(2) if 2 in cells else -1
+                        key_pos = cells.index(3) if 3 in cells else -1
+                        door_pos = cells.index(4) if 4 in cells else -1
+                        goal_pos = cells.index(5) if 5 in cells else -1
+                        tgt = key_pos if not hk else (door_pos if not do else goal_pos)
+                        blocked = set() if hk else {4}
+                        d = _bfs(cells, ag, blocked)
+                        score -= 0.06 * (d[tgt] if 0 <= tgt < len(d) and d[tgt] >= 0 else 12)
                 cands.append((score, sn, nsc, fa, trapped or solved))
         cands.sort(key=lambda t: -t[0])
         seen, nodes = set(), []
@@ -272,7 +342,7 @@ def select_action_learned(wm: DiscreteBoardWM, obs_toks: list[int], horizon: int
 
 
 @torch.no_grad()
-def eval_learned_planning(wm: DiscreteBoardWM, n_maps: int, device: str, seed0: int = 50000, horizon: int = 16, max_steps: int = 18, mode: str = "raw") -> dict:
+def eval_learned_planning(wm: DiscreteBoardWM, n_maps: int, device: str, seed0: int = 50000, horizon: int = 16, max_steps: int = 18, mode: str = "raw", vn: ValueNet | None = None) -> dict:
     """Held-out planning with the FULLY-LEARNED pipeline: obs -> encode -> learned-T
     beam search -> env step. Same protocol as evaluate_planning's symbolic modes."""
     wm.eval()
@@ -283,7 +353,7 @@ def eval_learned_planning(wm: DiscreteBoardWM, n_maps: int, device: str, seed0: 
         obs = env.reset()
         ret, n_steps = 0.0, 0
         while not env.done and n_steps < max_steps:
-            a = select_action_learned(wm, obs[0], horizon=horizon, device=device, mode=mode)
+            a = select_action_learned(wm, obs[0], horizon=horizon, device=device, mode=mode, vn=vn)
             obs, r, done, trapped = env.step(a)
             ret += r
             n_steps += 1

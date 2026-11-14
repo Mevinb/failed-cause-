@@ -1,0 +1,136 @@
+[discrete_wm] collecting 6000 env trajectories...
+[discrete_wm] 103417 transitions; training 8000 steps on cuda
+step 500/8000 loss 0.694 | enc_cell 1.0000 trans_cell 0.9795 trans_flag 0.9688
+step 1000/8000 loss 0.341 | enc_cell 1.0000 trans_cell 0.9920 trans_flag 0.9844
+step 1500/8000 loss 0.389 | enc_cell 1.0000 trans_cell 0.9927 trans_flag 0.9180
+step 2000/8000 loss 0.178 | enc_cell 1.0000 trans_cell 0.9969 trans_flag 0.9727
+step 2500/8000 loss 0.083 | enc_cell 1.0000 trans_cell 0.9947 trans_flag 0.9922
+step 3000/8000 loss 0.037 | enc_cell 1.0000 trans_cell 0.9961 trans_flag 1.0000
+step 3500/8000 loss 0.067 | enc_cell 1.0000 trans_cell 0.9963 trans_flag 0.9844
+step 4000/8000 loss 0.008 | enc_cell 1.0000 trans_cell 0.9985 trans_flag 1.0000
+step 4500/8000 loss 0.033 | enc_cell 1.0000 trans_cell 0.9964 trans_flag 0.9961
+step 5000/8000 loss 0.021 | enc_cell 1.0000 trans_cell 0.9957 trans_flag 1.0000
+step 5500/8000 loss 0.012 | enc_cell 1.0000 trans_cell 0.9982 trans_flag 1.0000
+step 6000/8000 loss 0.057 | enc_cell 1.0000 trans_cell 0.9986 trans_flag 1.0000
+step 6500/8000 loss 0.028 | enc_cell 1.0000 trans_cell 0.9967 trans_flag 0.9961
+step 7000/8000 loss 0.006 | enc_cell 1.0000 trans_cell 0.9992 trans_flag 1.0000
+step 7500/8000 loss 0.011 | enc_cell 1.0000 trans_cell 0.9985 trans_flag 1.0000
+step 8000/8000 loss 0.421 | enc_cell 1.0000 trans_cell 0.9858 trans_flag 0.9531
+[discrete_wm] saved cortex_runs/discrete_wm_v8.pt
+[discrete_wm] rollout-fidelity eval: 40 held-out maps, depth 14
+[discrete_wm] plan raw: {'goal_rate': 0.0, 'trap_rate': 0.0, 'mean_return': -0.0793, 'mean_steps': 18.0}
+[discrete_wm] plan agflag: {'goal_rate': 0.0, 'trap_rate': 0.0, 'mean_return': -0.0793, 'mean_steps': 18.0}
+{
+ "exact_d1": 0.75,
+ "agent_d1": 0.8,
+ "landmark_d1": 0.95,
+ "exact_oracle_d1": 0.75,
+ "exact_fact_d1": 0.0,
+ "agent_fact_d1": 0.0,
+ "landmark_fact_d1": 0.0,
+ "exact_d2": 0.3,
+ "agent_d2": 0.375,
+ "landmark_d2": 0.85,
+ "exact_oracle_d2": 0.3,
+ "exact_fact_d2": 0.05,
+ "agent_fact_d2": 0.05,
+ "landmark_fact_d2": 0.05,
+ "exact_d3": 0.05,
+ "agent_d3": 0.075,
+ "landmark_d3": 0.7,
+ "exact_oracle_d3": 0.05,
+ "exact_fact_d3": 0.0,
+ "agent_fact_d3": 0.0,
+ "landmark_fact_d3": 0.0,
+ "exact_d4": 0.0,
+ "agent_d4": 0.0,
+ "landmark_d4": 0.55,
+ "exact_oracle_d4": 0.0,
+ "exact_fact_d4": 0.0,
+ "agent_fact_d4": 0.075,
+ "landmark_fact_d4": 0.0,
+ "exact_d5": 0.0,
+ "agent_d5": 0.0,
+ "landmark_d5": 0.4359,
+ "exact_oracle_d5": 0.0,
+ "exact_fact_d5": 0.0,
+ "agent_fact_d5": 0.0,
+ "landmark_fact_d5": 0.0,
+ "exact_d6": 0.0,
+ "agent_d6": 0.0,
+ "landmark_d6": 0.2821,
+ "exact_oracle_d6": 0.0,
+ "exact_fact_d6": 0.0513,
+ "agent_fact_d6": 0.1026,
+ "landmark_fact_d6": 0.0513,
+ "exact_d7": 0.0,
+ "agent_d7": 0.0,
+ "landmark_d7": 0.1842,
+ "exact_oracle_d7": 0.0,
+ "exact_fact_d7": 0.0,
+ "agent_fact_d7": 0.0,
+ "landmark_fact_d7": 0.0,
+ "exact_d8": 0.0,
+ "agent_d8": 0.0286,
+ "landmark_d8": 0.0571,
+ "exact_oracle_d8": 0.0,
+ "exact_fact_d8": 0.0,
+ "agent_fact_d8": 0.0857,
+ "landmark_fact_d8": 0.0571,
+ "exact_d9": 0.0,
+ "agent_d9": 0.0,
+ "landmark_d9": 0.0625,
+ "exact_oracle_d9": 0.0,
+ "exact_fact_d9": 0.0,
+ "agent_fact_d9": 0.0,
+ "landmark_fact_d9": 0.0,
+ "exact_d10": 0.0,
+ "agent_d10": 0.0,
+ "landmark_d10": 0.0645,
+ "exact_oracle_d10": 0.0,
+ "exact_fact_d10": 0.0,
+ "agent_fact_d10": 0.2258,
+ "landmark_fact_d10": 0.0,
+ "exact_d11": 0.0,
+ "agent_d11": 0.0,
+ "landmark_d11": 0.0833,
+ "exact_oracle_d11": 0.0,
+ "exact_fact_d11": 0.0,
+ "agent_fact_d11": 0.0,
+ "landmark_fact_d11": 0.0,
+ "exact_d12": 0.0,
+ "agent_d12": 0.0526,
+ "landmark_d12": 0.0,
+ "exact_oracle_d12": 0.0,
+ "exact_fact_d12": 0.0,
+ "agent_fact_d12": 0.3158,
+ "landmark_fact_d12": 0.0,
+ "exact_d13": 0.0,
+ "agent_d13": 0.0,
+ "landmark_d13": 0.0,
+ "exact_oracle_d13": 0.0,
+ "exact_fact_d13": 0.0,
+ "agent_fact_d13": 0.0,
+ "landmark_fact_d13": 0.0,
+ "exact_d14": 0.0,
+ "agent_d14": 0.0,
+ "landmark_d14": 0.0,
+ "exact_oracle_d14": 0.0,
+ "exact_fact_d14": 0.0,
+ "agent_fact_d14": 0.75,
+ "landmark_fact_d14": 0.0,
+ "steps": 8000,
+ "n_transitions": 103417,
+ "plan_raw": {
+  "goal_rate": 0.0,
+  "trap_rate": 0.0,
+  "mean_return": -0.0793,
+  "mean_steps": 18.0
+ },
+ "plan_agflag": {
+  "goal_rate": 0.0,
+  "trap_rate": 0.0,
+  "mean_return": -0.0793,
+  "mean_steps": 18.0
+ }
+}

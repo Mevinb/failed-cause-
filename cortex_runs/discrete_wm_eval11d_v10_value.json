@@ -1,0 +1,14 @@
+{
+ "raw": {
+  "goal_rate": 0.55,
+  "trap_rate": 0.0,
+  "mean_return": 1.4432,
+  "mean_steps": 14.28
+ },
+ "val": {
+  "goal_rate": 0.575,
+  "trap_rate": 0.0,
+  "mean_return": 1.495,
+  "mean_steps": 14.12
+ }
+}

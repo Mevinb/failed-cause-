@@ -1,0 +1,14 @@
+{
+ "R2_K6": {
+  "goal_rate": 0.725,
+  "trap_rate": 0.0,
+  "mean_return": 1.8668,
+  "mean_steps": 14.07
+ },
+ "R3_K6": {
+  "goal_rate": 0.875,
+  "trap_rate": 0.0,
+  "mean_return": 2.2025,
+  "mean_steps": 12.2
+ }
+}

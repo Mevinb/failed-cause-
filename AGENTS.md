@@ -183,6 +183,11 @@ Modular 11-subsystem cognitive architecture (`SYNAPSE-1` / `H3_cortex_agi`) comp
   `.venv/bin/python cortex/reasoning_grok.py`
 - Autonomous diagnostic hypothesis, ablation & reversible evolutionary archive loop:
   `.venv/bin/python cortex/autonomous_loop.py --steps 3600 --batch 36 --seed 0 [--arch H4_cortex_v2]`
+- Wall-2/POMDP probes (eval-only on `cortex_runs/discrete_wm_v11.pt` — the 90% learned planner):
+  `cortex/probe_uncertainty.py` (mask landmarks; maximin vs EV over candidate beliefs — masked 0%, maximin 7.5%, EV 42.5%),
+  `cortex/probe_pomdp.py` (fog-of-war R; rule-based explored-map belief + frontier explore -> same beam: R2 67.5%, R3 80%, 0% traps),
+  `cortex/belief_beam.py` (particle-belief EV beam — K board-particles + per-particle imagined reveals; info-seeking emerges from lookahead, no hand-coded frontier).
+- Wall-3 probes: `cortex/probe_halting.py` (per-step acc/dz curves + halting rules on `H4_cortex_v2.pt`), `cortex/halting_head.py` (trained scalar-feature halt head, ~50% oracle-gap recovery multimodal only).
 - Gen-2 verification scripts: `cortex/replicate_h4_seed1.py` (seed-1 causal-grok replication), `cortex/run_h4_continual.py` (standalone H4 5-phase continual eval → `cortex_runs/continual_H4_gen2.json`).
 - **Gen-2 verified headline results** (`cortex_runs/benchmark_results_gen2.json`, `runs/hippocampus_24k`):
   `H4_cortex_v2` ID 0.3854 / OOD 0.3050 vs `H3` 0.2146/0.1671; `do()`-calculus grokked to ~1.0 within 3,600 steps on two seeds — **driven by the hippocampal slot bank as a training-time scaffold** (eval slot-kill −4pts, but `H3+sinusoidal` without slots never groks: 0.20–0.25 on two seeds; sinusoidal's role is K-extrapolation stability instead). **Wall-2 planning breached at the planning layer** (`symbolic_oracle` 90% solve / 0% trap on 40 held-out maps — the wall was state-abstraction fidelity, not search; learned-`obs_dec` perception variant still 0%). ARC exact-solve still 0% (FiLM+program TTT insufficient — needs discrete program search).

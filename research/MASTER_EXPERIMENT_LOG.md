@@ -396,3 +396,20 @@ Every experiment conducted in this laboratory—including negative results, bugs
 - **Results (40 maps, v11 weights):** R=2: 67.5% / 0% traps / +1.72 / 14.1 steps; **R=3: 80% / 0% traps / +2.02 / 12.9 steps** — vs 90% full-obs.
 - **Findings:** (1) the learned world model consumes *memory-rendered belief states* without modification — the explored-map IS the state representation; (2) 0% trap rate maintained under fog — once the trap enters belief it is never forgotten (the memory system's core function); (3) residual gap is exploration efficiency: hand-rolled nearest-frontier is a dumb info-seeker (no value-of-information weighting; the R=2→3 gain is mostly visibility, not strategy).
 - **Interpretation — the Wall-1×Wall-2 bridge closed at the probe level:** episodic-map memory (Wall-1's job: retain observations) → belief board → learned imagination (Wall-2's job: simulate futures). The missing capability is *learned* belief tracking (this probe hand-codes it) and *learned* information-seeking (frontier is hand-coded). Both are next: a history-conditioned belief encoder + value-of-information exploration.
+
+### Exp #034 — Particle-belief EV beam: information-seeking EMERGES from EV lookahead
+- **Artifact:** `cortex/belief_beam.py`, `cortex_runs/belief_beam.json`
+- **Mechanism:** K=6 board-particles sampled consistent with agent knowledge; inside the imagined rollout each particle evolves under learned T and the agent's per-particle knowledge updates on imagined reveals (cells within R of imagined position). Node score uses each particle's OWN revealed milestone targets; EV over particles then prefers actions that reveal informative cells — no hand-coded exploration primitive.
+- **Results (40 maps, v11 weights, fog R):**
+  | system | R=2 | R=3 |
+  |---|---|---|
+  | rule-belief + frontier (Exp #033) | 67.5% | 80% |
+  | **particle-belief EV beam** | **72.5% / 0% traps / +1.87** | **87.5% / 0% traps / +2.20 / 12.2 steps** |
+- **Findings:** (1) emergent info-seeking beats the hand-rolled frontier by +5 (R=2) and +7.5 (R=3) pts — value-of-information arises mechanically from EV over divergent particles (in particles where the imagined reveal found the landmark, post-reveal planning scores higher, and EV credits the revealing action); (2) at R=3 the system is within ~2.5pts of the FULL-observability oracle ceiling — fog is nearly free; (3) 0% traps throughout — particles respect the lethal constraint even unseen.
+- **Interpretation:** this is a real POMDP capability from pure EV lookahead — the "explore" behavior was not programmed; it is what maximizing expected imagined return looks like when beliefs have spread. The remaining R=2 gap (72.5% vs 90%) is belief-spread: 6 particles can't cover the joint prior of ~20 unseen cells (landmark combos) — scaling K or learned priors is the refinement axis.
+
+### Exp #035 — Learned belief encoder: 91.9% board accuracy from fog history (hand-tracker replaced)
+- **Artifact:** `cortex/belief_encoder.py`, `cortex_runs/belief_enc.pt`, `belief_enc_eval.json`
+- **Setup:** `BeliefEncoder` — recurrent conv belief board (36×9: 8 cell types + FOG), update f(B_{t-1}, fog_obs_t, act_t), trained 5000 steps on 32.8k fog-R=2 transitions, 2-step scheduled unroll.
+- **Result:** 91.9% per-cell board accuracy on 300 held-out episodes; `mean_fog_cells = 0.0` — the argmax commits everywhere (CE prefers guessing over marking uncertainty; the SOFTMAX still carries it — confidence-aware use is downstream's job).
+- **Interpretation:** the learned tracker matches the rule tracker's function (accumulate seen cells, persist statics) at ~92% and generalizes to held-out episodes — it learned "statics persist, agent moves, flag consumes" as dynamics not rules. Next step connects it end-to-end: learned belief → particle-beam (the full Wall-1×Wall-2 learned POMDP stack).

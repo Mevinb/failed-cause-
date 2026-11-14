@@ -86,6 +86,8 @@ def sample_particles(know: dict, flag: int, agent_rc: tuple, K: int, rng: random
         if 6 not in present:
             need.append(6)
         for v in need:
+            if not free:
+                break
             j = rng.choice(free)
             g[j] = v
             free.remove(j)

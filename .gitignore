@@ -1,15 +1,60 @@
-# Large artifacts — keep code, docs, small JSONs; not checkpoints/binaries/models
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# C / C++ build outputs
+llama.cpp-exp/build/
+build/
+*.o
+*.obj
+*.a
+*.lib
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Checkpoints, weights, and model files
 *.pt
 *.bin
 *.gguf
+*.onnx
+*.safetensors
 models/
+runs/*/last.pt
+
+# Datasets and large data files
+data/tinystories/*.txt
+!data/tinystories/TinyStories-valid.txt
 data/tinystories/*.bin
 data/tinystories/tokenizer.json
-.venv/
-__pycache__/
-*.pyc
-llama.cpp-exp/build/
+
+# Run logs and terminal outputs
 runs/*/log.jsonl
 nohup.out
 *.out
+
+# Subprojects and external worktrees
 llama.cpp-exp/
+
+# Editor and IDE configurations
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
